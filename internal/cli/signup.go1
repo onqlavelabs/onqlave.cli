@@ -1,0 +1,236 @@
+package cli
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/reflow/wrap"
+	"golang.org/x/term"
+)
+
+var (
+	focusedStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	blurredStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	cursorStyle         = focusedStyle.Copy()
+	noStyle             = lipgloss.NewStyle()
+	helpStyle           = blurredStyle.Copy()
+	cursorModeHelpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
+
+	focusedButton = focusedStyle.Copy().Render("[ Submit ]")
+	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Submit"))
+)
+
+type SignupTUI struct {
+	ctx        context.Context
+	opts       SignupOptions
+	duration   time.Duration
+	done       bool
+	start      bool
+	err        error
+	waiting    spinner.Model
+	focusIndex int
+	inputs     []textinput.Model
+	cursorMode textinput.CursorMode
+}
+
+type SignupOptions struct {
+	Link  string
+	Ctx   context.Context
+	Valid int
+}
+
+func NewSignupTUI(ctx context.Context, opts SignupOptions) (*SignupTUI, error) {
+	r := &SignupTUI{
+		ctx:     ctx,
+		opts:    opts,
+		waiting: spinner.New(),
+	}
+	r.waiting.Spinner = spinner.Dot
+	r.waiting.Style = lipgloss.NewStyle().Foreground(Primary)
+
+	r.inputs = make([]textinput.Model, 2)
+	var t textinput.Model
+	for i := range r.inputs {
+		t = textinput.New()
+		t.CursorStyle = cursorStyle
+		t.CharLimit = 32
+
+		switch i {
+		case 0:
+			t.Placeholder = "Your Tenant Name"
+			t.Focus()
+			t.PromptStyle = focusedStyle
+			t.TextStyle = focusedStyle
+			t.CharLimit = 64
+		case 1:
+			t.Placeholder = "Your Email Address"
+			t.CharLimit = 128
+		}
+		r.inputs[i] = t
+	}
+	return r, nil
+}
+
+func (ui *SignupTUI) Error() error {
+	return ui.err
+}
+
+func (ui *SignupTUI) Init() tea.Cmd {
+	// go func() {
+	// 	ui.run(ui.ctx)
+	// }()
+	return textinput.Blink
+}
+
+func (ui *SignupTUI) run(ctx context.Context) {
+	start := time.Now()
+	time.Sleep(15 * time.Second)
+	ui.duration = time.Since(start)
+	ui.done = true
+}
+
+func (ui *SignupTUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var (
+		cmd  tea.Cmd
+		cmds []tea.Cmd
+	)
+
+	// Enable quitting early.
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.Type {
+		case tea.KeyTab, tea.KeyShiftTab, tea.KeyEnter, tea.KeyUp, tea.KeyDown:
+			s := msg.String()
+			if s == "enter" && ui.focusIndex == len(ui.inputs) {
+				ui.start = true
+			}
+
+			// Cycle indexes
+			if s == "up" || s == "shift+tab" {
+				ui.focusIndex--
+			} else {
+				ui.focusIndex++
+			}
+
+			if ui.focusIndex > len(ui.inputs) {
+				ui.focusIndex = 0
+			} else if ui.focusIndex < 0 {
+				ui.focusIndex = len(ui.inputs)
+			}
+
+			for i := 0; i <= len(ui.inputs)-1; i++ {
+				if i == ui.focusIndex {
+					// Set focused state
+					cmd = ui.inputs[i].Focus()
+					ui.inputs[i].PromptStyle = focusedStyle
+					ui.inputs[i].TextStyle = focusedStyle
+					cmds = append(cmds, cmd)
+					continue
+				}
+				// Remove focused state
+				ui.inputs[i].Blur()
+				ui.inputs[i].PromptStyle = noStyle
+				ui.inputs[i].TextStyle = noStyle
+			}
+		case tea.KeyCtrlC, tea.KeyCtrlBackslash:
+			return ui, tea.Quit
+		}
+		if msg.String() == "q" {
+			return ui, tea.Quit
+		}
+	}
+
+	if !ui.done {
+		ui.waiting, cmd = ui.waiting.Update(msg)
+		cmds = append(cmds, cmd)
+	}
+	if ui.done || ui.duration != 0 || ui.err != nil {
+		// The fn has ran.
+		cmds = append(cmds, tea.Quit)
+	}
+
+	for i := range ui.inputs {
+		ui.inputs[i], cmd = ui.inputs[i].Update(msg)
+		cmds = append(cmds, cmd)
+	}
+	return ui, tea.Batch(cmds...)
+}
+
+func (ui *SignupTUI) View() string {
+	s := &strings.Builder{}
+
+	s.WriteString(ui.RenderInputs())
+
+	s.WriteString(ui.RenderLink())
+
+	s.WriteString(ui.RenderState())
+
+	if ui.err != nil {
+		s.WriteString(RenderError("There was an error whilst waiting for you to sign up : "+ui.err.Error()) + "\n")
+		return s.String()
+	}
+
+	if !ui.done {
+		// We have't ran the action yet.
+		return s.String()
+	}
+
+	s.WriteString(
+		BoldStyle.Copy().Foreground(Green).Padding(0, 0, 1, 0).Render(
+			fmt.Sprintf("Signup complete in %.2f seconds", ui.duration.Seconds()),
+		),
+	)
+
+	return s.String()
+}
+
+func (ui *SignupTUI) RenderInputs() string {
+	s := &strings.Builder{}
+	if ui.start == false {
+		for i := range ui.inputs {
+			s.WriteString(ui.inputs[i].View())
+			if i < len(ui.inputs)-1 {
+				s.WriteRune('\n')
+			}
+		}
+
+		button := &blurredButton
+		if ui.focusIndex == len(ui.inputs) {
+			button = &focusedButton
+		}
+		fmt.Fprintf(s, "\n\n%s\n\n", *button)
+	}
+	return s.String()
+}
+
+func (ui *SignupTUI) RenderLink() string {
+	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
+
+	s := &strings.Builder{}
+	if ui.start {
+		header := fmt.Sprintf("You can signup by browsing to the following link. This link is only valid for %d minutes.", ui.opts.Valid)
+		s.WriteString(TextStyle.Copy().Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+		s.WriteString("\n")
+		s.WriteString(TextStyle.Copy().Padding(1, 0, 0, 0).Render(wrap.String(ui.opts.Link, width)))
+		s.WriteString("\n")
+	}
+	return s.String()
+}
+
+func (ui *SignupTUI) RenderState() string {
+	if ui.start {
+		if ui.done {
+			return ""
+		}
+		return fmt.Sprintf("\n\n   %s Waiting for sign completion... Please be patient 🥳\n\n", ui.waiting.View())
+	} else {
+		return string("")
+	}
+}
