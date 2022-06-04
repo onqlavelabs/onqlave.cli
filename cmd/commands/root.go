@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 
+	"github.com/elewis787/boa"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,13 +32,10 @@ func Execute() error {
 			// viper.ReadInConfig()
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
 	}
 
-	// rootCmd.SetHelpFunc(boa.HelpFunc)
-	// rootCmd.SetUsageFunc(boa.UsageFunc)
+	rootCmd.SetHelpFunc(boa.HelpFunc)
+	rootCmd.SetUsageFunc(boa.UsageFunc)
 	rootCmd.PersistentFlags().Bool("json", false, "Output logs as JSON.  Set to true if stdout is not a TTY.")
 
 	// Add sub commands
