@@ -133,6 +133,10 @@ func _post[Response any, Request any](apiBase string, request Request) (*Respons
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
+	req.Header.Add("ONQLAVE-VERSION", "1")
+	req.Header.Add("ONQLAVE-ID", "1")
+	req.Header.Add("ONQLAVE-ROUTE", "1")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -159,6 +163,9 @@ func _get[T any](apiBase string) (*T, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
+	req.Header.Add("ONQLAVE-VERSION", "1")
+	req.Header.Add("ONQLAVE-ID", "1")
+	req.Header.Add("ONQLAVE-ROUTE", "1")
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	resp, err := client.Do(req)
 	if err != nil {
@@ -200,7 +207,7 @@ type GetTenantResponse struct {
 func (s *APIIntegrationService) GetTenant() (map[string]interface{}, error) {
 	baseUrl := viper.Get("api_base_url")
 	tenantId := viper.Get("tenant_id")
-	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8083, tenantId)
+	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8081, tenantId)
 
 	response, err := _get[map[string]interface{}](tenantUrl)
 	if err != nil {

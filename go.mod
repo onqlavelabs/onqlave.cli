@@ -15,12 +15,14 @@ require (
 require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2 // indirect
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 )
 
 require (
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/gosimple/slug v1.12.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

@@ -2,12 +2,15 @@ package commands
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
-	"github.com/TylerBrock/colorjson"
+	"github.com/muesli/reflow/wrap"
 	"github.com/onqlavelabs/onqlave.core/internal/api"
 	"github.com/onqlavelabs/onqlave.core/internal/cli"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/term"
 )
 
 func tenantDescribeCommand() *cobra.Command {
@@ -33,7 +36,7 @@ func tenantDescribeCommand() *cobra.Command {
 }
 
 func runTenantDiscoverCommand(cmd *cobra.Command, args []string) {
-	//width, _, _ := term.GetSize(int(os.Stdout.Fd()))
+	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	apiService := api.NewAPIIntegrationService(api.APIIntegrationServiceOptions{Ctx: cmd.Context()})
 
@@ -43,11 +46,9 @@ func runTenantDiscoverCommand(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	// s := &strings.Builder{}
-	// header := fmt.Sprintf("Tenant Name: '%s'.", tenant.Name)
-	// s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
-	// s.WriteString("\n")
-	// fmt.Println(s.String())
-	s, _ := colorjson.Marshal(tenant)
-	fmt.Println(string(s))
+	s := &strings.Builder{}
+	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String("Describing tenant .. ", width)))
+	s.WriteString("\n")
+	fmt.Println(s.String())
+	fmt.Println(cli.RenderAsJson(tenant))
 }

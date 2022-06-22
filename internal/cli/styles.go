@@ -1,6 +1,12 @@
 package cli
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"strings"
+
+	"github.com/TylerBrock/colorjson"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/gosimple/slug"
+)
 
 var (
 	Color   = lipgloss.AdaptiveColor{Light: "#111222", Dark: "#FAFAFA"}
@@ -35,6 +41,13 @@ func RenderWarning(msg string) string {
 	return err + content
 }
 
-// func (f Function) Slug() string {
-// 	return strings.ToLower(slug.Make(f.Name))
-// }
+func Slug(name string) string {
+	return strings.ToLower(slug.Make(name))
+}
+
+func RenderAsJson(object interface{}) string {
+	f := colorjson.NewFormatter()
+	f.Indent = 4
+	bytes, _ := f.Marshal(object)
+	return string(bytes)
+}

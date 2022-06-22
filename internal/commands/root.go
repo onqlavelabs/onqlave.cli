@@ -44,6 +44,7 @@ func Execute() error {
 	rootCmd.AddCommand(appsCommand())
 	rootCmd.AddCommand(keysCommand())
 	rootCmd.AddCommand(tenantsCommand())
+	rootCmd.AddCommand(clustersCommand())
 
 	viper.SetDefault("api_base_url", "")
 	viper.AddConfigPath(GetConfigDir())
