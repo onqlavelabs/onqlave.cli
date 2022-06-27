@@ -109,10 +109,11 @@ func _waitingSignupOperation(apiService *api.APIIntegrationService, token string
 	producer.Produce(api.ConcurrencyOperationResult{Result: "Waiting for signup completion", Done: false, Error: nil})
 	for duration.Minutes() < float64(valid) {
 		result, err := apiService.GetSignupOperationStatus(token)
-		time.Sleep(time.Second * 5)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
-		if result.Done {
+		if result.Done || err != nil {
 			return
+		} else {
+			time.Sleep(time.Second * 5)
 		}
 	}
 }

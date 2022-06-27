@@ -207,7 +207,7 @@ type GetTenantResponse struct {
 func (s *APIIntegrationService) GetTenant() (map[string]interface{}, error) {
 	baseUrl := viper.Get("api_base_url")
 	tenantId := viper.Get("tenant_id")
-	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8081, tenantId)
+	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8083, tenantId)
 
 	response, err := _get[map[string]interface{}](tenantUrl)
 	if err != nil {

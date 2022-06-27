@@ -18,7 +18,7 @@ func tenantDescribeCommand() *cobra.Command {
 		Use:     "describe",
 		Short:   "describe.",
 		Long:    "describe command.",
-		Example: "onqlave tenant describe",
+		Example: "onqlave tenants describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			return nil
 		},
@@ -47,8 +47,9 @@ func runTenantDiscoverCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String("Describing tenant .. ", width)))
+	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String("Describing your Tenant =>", width)))
 	s.WriteString("\n")
+	s.WriteString(cli.RenderAsJson(tenant))
+	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String("====================", width)))
 	fmt.Println(s.String())
-	fmt.Println(cli.RenderAsJson(tenant))
 }

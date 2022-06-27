@@ -96,9 +96,8 @@ func _waitingLoginOperation(apiService *api.APIIntegrationService, token string,
 	producer.Produce(api.ConcurrencyOperationResult{Result: "Waiting for login completion", Done: false, Error: nil})
 	for duration.Minutes() < float64(valid) {
 		result, authToken, tenantID, err := apiService.GetLoginOperationStatus(token)
-		time.Sleep(time.Second * 5)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
-		if result.Done {
+		if result.Done || err != nil {
 			if authToken != "" && err == nil {
 				viper.Set("auth_key", authToken)
 				viper.Set("tenant_id", tenantID)
@@ -108,6 +107,8 @@ func _waitingLoginOperation(apiService *api.APIIntegrationService, token string,
 				}
 			}
 			return
+		} else {
+			time.Sleep(time.Second * 5)
 		}
 	}
 }

@@ -47,10 +47,10 @@ type ConcurrencyOperationCallback func(result ConcurrencyOperationResult)
 func (c *Consumer) Consume(callback ConcurrencyOperationCallback) ConcurrencyOperationResult {
 	for {
 		msg := <-*c.msgs
+		callback(msg)
 		if msg.Done || msg.Error != nil {
 			return msg
 		}
-		callback(msg)
 	}
 }
 

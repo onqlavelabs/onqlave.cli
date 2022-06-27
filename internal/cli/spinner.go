@@ -82,11 +82,9 @@ func (ui *SpinnerTUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	if !ui.result.Done {
-		ui.waiting, cmd = ui.waiting.Update(msg)
-		cmds = append(cmds, cmd)
-	}
-	if ui.result.Done || ui.duration != 0 {
+	ui.waiting, cmd = ui.waiting.Update(msg)
+	cmds = append(cmds, cmd)
+	if ui.result.Done || ui.result.Error != nil || ui.duration != 0 {
 		cmds = append(cmds, tea.Quit)
 	}
 
@@ -102,7 +100,7 @@ func (ui *SpinnerTUI) View() string {
 }
 
 func (ui *SpinnerTUI) RenderState() string {
-	if !ui.result.Done {
+	if !ui.result.Done && ui.result.Error == nil {
 		return fmt.Sprintf("%s %s... Please be patient 🥳\n\n", ui.waiting.View(), ui.result.Result)
 	} else {
 		return string("")
