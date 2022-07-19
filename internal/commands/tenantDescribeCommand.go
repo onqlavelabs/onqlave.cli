@@ -30,12 +30,12 @@ func tenantDescribeCommand() *cobra.Command {
 			}
 			return nil
 		},
-		Run: runTenantDiscoverCommand,
+		Run: runTenantDescribeCommand,
 	}
 	return init
 }
 
-func runTenantDiscoverCommand(cmd *cobra.Command, args []string) {
+func runTenantDescribeCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	apiService := api.NewAPIIntegrationService(api.APIIntegrationServiceOptions{Ctx: cmd.Context()})

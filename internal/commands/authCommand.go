@@ -2,6 +2,7 @@ package commands
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func authCommand() *cobra.Command {
@@ -12,6 +13,9 @@ func authCommand() *cobra.Command {
 		Example: "onqlave auth",
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := viper.BindPFlags(cmd.Flags()); err != nil {
+				return err
+			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

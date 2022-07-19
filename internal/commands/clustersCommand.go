@@ -18,8 +18,8 @@ func clustersCommand() *cobra.Command {
 			return nil
 		},
 	}
-	init.AddCommand(configInitCommand())
-	init.AddCommand(configSetCommand())
-	init.AddCommand(configListCommand())
+	init.AddCommand(clusterAddCommand())
+	init.AddCommand(clusterRetryCommand())
+	init.AddCommand(clusterDescribeCommand())
 	return init
 }

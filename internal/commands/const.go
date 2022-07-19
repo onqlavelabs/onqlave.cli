@@ -1,6 +1,10 @@
 package commands
 
-import "os"
+import (
+	"os"
+
+	"github.com/spf13/viper"
+)
 
 const (
 	valid       = 30
@@ -64,4 +68,15 @@ func GetConfigFilePath() string {
 func GetConfigDir() string {
 	dir, _ := os.UserHomeDir()
 	return dir + cfgDir
+}
+
+func isEnvironmentConfigured() bool {
+	return viper.Get("api_base_url") != nil
+}
+
+func isLoggedin() bool {
+	if !isEnvironmentConfigured() || viper.Get("auth_key") == nil {
+		return false
+	}
+	return true
 }

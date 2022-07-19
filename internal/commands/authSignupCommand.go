@@ -49,6 +49,9 @@ func signupCommand() *cobra.Command {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return err
 			}
+			if !isEnvironmentConfigured() {
+				return errors.New("your environment is not configured. please run 'config init' before running any other command")
+			}
 			if tenantName == "" {
 				return fmt.Errorf("tenant name should be provided")
 			}
