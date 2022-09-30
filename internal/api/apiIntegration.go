@@ -17,6 +17,19 @@ type RegisterationRequest struct {
 	Request Registration `json:"registration" validate:"required"`
 }
 
+type UpdateTenantRequest struct {
+	Tennant TenantInfo `json:"tenant" validate:"required"`
+}
+
+type TenantInfo struct {
+	Id         string                 `json:"tenant_id,omitempty"`
+	Name       string                 `json:"tenant_name" validate:"required,min=4,max=100"`
+	Label      string                 `json:"tenant_label"  validate:"required"`
+	OwnerEmail string                 `json:"owner_email,omitempty"`
+	CreatedOn  time.Time              `json:"created_on,omitempty"`
+	ACL        map[string]interface{} `json:"acl,omitempty"`
+}
+
 type Registration struct {
 	Email      string `json:"email_address" validate:"email,required"`
 	Operation  string `json:"operation" validate:"required"`
@@ -430,6 +443,7 @@ func (s *APIIntegrationService) AddClusterOperationState(clusterId string) (*API
 func (s *APIIntegrationService) GetTenant() (map[string]interface{}, error) {
 	baseUrl := viper.Get("api_base_url")
 	tenantId := viper.Get("tenant_id")
+	fmt.Println(tenantId)
 	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8083, tenantId)
 
 	response, err := _get[map[string]interface{}](tenantUrl)
