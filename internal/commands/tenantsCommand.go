@@ -14,5 +14,6 @@ func tenantsCommand() *cobra.Command {
 		},
 	}
 	init.AddCommand(tenantDescribeCommand())
+	init.AddCommand(tenantUpdateCommand())
 	return init
 }

@@ -50,7 +50,7 @@ func Execute() error {
 	viper.AddConfigPath(GetConfigDir())
 	viper.SetConfigName(cfgFile) // Register config file name (no extension)
 	viper.SetConfigType("json")  // Look for specific type
-	viper.ReadInConfig()
+	_ = viper.ReadInConfig()
 
 	return rootCmd.ExecuteContext(context.Background())
 }
