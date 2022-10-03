@@ -18,9 +18,6 @@ func authCommand() *cobra.Command {
 			}
 			return nil
 		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
 	}
 	init.AddCommand(signupCommand(), loginCommand())
 	return init

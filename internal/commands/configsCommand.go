@@ -10,11 +10,9 @@ func configsCommand() *cobra.Command {
 		Short:   "configs",
 		Long:    "configs",
 		Example: "onqlave configs",
+
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
 			return nil
 		},
 	}

@@ -109,6 +109,19 @@ func (s State) String() string {
 	return "unknown"
 }
 
+type UpdateTenantRequest struct {
+	Tenant TenantInfo `json:"tenant" validate:"required"`
+}
+
+type TenantInfo struct {
+	Id         string                 `json:"tenant_id,omitempty"`
+	Name       string                 `json:"tenant_name,omitempty" validate:"required,min=4,max=100"`
+	Label      string                 `json:"tenant_label,omitempty"  validate:"required"`
+	OwnerEmail string                 `json:"owner_email,omitempty"`
+	CreatedOn  time.Time              `json:"created_on,omitempty"`
+	ACL        map[string]interface{} `json:"acl,omitempty"`
+}
+
 type Tenant struct {
 	Name        string `json:"name" validate:"required,min=4,max=100"`
 	Description string `json:"description" validate:"max=500"`
@@ -264,6 +277,41 @@ func NewAPIIntegrationService(opts APIIntegrationServiceOptions) *APIIntegration
 	}
 }
 
+func _put[Response any, Request any](apiBase string, request Request) (*Response, error) {
+	client := &http.Client{}
+	payload, _ := json.Marshal(&request)
+
+	req, err := http.NewRequest(http.MethodPut, apiBase, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("ONQLAVE-API-KEY", "")
+	req.Header.Add("ONQLAVE-VERSION", "1")
+	req.Header.Add("ONQLAVE-ID", "1")
+	req.Header.Add("ONQLAVE-ROUTE", "1")
+	if viper.Get("auth_key") != nil {
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+	var responseObject Response
+	_ = json.Unmarshal(bodyBytes, &responseObject)
+	return &responseObject, nil
+}
+
 func _post[Response any, Request any](apiBase string, request Request) (*Response, error) {
 	client := &http.Client{}
 	payload, _ := json.Marshal(&request)
@@ -295,7 +343,7 @@ func _post[Response any, Request any](apiBase string, request Request) (*Respons
 		return nil, fmt.Errorf(string(bodyBytes))
 	}
 	var responseObject Response
-	json.Unmarshal(bodyBytes, &responseObject)
+	_ = json.Unmarshal(bodyBytes, &responseObject)
 	return &responseObject, nil
 }
 
@@ -327,7 +375,7 @@ func _get[T any](apiBase string) (*T, error) {
 		return nil, fmt.Errorf(string(bodyBytes))
 	}
 	var responseObject T
-	json.Unmarshal(bodyBytes, &responseObject)
+	_ = json.Unmarshal(bodyBytes, &responseObject)
 	return &responseObject, nil
 }
 
@@ -430,9 +478,24 @@ func (s *APIIntegrationService) AddClusterOperationState(clusterId string) (*API
 func (s *APIIntegrationService) GetTenant() (map[string]interface{}, error) {
 	baseUrl := viper.Get("api_base_url")
 	tenantId := viper.Get("tenant_id")
+	fmt.Println(tenantId)
 	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8083, tenantId)
 
 	response, err := _get[map[string]interface{}](tenantUrl)
+	if err != nil {
+		return nil, err
+	}
+	return *response, nil
+}
+
+func (s *APIIntegrationService) UpdateTenant(tenantName string, tenantLabel string) (map[string]interface{}, error) {
+	baseUrl := viper.Get("api_base_url")
+	tenantId := viper.Get("tenant_id")
+	tenantUrl := fmt.Sprintf("%s:%d/tenants/%s", baseUrl, 8083, tenantId)
+
+	request := UpdateTenantRequest{Tenant: TenantInfo{Label: tenantLabel, Name: tenantName}}
+
+	response, err := _put[map[string]interface{}](tenantUrl, request)
 	if err != nil {
 		return nil, err
 	}
