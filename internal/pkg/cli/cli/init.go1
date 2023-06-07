@@ -1,0 +1,323 @@
+package cli
+
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/term"
+)
+
+const (
+	stateAskEnvironment = "state-environment"
+	stateAskConfig      = "state-config"
+
+	// stateDone is triggered as soon as we're complete and are quitting the walkthrough.
+	stateDone = "done"
+	// stateQuit is used when terminating the walkthrough early
+	stateQuit = "quit"
+
+	eventPlaceholder = "What event name triggers this function?  Use your own event name or an event from an integration."
+	cronPlaceholder  = "Specify the cron schedule for the function, eg. '0 * * * *' for every hour."
+	urlPlaceholder   = "What's the URL we should call?"
+)
+
+type InitOptions struct {
+	ShowWelcome bool
+}
+
+func (f *InitTUI) eventBrowserOffset() int {
+	if f.showWelcome && f.height > 35 {
+		return 25
+	}
+	return 17
+}
+
+func NewInitTUI(options InitOptions) (*InitTUI, error) {
+	width, height, _ := term.GetSize(int(os.Stdout.Fd()))
+
+	languageDelegate := list.NewDefaultDelegate()
+	languageDelegate.ShowDescription = false
+
+	f := &InitTUI{
+		width:       width,
+		height:      height,
+		showWelcome: options.ShowWelcome,
+		state:       stateAskConfig,
+		textinput:   textinput.New(),
+		loading:     spinner.New(),
+		transitions: 1,
+	}
+
+	listHeight := height - f.eventBrowserOffset()
+
+	f.envionmentList = list.New([]list.Item{
+		initListItem{
+			name:        "Devlopment",
+			description: "This is to run on development",
+		},
+		initListItem{
+			name:        "Production",
+			description: "This is to run on production",
+		},
+	}, list.NewDefaultDelegate(), width, listHeight)
+
+	f.textinput.Focus()
+	f.textinput.CharLimit = 156
+	f.textinput.Width = width
+	f.textinput.Prompt = "→  "
+
+	f.loading.Spinner = spinner.Dot
+	f.loading.Style = lipgloss.NewStyle().Foreground(Primary)
+
+	hideListChrome(&f.envionmentList)
+
+	return f, nil
+}
+
+type InitTUI struct {
+	// The width of the terminal.  Necessary for styling content such
+	// as the welcome message, the evnet browser, etc.
+	width  int
+	height int
+
+	// whether to show the welcome message.
+	showWelcome bool
+
+	// The current state we're on.
+	state string
+
+	// transitions records the number of questions we've aksed
+	transitions int
+
+	// triggerType is the type of trigger we're using, ie. cron or event.
+	config string
+
+	environment string
+
+	configError error
+
+	// these are models used to render helpers and sub-components.
+	textinput      textinput.Model
+	envionmentList list.Model
+	loading        spinner.Model
+}
+
+// Ensure that InitTUI fulfils the tea.Model interface.
+var _ tea.Model = (*InitTUI)(nil)
+
+// DidQuitEarly returns whether we quit the walthrough early.
+func (f *InitTUI) DidQuitEarly() bool {
+	return f.state == stateQuit
+}
+
+func (f *InitTUI) Init() tea.Cmd {
+	return f.loading.Tick
+}
+
+func (f *InitTUI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var (
+		cmd  tea.Cmd
+		cmds []tea.Cmd
+	)
+
+	// Base stuff we should always run.
+
+	// Spin the scaffolding spinner if we're waiting.
+	f.loading, cmd = f.loading.Update(msg)
+	cmds = append(cmds, cmd)
+
+	if f.state == stateDone {
+		// Ensure we always quit if someone forgot to return tea.Quit when updating
+		// the state.
+		return f, tea.Quit
+	}
+
+	// Globals.  These always run whenever changes happen.
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		f.width = msg.Width
+		f.height = msg.Height
+	case tea.KeyMsg:
+		switch msg.Type {
+		case tea.KeyEsc, tea.KeyCtrlC, tea.KeyCtrlBackslash:
+			f.state = stateQuit
+			return f, tea.Quit
+		}
+
+		if msg.String() == "q" && f.state == stateAskConfig {
+			f.state = stateDone
+			return f, tea.Quit
+		}
+	}
+
+	originalState := f.state
+	// Run the update events for each state.
+	_, cmd = func() (tea.Model, tea.Cmd) {
+		switch f.state {
+		case stateAskEnvironment:
+			return f.updateEnvironment(msg)
+		case stateAskConfig:
+			return f.updateConfig(msg)
+		}
+		return f, nil
+	}()
+	if f.state != originalState {
+		f.transitions++
+	}
+
+	// Merge the async commands from each state into the top-level commands to run.
+	cmds = append(cmds, cmd)
+
+	// Return our updated state and all commands to run.
+	return f, tea.Batch(cmds...)
+}
+
+func (f *InitTUI) updateConfig(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+	f.textinput.Placeholder = "Where to store your configuration?"
+	f.config = f.textinput.Value()
+	f.textinput, cmd = f.textinput.Update(msg)
+
+	if key, ok := msg.(tea.KeyMsg); ok && key.Type == tea.KeyEnter && f.config != "" {
+		f.textinput.Placeholder = eventPlaceholder
+		f.textinput.SetValue("")
+		f.state = stateAskEnvironment
+	}
+
+	return f, cmd
+}
+
+func (f *InitTUI) updateEnvironment(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var (
+		cmd  tea.Cmd
+		cmds []tea.Cmd
+	)
+
+	// We only care about enter keypresses to select an item in the list.
+	if key, ok := msg.(tea.KeyMsg); ok && key.Type == tea.KeyEnter {
+		// We've selected a trigger..
+		f.environment = f.envionmentList.SelectedItem().FilterValue()
+		f.state = stateDone
+		return f, nil
+	}
+
+	f.envionmentList, cmd = f.envionmentList.Update(msg)
+	cmds = append(cmds, cmd)
+	return f, tea.Batch(cmds...)
+}
+
+// View is called to render the CLI's UI.
+func (f *InitTUI) View() string {
+
+	b := &strings.Builder{}
+
+	if f.height > 35 {
+		b.WriteString(f.renderIntro(f.showWelcome))
+	}
+
+	switch f.state {
+	case stateAskEnvironment:
+		b.WriteString(f.renderEnvironment())
+	case stateAskConfig:
+		b.WriteString(f.renderConfig())
+	case stateDone:
+		// Done.  Add some padding to the final view for the parent.
+		b.WriteString("\n")
+	}
+
+	return b.String()
+}
+
+// renderState renders the already answered questions.
+func (f *InitTUI) renderState() string {
+	if f.state == stateAskEnvironment {
+		return ""
+	}
+
+	b := &strings.Builder{}
+	n := 1
+	write := func(s string) {
+		b.WriteString(fmt.Sprintf("%d. %s", n, s))
+		n++
+	}
+
+	write("Environment : " + BoldStyle.Render(f.environment) + "\n")
+
+	if f.config != "" {
+		write("Configuration file: " + BoldStyle.Render(f.config) + "\n")
+	}
+
+	return b.String()
+}
+
+func (f *InitTUI) renderConfig() string {
+	b := &strings.Builder{}
+	b.WriteString(BoldStyle.Render(fmt.Sprintf("%d. Configuration file:", f.transitions)) + "\n")
+	b.WriteString(f.textinput.View())
+	return b.String()
+}
+
+func (f *InitTUI) renderEnvironment() string {
+	b := &strings.Builder{}
+	b.WriteString(BoldStyle.Render(fmt.Sprintf("%d. Which environment you are going to use?", f.transitions)) + "\n\n")
+	b.WriteString(f.envionmentList.View())
+	return b.String()
+}
+
+func (f *InitTUI) renderIntro(welcome bool) string {
+	b := &strings.Builder{}
+	if welcome {
+		b.WriteString(f.renderWelcome())
+	}
+	b.WriteString("\n")
+	b.WriteString(BoldStyle.Render("Let's get you set up with your environment configuration."))
+	b.WriteString("\n")
+	b.WriteString(TextStyle.Copy().Foreground(Feint).Render("Answer these questions to get started."))
+	b.WriteString("\n\n")
+	b.WriteString(f.renderState())
+	return b.String()
+}
+
+func (f *InitTUI) renderWelcome() string {
+	dialogBoxStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(Primary).
+		Padding(1, 0).
+		BorderTop(true).
+		BorderLeft(true).
+		BorderRight(true).
+		BorderBottom(true)
+
+	dialog := lipgloss.Place(
+		f.width, 7,
+		lipgloss.Center, lipgloss.Center,
+		dialogBoxStyle.Render(TextStyle.Copy().Bold(true).PaddingLeft(3).PaddingRight(4).Render("👋 Welcome to Onqlave!")),
+		lipgloss.WithWhitespaceChars("⎼⎽"),
+		lipgloss.WithWhitespaceForeground(lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#333333"}),
+	)
+	return dialog
+}
+
+type initListItem struct {
+	name        string
+	description string
+}
+
+func (i initListItem) Title() string       { return i.name }
+func (i initListItem) Description() string { return i.description }
+func (i initListItem) FilterValue() string { return i.name }
+
+func hideListChrome(lists ...*list.Model) {
+	for _, l := range lists {
+		l.SetShowFilter(false)
+		l.SetShowHelp(false)
+		l.SetShowStatusBar(false)
+		l.SetShowTitle(false)
+	}
+}

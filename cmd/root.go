@@ -1,50 +1,51 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
+	"context"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/onqlavelabs/onqlave.cli/cmd/application"
+	"github.com/onqlavelabs/onqlave.cli/cmd/arx"
+	"github.com/onqlavelabs/onqlave.cli/cmd/auth"
+	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/cmd/config"
+	"github.com/onqlavelabs/onqlave.cli/cmd/key"
+	"github.com/onqlavelabs/onqlave.cli/cmd/tenant"
+	"github.com/onqlavelabs/onqlave.cli/cmd/user"
 )
 
-var cfgFile string
-
-var rootCmd = &cobra.Command{
-	Use:   "onqlave.cli",
-	Short: "A brief description of your application",
-}
-
-func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.onqlave.cli.yaml)")
-
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func initConfig() {
-	if cfgFile != "" {
-		viper.SetConfigFile(cfgFile)
-	} else {
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".onqlave.cli")
+func Execute() error {
+	rootCmd := &cobra.Command{
+		Version: common.Version,
+		Use:     "onqlave (onqlave) is a CLI that helps you manage your Onqlave environment.",
+		Example: "onqlave",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
+				cmd.SilenceUsage = true
+				return common.ReplacePersistentPreRunE(cmd, err)
+			}
+			return nil
+		},
 	}
 
-	viper.AutomaticEnv()
+	rootCmd.PersistentFlags().Bool(common.FlagJson, false, "JSON Output. Set to true if stdout is not a TTY.")
 
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
+	// Add sub commands
+	rootCmd.AddCommand(config.Command())
+	rootCmd.AddCommand(auth.Command())
+	rootCmd.AddCommand(key.Command())
+	rootCmd.AddCommand(tenant.Command())
+	rootCmd.AddCommand(arx.Command())
+	rootCmd.AddCommand(application.Command())
+	rootCmd.AddCommand(user.Command())
+
+	viper.SetDefault(common.FlagApiBaseUrl, "")
+	viper.AddConfigPath(common.GetConfigDir())
+	viper.SetConfigName(common.ConfigFile)     // Register config file name (no extension)
+	viper.SetConfigType(common.ConfigTypeJson) // Look for specific type
+
+	_ = viper.ReadInConfig()
+
+	return rootCmd.ExecuteContext(context.Background())
 }
