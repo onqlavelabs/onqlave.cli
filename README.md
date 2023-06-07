@@ -1,24 +1,124 @@
-# Follow the procedure to setup your development environment
-## Note
-- **The code is just POC and by no means production ready. So it is up to the developers to maintain the quality as expected. We later on incorporate proper quality in our CI system**
-- ***Please follow the code structure as it is. If there is a need/concern to change it please talk to @matt first***
-## Prerequisites
 
-- If developing on windows machine you should enable WSL2 [Follow the link](https://docs.microsoft.com/en-us/windows/wsl/install)
-- Install Visual Studio Code [Folowing this link](https://code.visualstudio.com)
-- Install Go [Follow the link](https://go.dev/) - you should install verion 1.18+
-- Install Visual Studio Code Extensions Below
+## Setup
 
-``` shell 
-code --install-extension GitHub.copilot
-code --install-extension golang.go
-code --install-extension googlecloudtools.cloudcode
-code --install-extension maptz.regionfolder
-code --install-extension ms-azuretools.vscode-dapr
-code --install-extension ms-azuretools.vscode-docker
-code --install-extension Vue.volar
+Init configuration
+
+```bash
+  go run main.go config init
 ```
 
-## Step 1: 
-## Step 2: 
-## Related Links
+## Authentication
+
+Sign up new account
+
+```bash
+  go run main.go auth signup [email] --tenant_name [tenant_name] --full_name[full_name]
+```
+
+Login
+
+```bash
+  go run main.go auth login [email] --tenant_name [tenant_name]
+```
+
+## User commands
+
+List users
+
+```bash
+  go run main.go user list
+```
+
+## API Key commands
+
+API key base info
+
+```bash
+  go run main.go key base
+```
+
+List api keys
+
+```bash
+  go run main.go key list
+```
+
+Describe an api key
+
+```bash
+  go run main.go key describe [keyid]
+```
+
+Add an api key
+
+```bash
+  go run main.go key add --key_application_id [appid] --key_arx_id [arxid] --key_application_technology [client|server]
+```
+
+Delete an api key
+
+```bash
+  go run main.go key delete [keyid]
+```
+
+## Arx commands
+
+Arx base info
+
+```bash
+  go run main.go arx base
+```
+
+List arx
+
+```bash
+  go run main.go arx list
+```
+
+Describe a arx
+
+```bash
+  go run main.go arx describe [arxid]
+```
+
+Add a arx
+
+```bash
+  go run main.go arx add [arx_name] --arx_provider [gcp|aws|azure] --arx_purpose [development|testing|staging|production] --arx_region [au|us|sg|gb] --arx_encryption_method [aes-gcm-128|cha-cha-20-poly-1305|aes-gcm-256] --arx_rotation_cycle [monthly|3-monthly|6-monthly|annually] --arx_owner [userid] --arx_spend_limit [int] --arx_is_default=[true|false]
+```
+
+Edit a arx
+
+```bash
+  go run main.go arx edit [arxid] --arx_name [arx_name] --arx_region [au|us|sg|gb] --arx_rotation_cycle [monthly|3-monthly|6-monthly|annually] --arx_owner [userid] --arx_spend_limit [int] --arx_is_default=[true|false]
+```
+
+Delete a arx
+
+```bash
+  go run main.go arx delete [arxid]
+```
+
+Seal a arx
+
+```bash
+  go run main.go arx seal [arxid]
+```
+
+Unseal a arx
+
+```bash
+  go run main.go arx unseal [arxid]
+```
+
+Set a arx as default
+
+```bash
+  go run main.go arx default [arxid]
+```
+
+Reinitialize a arx
+
+```bash
+  go run main.go arx retry [arxid]
+```
