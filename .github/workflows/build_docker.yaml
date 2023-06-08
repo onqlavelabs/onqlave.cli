@@ -1,0 +1,68 @@
+name: Build Docker CLI Image
+on:
+  workflow_call:
+    inputs:
+      username:
+        required: false
+        type: string
+    secrets:
+      SLACK_WEBHOOK:
+        description: 'Slack Webhook address, passed from the caller workflow'
+        required: true
+
+jobs:
+  build-docker-cli:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - name: Checking out the code
+        uses: actions/checkout@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Extract Version
+        id: version_step
+        run: |
+          echo "version=${GITHUB_REF#$"refs/tags/"}" >> $GITHUB_OUTPUT
+          echo "latest_tag=ghcr.io/onqlavelabs/$GITHUB_REPOSITORY:latest" >> $GITHUB_OUTPUT
+          echo "version_tag=ghcr.io/onqlavelabs/$GITHUB_REPOSITORY:${GITHUB_REF#$"refs/tags/"}" >> $GITHUB_OUTPUT
+
+      - name: Prepare Registry Names
+        id: read-docker-image-identifiers
+        run: |
+          echo VERSION_TAG=$(echo ${{ steps.version_step.outputs.version_tag }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+          echo LATEST_TAG=$(echo ${{ steps.version_step.outputs.latest_tag  }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
+      - name: Build and Push Docker Image
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: .
+          file: ./build/Dockerfile
+          tags: |
+            ${{env.VERSION_TAG}}
+            ${{env.LATEST_TAG}}
+          build-args: |
+            CLI_ENV=prod
+
+      - name: Notify Slack // Enable again when finished
+        uses: rtCamp/action-slack-notify@v2
+        if: always()
+        env:
+          SLACK_CHANNEL: ci-notification
+          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_TITLE: docker-build-cli-prod (onqlave.all)
+          SLACK_USERNAME: ci-bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

@@ -1,0 +1,18 @@
+name: CI Production
+on:
+  push:
+    tags:
+      - 'v0.1.*'
+      - 'v0.0.*'
+
+jobs:
+  build-code:
+    uses: ./.github/workflows/build_code.yaml
+
+  build-docker:
+    uses: ./.github/workflows/build_docker.yaml
+    needs: [ build-code ]
+
+  release-cli:
+    needs: [ build-docker ]
+    uses: ./.github/workflows/release_asset.yaml
