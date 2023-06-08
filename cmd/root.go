@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"context"
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -15,23 +17,37 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/cmd/user"
 )
 
-func Execute() error {
-	rootCmd := &cobra.Command{
-		Version: common.Version,
-		Use:     "onqlave (onqlave) is a CLI that helps you manage your Onqlave environment.",
-		Example: "onqlave",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
-				cmd.SilenceUsage = true
-				return common.ReplacePersistentPreRunE(cmd, err)
-			}
-			return nil
-		},
+var rootCmd = &cobra.Command{
+	Version:           common.Version,
+	Use:               "onqlave CLI helps you manage your Onqlave environment.",
+	Example:           "onqlave",
+	PersistentPreRunE: RootPreRunE,
+}
+
+func Execute() {
+	initConfig()
+	addCommands()
+
+	err := rootCmd.ExecuteContext(context.Background())
+	if err != nil {
+		log.Fatal(err)
 	}
+}
 
+func initConfig() {
 	rootCmd.PersistentFlags().Bool(common.FlagJson, false, "JSON Output. Set to true if stdout is not a TTY.")
+	viper.SetDefault(common.FlagApiBaseUrl, "")
+	viper.AddConfigPath(common.GetConfigDir())
+	viper.SetConfigName(common.ConfigFile)     // Register config file name (no extension)
+	viper.SetConfigType(common.ConfigTypeJson) // Look for specific type
 
-	// Add sub commands
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func addCommands() {
 	rootCmd.AddCommand(config.Command())
 	rootCmd.AddCommand(auth.Command())
 	rootCmd.AddCommand(key.Command())
@@ -39,13 +55,12 @@ func Execute() error {
 	rootCmd.AddCommand(arx.Command())
 	rootCmd.AddCommand(application.Command())
 	rootCmd.AddCommand(user.Command())
+}
 
-	viper.SetDefault(common.FlagApiBaseUrl, "")
-	viper.AddConfigPath(common.GetConfigDir())
-	viper.SetConfigName(common.ConfigFile)     // Register config file name (no extension)
-	viper.SetConfigType(common.ConfigTypeJson) // Look for specific type
-
-	_ = viper.ReadInConfig()
-
-	return rootCmd.ExecuteContext(context.Background())
+func RootPreRunE(cmd *cobra.Command, args []string) error {
+	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
+		cmd.SilenceUsage = true
+		return common.ReplacePersistentPreRunE(cmd, err)
+	}
+	return nil
 }
