@@ -49,9 +49,8 @@ func (ui *SpinnerTUI) Error() error {
 }
 
 func (ui *SpinnerTUI) Init() tea.Cmd {
-	go func() {
-		ui.runOperation()
-	}()
+	go ui.runOperation()
+
 	return spinner.Tick
 }
 
