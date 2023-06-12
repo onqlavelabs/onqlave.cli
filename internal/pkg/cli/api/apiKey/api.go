@@ -8,13 +8,12 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/app/tenant/apikey/enums"
-
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
+	"github.com/onqlavelabs/onqlave.core/enumerations"
 )
 
 type CommandOperation string
@@ -24,9 +23,9 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]enums.ApiKeyStatus{
-	AddOperation:    enums.Active,
-	DeleteOperation: enums.Deleted,
+var expectedOperationStatus = map[CommandOperation]enumerations.ApiKeyStatus{
+	AddOperation:    enumerations.Active,
+	DeleteOperation: enumerations.Deleted,
 }
 
 type APIKeyBaseInfo struct {
@@ -107,12 +106,12 @@ func (s *APIKeyIntegrationService) CheckAPIKeyOperationStatus(keyId string, oper
 	}
 
 	switch response.Data.Status {
-	case enums.Failed.String():
+	case enumerations.Failed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf("api key operation failed")
-	case enums.Pending.String(), enums.Disabled.String():
+	case enumerations.Pending.String(), enumerations.Disabled.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case enums.Active.String(), enums.Deleted.String():
-		if expectedOperationStatus[operation] == enums.ApiKeyStatus(response.Data.Status) {
+	case enumerations.Active.String(), enumerations.Deleted.String():
+		if expectedOperationStatus[operation] == enumerations.ApiKeyStatus(response.Data.Status) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
