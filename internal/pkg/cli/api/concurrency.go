@@ -1,14 +1,14 @@
 package api
 
-type ConcurrencyChannel struct {
-	msgs   *chan ConcurrencyOperationResult
-	cancel *chan bool
-}
-
 type ConcurrencyOperationResult struct {
 	Result any
 	Done   bool
 	Error  error
+}
+
+type ConcurrencyChannel struct {
+	msgs   *chan ConcurrencyOperationResult
+	cancel *chan bool
 }
 
 func NewConcurrencyChannel() *ConcurrencyChannel {
