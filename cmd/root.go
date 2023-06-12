@@ -62,5 +62,6 @@ func RootPreRunE(cmd *cobra.Command, args []string) error {
 		cmd.SilenceUsage = true
 		return common.ReplacePersistentPreRunE(cmd, err)
 	}
+
 	return nil
 }
