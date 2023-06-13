@@ -22,14 +22,6 @@ func IsLocal() bool {
 	return viper.GetString("env") == "local"
 }
 
-func IsDev() bool {
-	return viper.GetString("env") == "dev"
-}
-
-func IsProd() bool {
-	return viper.GetString("env") == "prod"
-}
-
 func GetBaseUrl(serviceName string) string {
 	const defaultURL = "http://localhost:8081"
 	apiBaseUrl := viper.GetStringMapString("api_base_url")
@@ -38,9 +30,11 @@ func GetBaseUrl(serviceName string) string {
 	}
 	return defaultURL
 }
+
 func UrlBuilder(serviceName string) string {
 	if IsLocal() {
 		return fmt.Sprintf("%s/%s", GetBaseUrl(serviceName), serviceName)
 	}
+
 	return fmt.Sprintf("%s/%s", viper.GetString("api_base_url"), serviceName)
 }
