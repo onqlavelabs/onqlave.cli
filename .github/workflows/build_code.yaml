@@ -5,6 +5,7 @@ on:
       username:
         required: false
         type: string
+
 jobs:
   code-build:
     strategy:
@@ -15,11 +16,6 @@ jobs:
     steps:
       - name: Checking out the code
         uses: actions/checkout@v3
-
-      - name: Dump Github var
-        env:
-          GITHUB_VAR: ${{ toJson(github) }}
-        run: echo "$GITHUB_VAR"
 
       - name: Set up Go
         uses: actions/setup-go@v2
