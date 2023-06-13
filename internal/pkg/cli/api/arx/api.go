@@ -8,9 +8,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/app/tenant/cluster/enums"
+	"github.com/onqlavelabs/onqlave.cli/core"
 	acl "github.com/onqlavelabs/onqlave.cli/internal/pkg/acl/contracts"
-
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
@@ -30,13 +29,13 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]enums.ClusterStatus{
-	UpdateOperation: enums.ClusterActive,
-	RetryOperation:  enums.ClusterActive,
-	AddOperation:    enums.ClusterActive,
-	UnsealOperation: enums.ClusterActive,
-	SealOperation:   enums.ClusterSealed,
-	DeleteOperation: enums.ClusterDeleted,
+var expectedOperationStatus = map[CommandOperation]core.ArxStatus{
+	UpdateOperation: core.ArxActive,
+	RetryOperation:  core.ArxActive,
+	AddOperation:    core.ArxActive,
+	UnsealOperation: core.ArxActive,
+	SealOperation:   core.ArxSealed,
+	DeleteOperation: core.ArxDeleted,
 }
 
 type ArxBaseInfo struct {
@@ -83,18 +82,18 @@ func (s *ArxAPIIntegrationService) CheckArxOperationState(clusterId string, oper
 	}
 
 	switch response.Data.State {
-	case enums.ClusterFailed.String():
+	case core.ArxFailed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf(response.Data.Message)
-	case enums.ClusterInactive.String(),
-		enums.ClusterPending.String(),
-		enums.ClusterInitiated.String(),
-		enums.ClusterReInitiated.String(),
-		enums.ClusterUnsealed.String():
+	case core.ArxInactive.String(),
+		core.ArxPending.String(),
+		core.ArxInitiated.String(),
+		core.ArxReInitiated.String(),
+		core.ArxUnsealed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case enums.ClusterActive.String(),
-		enums.ClusterSealed.String(),
-		enums.ClusterDeleted.String():
-		if expectedOperationStatus[operation] == enums.ClusterStatus(response.Data.State) {
+	case core.ArxActive.String(),
+		core.ArxSealed.String(),
+		core.ArxDeleted.String():
+		if expectedOperationStatus[operation] == core.ArxStatus(response.Data.State) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil

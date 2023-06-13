@@ -1,4 +1,4 @@
-package enums
+package core
 
 type ApiKeyStatus string
 
