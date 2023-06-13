@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/onqlavelabs/onqlave.cli/core"
 	acl "github.com/onqlavelabs/onqlave.cli/internal/pkg/acl/contracts"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
@@ -15,7 +16,6 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
-	"github.com/onqlavelabs/onqlave.core/enumerations"
 )
 
 type CommandOperation string
