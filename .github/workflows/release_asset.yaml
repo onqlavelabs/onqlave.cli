@@ -1,10 +1,10 @@
 name: Release CLI Package
 on:
   workflow_call:
-    secrets:
-      SLACK_WEBHOOK:
-        description: 'Slack Webhook address, passed from the caller workflow'
-        required: true
+    inputs:
+      username:
+        required: false
+        type: string
 
 jobs:
   release-cli:
