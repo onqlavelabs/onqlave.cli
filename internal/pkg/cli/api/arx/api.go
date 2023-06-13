@@ -29,13 +29,13 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]enumerations.ArxStatus{
-	UpdateOperation: enumerations.ArxActive,
-	RetryOperation:  enumerations.ArxActive,
-	AddOperation:    enumerations.ArxActive,
-	UnsealOperation: enumerations.ArxActive,
-	SealOperation:   enumerations.ArxSealed,
-	DeleteOperation: enumerations.ArxDeleted,
+var expectedOperationStatus = map[CommandOperation]core.ArxStatus{
+	UpdateOperation: core.ArxActive,
+	RetryOperation:  core.ArxActive,
+	AddOperation:    core.ArxActive,
+	UnsealOperation: core.ArxActive,
+	SealOperation:   core.ArxSealed,
+	DeleteOperation: core.ArxDeleted,
 }
 
 type ArxBaseInfo struct {
@@ -82,18 +82,18 @@ func (s *ArxAPIIntegrationService) CheckArxOperationState(clusterId string, oper
 	}
 
 	switch response.Data.State {
-	case enumerations.ArxFailed.String():
+	case core.ArxFailed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf(response.Data.Message)
-	case enumerations.ArxInactive.String(),
-		enumerations.ArxPending.String(),
-		enumerations.ArxInitiated.String(),
-		enumerations.ArxReInitiated.String(),
-		enumerations.ArxUnsealed.String():
+	case core.ArxInactive.String(),
+		core.ArxPending.String(),
+		core.ArxInitiated.String(),
+		core.ArxReInitiated.String(),
+		core.ArxUnsealed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case enumerations.ArxActive.String(),
-		enumerations.ArxSealed.String(),
-		enumerations.ArxDeleted.String():
-		if expectedOperationStatus[operation] == enumerations.ArxStatus(response.Data.State) {
+	case core.ArxActive.String(),
+		core.ArxSealed.String(),
+		core.ArxDeleted.String():
+		if expectedOperationStatus[operation] == core.ArxStatus(response.Data.State) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil

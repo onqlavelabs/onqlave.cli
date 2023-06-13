@@ -1,4 +1,4 @@
-package enumerations
+package core
 
 type ApiKeyStatus string
 

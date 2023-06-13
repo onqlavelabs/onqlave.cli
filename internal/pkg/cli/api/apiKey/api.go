@@ -23,9 +23,9 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]enumerations.ApiKeyStatus{
-	AddOperation:    enumerations.Active,
-	DeleteOperation: enumerations.Deleted,
+var expectedOperationStatus = map[CommandOperation]core.ApiKeyStatus{
+	AddOperation:    core.Active,
+	DeleteOperation: core.Deleted,
 }
 
 type APIKeyBaseInfo struct {
@@ -106,12 +106,12 @@ func (s *APIKeyIntegrationService) CheckAPIKeyOperationStatus(keyId string, oper
 	}
 
 	switch response.Data.Status {
-	case enumerations.Failed.String():
+	case core.Failed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf("api key operation failed")
-	case enumerations.Pending.String(), enumerations.Disabled.String():
+	case core.Pending.String(), core.Disabled.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case enumerations.Active.String(), enumerations.Deleted.String():
-		if expectedOperationStatus[operation] == enumerations.ApiKeyStatus(response.Data.Status) {
+	case core.Active.String(), core.Deleted.String():
+		if expectedOperationStatus[operation] == core.ApiKeyStatus(response.Data.Status) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
