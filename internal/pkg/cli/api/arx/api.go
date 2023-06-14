@@ -8,13 +8,13 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core"
-	acl "github.com/onqlavelabs/onqlave.cli/internal/pkg/acl/contracts"
+	acl "github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx/requests"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx/responses"
+	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
 )
 
@@ -29,13 +29,13 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]core.ArxStatus{
-	UpdateOperation: core.ArxActive,
-	RetryOperation:  core.ArxActive,
-	AddOperation:    core.ArxActive,
-	UnsealOperation: core.ArxActive,
-	SealOperation:   core.ArxSealed,
-	DeleteOperation: core.ArxDeleted,
+var expectedOperationStatus = map[CommandOperation]enumerations.ArxStatus{
+	UpdateOperation: enumerations.ArxActive,
+	RetryOperation:  enumerations.ArxActive,
+	AddOperation:    enumerations.ArxActive,
+	UnsealOperation: enumerations.ArxActive,
+	SealOperation:   enumerations.ArxSealed,
+	DeleteOperation: enumerations.ArxDeleted,
 }
 
 type ArxBaseInfo struct {
@@ -82,18 +82,18 @@ func (s *ArxAPIIntegrationService) CheckArxOperationState(clusterId string, oper
 	}
 
 	switch response.Data.State {
-	case core.ArxFailed.String():
+	case enumerations.ArxFailed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf(response.Data.Message)
-	case core.ArxInactive.String(),
-		core.ArxPending.String(),
-		core.ArxInitiated.String(),
-		core.ArxReInitiated.String(),
-		core.ArxUnsealed.String():
+	case enumerations.ArxInactive.String(),
+		enumerations.ArxPending.String(),
+		enumerations.ArxInitiated.String(),
+		enumerations.ArxReInitiated.String(),
+		enumerations.ArxUnsealed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case core.ArxActive.String(),
-		core.ArxSealed.String(),
-		core.ArxDeleted.String():
-		if expectedOperationStatus[operation] == core.ArxStatus(response.Data.State) {
+	case enumerations.ArxActive.String(),
+		enumerations.ArxSealed.String(),
+		enumerations.ArxDeleted.String():
+		if expectedOperationStatus[operation] == enumerations.ArxStatus(response.Data.State) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil

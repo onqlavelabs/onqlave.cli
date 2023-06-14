@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts"
 )
 
 type UserList struct {

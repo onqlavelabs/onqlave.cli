@@ -14,11 +14,11 @@ import (
 	"golang.org/x/term"
 
 	cliCommon "github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
 )
 

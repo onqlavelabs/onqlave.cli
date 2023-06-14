@@ -13,10 +13,10 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/apiKey"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 )
 
 type addApiKeyOperation struct {

@@ -10,7 +10,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
 )
 
 type BaseArx struct {

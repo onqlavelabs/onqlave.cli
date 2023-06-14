@@ -6,9 +6,9 @@ import (
 
 	"github.com/spf13/viper"
 
+	"github.com/onqlavelabs/onqlave.cli/core/contracts"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/user/responses"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
 )
 
 type UserAPIIntegrationService struct {

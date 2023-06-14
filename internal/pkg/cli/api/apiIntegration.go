@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth/requests"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth/responses"
 
 	"github.com/spf13/viper"
 )

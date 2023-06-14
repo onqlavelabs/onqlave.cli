@@ -8,12 +8,12 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key/requests"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key/responses"
+	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
 )
 
 type CommandOperation string
@@ -23,9 +23,9 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]core.ApiKeyStatus{
-	AddOperation:    core.Active,
-	DeleteOperation: core.Deleted,
+var expectedOperationStatus = map[CommandOperation]enumerations.ApiKeyStatus{
+	AddOperation:    enumerations.Active,
+	DeleteOperation: enumerations.Deleted,
 }
 
 type APIKeyBaseInfo struct {
@@ -106,12 +106,12 @@ func (s *APIKeyIntegrationService) CheckAPIKeyOperationStatus(keyId string, oper
 	}
 
 	switch response.Data.Status {
-	case core.Failed.String():
+	case enumerations.Failed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf("api key operation failed")
-	case core.Pending.String(), core.Disabled.String():
+	case enumerations.Pending.String(), enumerations.Disabled.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case core.Active.String(), core.Deleted.String():
-		if expectedOperationStatus[operation] == core.ApiKeyStatus(response.Data.Status) {
+	case enumerations.Active.String(), enumerations.Deleted.String():
+		if expectedOperationStatus[operation] == enumerations.ApiKeyStatus(response.Data.Status) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
