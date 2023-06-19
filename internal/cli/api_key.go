@@ -12,7 +12,7 @@ const (
 
 type ApiKeyService interface {
 	List()
-	Get(string) (*api_key.APIKeyDetail, error)
+	Get(string) (*api_key.APIKey, error)
 	Base()
 	Create()
 	Delete() error
@@ -26,10 +26,10 @@ func (s *ApiKeyServiceOp) List() {
 
 }
 
-func (s *ApiKeyServiceOp) Get(id string) (*api_key.APIKeyDetail, error) {
+func (s *ApiKeyServiceOp) Get(id string) (*api_key.APIKey, error) {
 	path := fmt.Sprintf("%s/%s", apiKeyPath, id)
 
-	resource := new(api_key.GetAPIKeyDetailResponse)
+	resource := new(api_key.DetailResponse)
 	err := s.client.Get(path, &resource, nil)
 	if err != nil {
 		return nil, err

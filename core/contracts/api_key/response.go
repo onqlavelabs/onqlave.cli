@@ -4,17 +4,17 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 )
 
-type APIKeyResponse struct {
+type DetailResponse struct {
 	common.BaseErrorResponse
 	Data APIKey `json:"data"`
 }
 
-type APIKeysResponse struct {
+type ListResponse struct {
 	common.BaseErrorResponse
 	Data APIKeys `json:"data"`
 }
 
-type APIKeySensitiveDataResponse struct {
+type SensitiveDataResponse struct {
 	common.BaseErrorResponse
-	Data APIKeySensitiveData `json:"data"`
+	Data SensitiveData `json:"data"`
 }

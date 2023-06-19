@@ -16,21 +16,21 @@ type APIKey struct {
 	Status        string                `json:"status"`
 	CreatedBy     *common.ShortUserInfo `json:"created_by"`
 	ApplicationID string                `json:"application_id,omitempty"`
-	Application   ShortInfoApplication  `json:"application"`
+	Application   ShortInfo             `json:"application"`
 	ArxID         string                `json:"cluster_id,omitempty"`
-	Arx           ShortInfoArx          `json:"cluster"`
+	Arx           ShortInfo             `json:"cluster"`
 	ACL           acl.ACL               `json:"acl"`
 	ArxUrl        string                `json:"arx_url"`
 }
 
 type APIKeys struct {
-	ACL      acl.ACL      `json:"acl"`
-	APIKeys  []APIKey     `json:"api_keys"`
-	Model    APIKeyModels `json:"model"`
-	Insights Insights     `json:"insights"`
+	ACL      acl.ACL  `json:"acl"`
+	APIKeys  []APIKey `json:"api_keys"`
+	Model    Models   `json:"model"`
+	Insights Insights `json:"insights"`
 }
 
-type APIKeySensitiveData struct {
+type SensitiveData struct {
 	ID                    string     `json:"id"`
 	AccessKey             string     `json:"access_key"`
 	Status                string     `json:"status"`
@@ -41,19 +41,19 @@ type APIKeySensitiveData struct {
 	ProvidedAt            *time.Time `json:"provided_at"`
 }
 
-type APIKeyModels struct {
-	Applications []APIKeyApplication `json:"applications"`
-	Arx          []APIKeyArx         `json:"clusters"`
+type Models struct {
+	Applications []Application `json:"applications"`
+	Arx          []Arx         `json:"clusters"`
 }
 
-type APIKeyApplication struct {
-	ShortInfoApplication  `json:",inline"`
+type Application struct {
+	ShortInfo             `json:",inline"`
 	Label                 string                            `json:"label"`
 	ApplicationTechnology application.ApplicationTechnology `json:"application_technology"`
 }
 
-type APIKeyArx struct {
-	ShortInfoArx  `json:",inline"`
+type Arx struct {
+	ShortInfo     `json:",inline"`
 	Purpose       arx.ArxPurpose                 `json:"purpose"`
 	Plan          arx.ArxPlan                    `json:"plan"`
 	Provider      arx.ArxProvider                `json:"provider"`
@@ -63,12 +63,7 @@ type APIKeyArx struct {
 	CreatedBy     *common.ShortUserInfo          `json:"created_by"`
 }
 
-type ShortInfoApplication struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type ShortInfoArx struct {
+type ShortInfo struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Label string `json:"label"`

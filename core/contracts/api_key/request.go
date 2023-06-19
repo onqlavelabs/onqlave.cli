@@ -1,5 +1,5 @@
 package api_key
 
-type CreateAPIKeyRequest struct {
+type CreateRequest struct {
 	APIKey CreateAPIKey `json:"api_key" validate:"required"`
 }
