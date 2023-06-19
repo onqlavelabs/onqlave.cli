@@ -2,6 +2,30 @@ package api_key
 
 import "time"
 
+type ShortInfoApplication struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type ShortInfoCluster struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Label string `json:"label"`
+}
+
+type CreatedBy struct {
+	ID           string `json:"id"`
+	FullName     string `json:"name"`
+	EmailAddress string `json:"email_address"`
+	Avatar       string `json:"avatar"`
+}
+
+type Insights struct {
+	TotalKeys    int64 `json:"total_keys"`
+	TotalActive  int64 `json:"total_active"`
+	TotalDeleted int64 `json:"total_deleted"`
+}
+
 type SensitiveData struct {
 	ID                    string     `json:"id"`
 	AccessKey             string     `json:"access_key"`
@@ -11,4 +35,10 @@ type SensitiveData struct {
 	ServerCryptoAccessKey string     `json:"server_crypto_access_key"`
 	ArxUrl                string     `json:"arx_url"`
 	ProvidedAt            *time.Time `json:"provided_at"`
+}
+
+type NewAPIKey struct {
+	ApplicationID         string `json:"application_id" validate:"required"`
+	ClusterID             string `json:"cluster_id" validate:"required"`
+	ApplicationTechnology string `json:"application_technology" validate:"required"`
 }

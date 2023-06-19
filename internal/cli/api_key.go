@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key/responses"
 )
 
 const (
@@ -30,7 +29,7 @@ func (s *ApiKeyServiceOp) List() {
 func (s *ApiKeyServiceOp) Get(id string) (*api_key.APIKeyDetail, error) {
 	path := fmt.Sprintf("%s/%s", apiKeyPath, id)
 
-	resource := new(responses.GetAPIKeyDetailResponse)
+	resource := new(api_key.GetAPIKeyDetailResponse)
 	err := s.client.Get(path, &resource, nil)
 	if err != nil {
 		return nil, err

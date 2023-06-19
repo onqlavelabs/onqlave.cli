@@ -3,19 +3,9 @@ package api_key
 import (
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
 	application "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
+	arx "github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 )
-
-type GetAPIKeysResponseWrapper struct {
-	ACL      acl.ACL             `json:"acl"`
-	APIKeys  []APIKey            `json:"api_keys"`
-	Model    APIKeyModelsWrapper `json:"model"`
-	Insights Insights            `json:"insights"`
-}
-
-type GetAPIKeyBaseResponse struct {
-	ACL   acl.ACL             `json:"acl"`
-	Model APIKeyModelsWrapper `json:"model"`
-}
 
 type APIKey struct {
 	ID          string               `json:"id"`
@@ -29,11 +19,21 @@ type APIKey struct {
 	ArxUrl      string               `json:"arx_url"`
 }
 
-type CreatedBy struct {
-	ID           string `json:"id"`
-	FullName     string `json:"name"`
-	EmailAddress string `json:"email_address"`
-	Avatar       string `json:"avatar"`
+type Application struct {
+	ShortInfoApplication  `json:",inline"`
+	Label                 string                            `json:"label"`
+	ApplicationTechnology application.ApplicationTechnology `json:"application_technology"`
+}
+
+type Cluster struct {
+	ShortInfoCluster `json:",inline"`
+	Purpose          arx.ArxPurpose                 `json:"purpose"`
+	Plan             arx.ArxPlan                    `json:"plan"`
+	Provider         arx.ArxProvider                `json:"provider"`
+	Regions          []arx.ArxRegion                `json:"regions"`
+	Encryption       arx.ArxEncryptionMethod        `json:"encryption"`
+	RotationCycle    arx.ArxEncryptionRotationCycle `json:"rotation_cycle"`
+	CreatedBy        CreatedBy                      `json:"created_by"`
 }
 
 type APIKeyModelsWrapper struct {
@@ -41,70 +41,27 @@ type APIKeyModelsWrapper struct {
 	Clusters     []Cluster     `json:"clusters"`
 }
 
-type ShortInfoApplication struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-type Application struct {
-	ShortInfoApplication  `json:",inline"`
-	Label                 string                            `json:"label"`
-	ApplicationTechnology application.ApplicationTechnology `json:"application_technology"`
+//TODO: Can combine GetAPIKeysResponseWrapper and GetAPIKeyBaseResponse?
+
+type GetAPIKeysResponseWrapper struct {
+	ACL      acl.ACL             `json:"acl"`
+	APIKeys  []APIKey            `json:"api_keys"`
+	Model    APIKeyModelsWrapper `json:"model"`
+	Insights Insights            `json:"insights"`
 }
 
-type ShortInfoCluster struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Label string `json:"label"`
-}
-type Cluster struct {
-	ShortInfoCluster `json:",inline"`
-	Purpose          Purpose       `json:"purpose"`
-	Plan             Plan          `json:"plan"`
-	Provider         Provider      `json:"provider"`
-	Regions          []Region      `json:"regions"`
-	Encryption       Encryption    `json:"encryption"`
-	RotationCycle    RotationCycle `json:"rotation_cycle"`
-	CreatedBy        CreatedBy     `json:"created_by"`
+type GetAPIKeyBaseResponse struct {
+	ACL   acl.ACL             `json:"acl"`
+	Model APIKeyModelsWrapper `json:"model"`
 }
 
-type Purpose struct {
-	Name string `json:"name"`
-}
-
-type Plan struct {
-	Name string `json:"name"`
-	Icon string `json:"icon"`
-}
-
-type Provider struct {
-	Name  string `json:"name"`
-	Image string `json:"image"`
-}
-
-type Region struct {
-	Name string `json:"name"`
-	Icon string `json:"icon"`
-}
-
-type Encryption struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Icon string `json:"icon"`
-}
-
-type RotationCycle struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type Owner struct {
-	Name         string `json:"name"`
-	EmailAddress string `json:"email_address"`
-	Avatar       string `json:"avatar"`
-}
-
-type Insights struct {
-	TotalKeys    int64 `json:"total_keys"`
-	TotalActive  int64 `json:"total_active"`
-	TotalDeleted int64 `json:"total_deleted"`
+type APIKeyDetail struct {
+	ID            string                `json:"id"`
+	ClusterID     string                `json:"cluster_id,omitempty"`
+	ApplicationID string                `json:"application_id,omitempty"`
+	CreatedAt     string                `json:"created_at"`
+	Status        string                `json:"status"`
+	AccessKey     string                `json:"access_key,omitempty"`
+	CreatedBy     *common.ShortUserInfo `json:"created_by,omitempty"`
+	ArxUrl        string                `json:"arx_url"`
 }

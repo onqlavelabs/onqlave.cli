@@ -8,9 +8,9 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key/requests"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key/responses"
+
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
 	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
@@ -50,7 +50,7 @@ func (s *APIKeyIntegrationService) GetKeyBaseInfo() (api_key.APIKeyModelsWrapper
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/keys/base", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[responses.GetAPIKeyBaseInformationResponse](clusterUrl)
+	response, err := api.Get[api_key.GetAPIKeyBaseInformationResponse](clusterUrl)
 	if err != nil {
 		return api_key.APIKeyModelsWrapper{}, model.NewAppError("GetKeyBaseInfo", "cli.server_error.key_base_info", nil, "get key base info failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -94,7 +94,7 @@ func (s *APIKeyIntegrationService) CheckAPIKeyOperationStatus(keyId string, oper
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/keys/%s", api.UrlBuilder(api.TenantName.String()), tenantId, keyId)
 
-	response, err := api.Get[responses.AddAPIKeyResponse](clusterUrl)
+	response, err := api.Get[api_key.AddAPIKeyResponse](clusterUrl)
 	message := "Checking api key operation status"
 	if err != nil {
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, err
@@ -119,7 +119,7 @@ func (s *APIKeyIntegrationService) GetKeys() (ListKeysResponse, error) {
 	tenantId := viper.Get("tenant_id")
 	keyUrl := fmt.Sprintf("%s/%s/keys", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[responses.GetAPIKeysResponse](keyUrl)
+	response, err := api.Get[api_key.GetAPIKeysResponse](keyUrl)
 	if err != nil {
 		return ListKeysResponse{}, model.NewAppError("GetKeys", "cli.server_error.get_keys", nil, "get api keys failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -147,7 +147,7 @@ func (s *APIKeyIntegrationService) AddKey(contract api_key.NewAPIKey) (string, e
 	request := requests.AddAPIKeyRequest{
 		APIKey: contract,
 	}
-	response, err := api.Post[responses.AddAPIKeyResponse](keyUrl, request)
+	response, err := api.Post[api_key.AddAPIKeyResponse](keyUrl, request)
 	if err != nil {
 		return "", model.NewAppError("AddKey", "cli.server_error.add_key", nil, "add api key failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -159,7 +159,7 @@ func (s *APIKeyIntegrationService) GetKeyDetail(keyID string) (api_key.APIKeyDet
 	tenantId := viper.Get("tenant_id")
 	keyUrl := fmt.Sprintf("%s/%s/keys/%s", api.UrlBuilder(api.TenantName.String()), tenantId, keyID)
 
-	response, err := api.Get[responses.GetAPIKeyDetailResponse](keyUrl)
+	response, err := api.Get[api_key.GetAPIKeyDetailResponse](keyUrl)
 	if err != nil {
 		return api_key.APIKeyDetail{}, model.NewAppError("GetKeyDetail", "cli.server_error.get_key_detail", nil, "get api key detail failed", http.StatusInternalServerError).Wrap(err)
 	}
