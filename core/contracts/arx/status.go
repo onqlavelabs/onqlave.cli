@@ -15,7 +15,7 @@ type ClusterStatus struct {
 	IsError   bool           `json:"is_error,omitempty"`
 	UpdatedAt time.Time      `json:"update_time,omitempty"`
 	Cluster   *ClusterDetail `json:"cluster,omitempty"`
-	ACL       contracts.ACL  `json:"acl"`
+	ACL       acl.ACL        `json:"acl"`
 }
 
 type ClusterDetail struct {

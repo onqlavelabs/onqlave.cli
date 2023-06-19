@@ -12,5 +12,5 @@ type GetAPIKeyDetailResponse struct {
 
 type GetAPIKeySensitiveInfoResponse struct {
 	common.BaseErrorResponse
-	Data contracts.APIKeySensitive `json:"data"`
+	Data contracts.SensitiveData `json:"data"`
 }

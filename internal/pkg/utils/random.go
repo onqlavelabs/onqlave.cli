@@ -46,7 +46,7 @@ func IntRange(min, max int) (result int) {
 	return result
 }
 
-// String returns a random string n characters long, composed of entities
+// RandomString returns a random string n characters long, composed of entities
 func RandomString(n int, charset string) string {
 	randStr := make([]byte, n) // Random string to return
 	charLen := big.NewInt(int64(len(charset)))

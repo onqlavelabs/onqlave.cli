@@ -6,18 +6,18 @@ import (
 )
 
 type GetAPIKeysResponseWrapper struct {
-	ACL      contracts.ACL       `json:"acl"`
+	ACL      acl.ACL             `json:"acl"`
 	APIKeys  []APIKey            `json:"api_keys"`
 	Model    APIKeyModelsWrapper `json:"model"`
 	Insights Insights            `json:"insights"`
 }
 
 type GetAPIKeyBaseResponse struct {
-	ACL   contracts.ACL       `json:"acl"`
+	ACL   acl.ACL             `json:"acl"`
 	Model APIKeyModelsWrapper `json:"model"`
 }
 
-func (wrapper *GetAPIKeysResponseWrapper) SetACL(acl contracts.ACL) {
+func (wrapper *GetAPIKeysResponseWrapper) SetACL(acl acl.ACL) {
 	wrapper.ACL = acl
 }
 
@@ -49,7 +49,7 @@ type APIKey struct {
 	CreatedBy   CreatedBy            `json:"created_by"`
 	Application ShortInfoApplication `json:"application"`
 	Cluster     ShortInfoCluster     `json:"cluster"`
-	ACL         contracts.ACL        `json:"acl"`
+	ACL         acl.ACL              `json:"acl"`
 	ArxUrl      string               `json:"arx_url"`
 }
 

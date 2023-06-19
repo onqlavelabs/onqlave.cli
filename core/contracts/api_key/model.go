@@ -2,7 +2,7 @@ package contracts
 
 import "time"
 
-type APIKeySensitive struct {
+type SensitiveData struct {
 	ID                    string     `json:"id"`
 	AccessKey             string     `json:"access_key"`
 	Status                string     `json:"status"`

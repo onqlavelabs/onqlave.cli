@@ -1,11 +1,11 @@
 package contracts
 
 import (
-	contracts "github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
 )
 
 type GetArxsResponseWrapper struct {
-	ACL      contracts.ACL                `json:"acl"`
+	ACL      acl.ACL                      `json:"acl"`
 	Clusters []ExistingClusterWithDetails `json:"clusters"`
 	Models   ArxModelWrapper              `json:"model"`
 	Insights ArxInsights                  `json:"insights"`

@@ -1,4 +1,4 @@
-package contracts
+package acl
 
 type ACL struct {
 	Can    map[string]bool   `json:"can"`

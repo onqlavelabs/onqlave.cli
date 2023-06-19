@@ -6,7 +6,7 @@ import (
 )
 
 type ExistingApplicationWithDetails struct {
-	ACL         contracts.ACL        `json:"acl"`
+	ACL         acl.ACL              `json:"acl"`
 	ID          common.ApplicationId `json:"application_id" validate:"required"`
 	Name        string               `json:"name" validate:"required,max=150"`
 	Description string               `json:"description" validate:"required,max=500"`

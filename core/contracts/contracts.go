@@ -37,7 +37,7 @@ type TenantInfo struct {
 	Label      string          `json:"tenant_label"  validate:"required"`
 	OwnerEmail string          `json:"owner_email,omitempty"`
 	CreatedOn  time.Time       `json:"created_on,omitempty"`
-	ACL        contracts.ACL   `json:"acl,omitempty"`
+	ACL        acl.ACL         `json:"acl,omitempty"`
 }
 
 type TenantDashboard struct {
@@ -169,7 +169,7 @@ type UserGeneralInformation struct {
 type GetUsersResponse struct {
 	Users         []UserWithAccessControl `json:"users"`
 	Model         UserModelWrapper        `json:"model"`
-	ACL           contracts.ACL           `json:"acl"`
+	ACL           acl.ACL                 `json:"acl"`
 	UserStatistic UserStatistic           `json:"statistics"`
 }
 
@@ -204,12 +204,12 @@ type APIKeyVersion struct {
 
 type UsersWithAccessControl struct {
 	Users []UserWithAccessControl
-	ACL   contracts.ACL
+	ACL   acl.ACL
 }
 
 type UserWithAccessControl struct {
 	User `json:"user"`
-	ACL  contracts.ACL `json:"acl"`
+	ACL  acl.ACL `json:"acl"`
 }
 
 type UserStatistic struct {
