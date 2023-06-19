@@ -7,10 +7,10 @@ import (
 
 type GetAPIKeysResponse struct {
 	common.BaseErrorResponse
-	Data contracts.GetAPIKeysResponseWrapper `json:"data"`
+	Data api_key.GetAPIKeysResponseWrapper `json:"data"`
 }
 
 type GetAPIKeyBaseInformationResponse struct {
 	common.BaseErrorResponse
-	Data contracts.GetAPIKeyBaseResponse `json:"data"`
+	Data api_key.GetAPIKeyBaseResponse `json:"data"`
 }

@@ -28,13 +28,8 @@ var expectedOperationStatus = map[CommandOperation]enumerations.ApiKeyStatus{
 	DeleteOperation: enumerations.Deleted,
 }
 
-type APIKeyBaseInfo struct {
-	ApplicationIDs []string
-	ClusterIDs     []string
-}
-
 type ListKeysResponse struct {
-	Keys []contracts.APIKey
+	Keys []api_key.APIKey
 }
 
 type APIKeyIntegrationService struct {
@@ -51,19 +46,19 @@ func NewAPIKeyIntegrationService(opts APIKeyIntegrationServiceOptions) *APIKeyIn
 	}
 }
 
-func (s *APIKeyIntegrationService) GetKeyBaseInfo() (contracts.APIKeyModelsWrapper, error) {
+func (s *APIKeyIntegrationService) GetKeyBaseInfo() (api_key.APIKeyModelsWrapper, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/keys/base", api.UrlBuilder(api.TenantName.String()), tenantId)
 
 	response, err := api.Get[responses.GetAPIKeyBaseInformationResponse](clusterUrl)
 	if err != nil {
-		return contracts.APIKeyModelsWrapper{}, model.NewAppError("GetKeyBaseInfo", "cli.server_error.key_base_info", nil, "get key base info failed", http.StatusInternalServerError).Wrap(err)
+		return api_key.APIKeyModelsWrapper{}, model.NewAppError("GetKeyBaseInfo", "cli.server_error.key_base_info", nil, "get key base info failed", http.StatusInternalServerError).Wrap(err)
 	}
 
 	return response.Data.Model, nil
 }
 
-func (s *APIKeyIntegrationService) ValidateAPIKey(baseInfo contracts.APIKeyModelsWrapper, appID, clusterID, appTech string) (bool, error) {
+func (s *APIKeyIntegrationService) ValidateAPIKey(baseInfo api_key.APIKeyModelsWrapper, appID, clusterID, appTech string) (bool, error) {
 	var isClusterIDValid bool
 	for _, cluster := range baseInfo.Clusters {
 		if cluster.ID == clusterID {
@@ -145,7 +140,7 @@ func (s *APIKeyIntegrationService) DeleteKey(keyId string) (string, error) {
 	return keyId, nil
 }
 
-func (s *APIKeyIntegrationService) AddKey(contract contracts.NewAPIKey) (string, error) {
+func (s *APIKeyIntegrationService) AddKey(contract api_key.NewAPIKey) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	keyUrl := fmt.Sprintf("%s/%s/keys", api.UrlBuilder(api.TenantName.String()), tenantId)
 
@@ -160,13 +155,13 @@ func (s *APIKeyIntegrationService) AddKey(contract contracts.NewAPIKey) (string,
 	return response.Data.ID, nil
 }
 
-func (s *APIKeyIntegrationService) GetKeyDetail(keyID string) (contracts.APIKeyDetail, error) {
+func (s *APIKeyIntegrationService) GetKeyDetail(keyID string) (api_key.APIKeyDetail, error) {
 	tenantId := viper.Get("tenant_id")
 	keyUrl := fmt.Sprintf("%s/%s/keys/%s", api.UrlBuilder(api.TenantName.String()), tenantId, keyID)
 
 	response, err := api.Get[responses.GetAPIKeyDetailResponse](keyUrl)
 	if err != nil {
-		return contracts.APIKeyDetail{}, model.NewAppError("GetKeyDetail", "cli.server_error.get_key_detail", nil, "get api key detail failed", http.StatusInternalServerError).Wrap(err)
+		return api_key.APIKeyDetail{}, model.NewAppError("GetKeyDetail", "cli.server_error.get_key_detail", nil, "get api key detail failed", http.StatusInternalServerError).Wrap(err)
 	}
 	return response.Data, nil
 }

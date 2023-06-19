@@ -78,7 +78,7 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
-	keyID, err := apiService.AddKey(contracts.NewAPIKey{
+	keyID, err := apiService.AddKey(api_key.NewAPIKey{
 		ApplicationID:         _addApiKeyOperation.applicationID,
 		ClusterID:             _addApiKeyOperation.arxID,
 		ApplicationTechnology: _addApiKeyOperation.applicationTechnology,

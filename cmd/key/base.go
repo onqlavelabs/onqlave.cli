@@ -47,7 +47,7 @@ func runBaseCommand(cmd *cobra.Command, args []string) {
 	common.NewDataTable(convertKeyBaseInfo(data)).Render()
 }
 
-func convertKeyBaseInfo(key contracts.APIKeyModelsWrapper) []BaseKey {
+func convertKeyBaseInfo(key api_key.APIKeyModelsWrapper) []BaseKey {
 	var list []BaseKey
 
 	list = append(list, BaseKey{Model: "Applications", Flag: ApplicationID.String()})

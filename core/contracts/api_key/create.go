@@ -1,4 +1,4 @@
-package contracts
+package api_key
 
 type NewAPIKey struct {
 	ApplicationID         string `json:"application_id" validate:"required"`

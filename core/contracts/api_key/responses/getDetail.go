@@ -7,10 +7,10 @@ import (
 
 type GetAPIKeyDetailResponse struct {
 	common.BaseErrorResponse
-	Data contracts.APIKeyDetail `json:"data"`
+	Data api_key.APIKeyDetail `json:"data"`
 }
 
 type GetAPIKeySensitiveInfoResponse struct {
 	common.BaseErrorResponse
-	Data contracts.SensitiveData `json:"data"`
+	Data api_key.SensitiveData `json:"data"`
 }

@@ -203,20 +203,13 @@ const (
 	REGION_INVALID ClusterRegion = iota
 	REGION_AUS_EAST
 	REGION_AUS_WEST
-	// US_EAST
-	// US_WEST
-	// EU_EAST
-	// EU_WEST
-	// APAC_EAST
-	// APAC_WEST
-	// APAC_NORTH
 )
 
-var ArxProviders map[ArxProvider]string = map[ArxProvider]string{ProviderAWS: "AWS", ProviderAzure: "Azure", ProviderGCP: "GCP"}
-var ClusterTypes map[ClusterType]string = map[ClusterType]string{ServerlessCluster: "Serverless", DedicatedCluster: "Dedicated", OnPremCluster: "On-Premise"}
-var ClusterPurposes map[ClusterPurpose]string = map[ClusterPurpose]string{PurposeTesting: "Testing", PurposeProduction: "Production", PurposeStaging: "Staging"}
-var ClusterProvisioningStates map[ClusterProvisioningState]string = map[ClusterProvisioningState]string{StateCompleted: "Completed", StateFailed: "Failed", StateInitiated: "Initiated", StateInvalid: "Invalid", StatePending: "Pending", StateTimedout: "Timedout"}
-var ClusterRegions map[ClusterRegion]string = map[ClusterRegion]string{REGION_AUS_EAST: "AUS-EAST", REGION_AUS_WEST: "AUS-WEST"}
+var ArxProviders = map[ArxProvider]string{ProviderAWS: "AWS", ProviderAzure: "Azure", ProviderGCP: "GCP"}
+var ClusterTypes = map[ClusterType]string{ServerlessCluster: "Serverless", DedicatedCluster: "Dedicated", OnPremCluster: "On-Premise"}
+var ClusterPurposes = map[ClusterPurpose]string{PurposeTesting: "Testing", PurposeProduction: "Production", PurposeStaging: "Staging"}
+var ClusterProvisioningStates = map[ClusterProvisioningState]string{StateCompleted: "Completed", StateFailed: "Failed", StateInitiated: "Initiated", StateInvalid: "Invalid", StatePending: "Pending", StateTimedout: "Timedout"}
+var ClusterRegions = map[ClusterRegion]string{REGION_AUS_EAST: "AUS-EAST", REGION_AUS_WEST: "AUS-WEST"}
 
 func (c ArxProvider) String() string {
 	return ArxProviders[c]
@@ -282,9 +275,6 @@ func Put[Response any, Request any](apiBase string, request Request) (*Response,
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -317,9 +307,6 @@ func Post[Response any, Request any](apiBase string, request Request) (*Response
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -350,9 +337,6 @@ func Get[T any](apiBase string) (*T, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -382,9 +366,6 @@ func Delete[T any](apiBase string) (*T, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}

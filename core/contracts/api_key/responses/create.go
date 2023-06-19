@@ -7,5 +7,5 @@ import (
 
 type AddAPIKeyResponse struct {
 	common.BaseErrorResponse
-	Data contracts.APIKey `json:"data"`
+	Data api_key.APIKey `json:"data"`
 }
