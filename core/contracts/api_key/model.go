@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
-	application "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/application"
 	arx "github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 )
@@ -48,8 +48,8 @@ type Models struct {
 
 type Application struct {
 	ShortInfo             `json:",inline"`
-	Label                 string                            `json:"label"`
-	ApplicationTechnology application.ApplicationTechnology `json:"application_technology"`
+	Label                 string                 `json:"label"`
+	ApplicationTechnology application.Technology `json:"application_technology"`
 }
 
 type Arx struct {

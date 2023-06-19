@@ -10,7 +10,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/application"
+	contractApplication "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/application"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user"
 )
@@ -86,14 +86,14 @@ func addCommand() *cobra.Command {
 func runAddCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
-	var applicationCors []contracts.ApplicationCors
+	var applicationCors []contractApplication.Cors
 	for _, cors := range strings.Split(_addApplicationOperation.applicationCors, ";") {
-		applicationCors = append(applicationCors, contracts.ApplicationCors{
+		applicationCors = append(applicationCors, contractApplication.Cors{
 			Address: cors,
 		})
 	}
 
-	applicationID, err := newApplicationAPIService(cmd.Context()).AddApplication(contracts.NewApplication{
+	applicationID, err := newApplicationAPIService(cmd.Context()).AddApplication(contractApplication.Application{
 		Name:        _addApplicationOperation.applicationName,
 		Description: _addApplicationOperation.applicationDescription,
 		Technology:  _addApplicationOperation.applicationTechnology,

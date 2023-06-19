@@ -4,36 +4,21 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 )
 
-type ArchiveApplicationResponse struct {
+type DetailResponse struct {
 	common.BaseErrorResponse
-	Data ApplicationStatus `json:"data"`
+	Data Detail `json:"data"`
 }
 
-type AddApplicationResponse struct {
-	common.BaseErrorResponse
-	Data ExistingApplicationWithDetails `json:"data"`
+type BaseResponse struct {
+	Data Technologies `json:"data"`
 }
 
-type DisableApplicationResponse struct {
+type ListResponse struct {
 	common.BaseErrorResponse
-	Data ApplicationStatus `json:"data"`
+	Data Applications `json:"data"`
 }
 
-type GetApplicationResponse struct {
+type StatusResponse struct {
 	common.BaseErrorResponse
-	Data ExistingApplicationWithDetails `json:"data"`
-}
-
-type GetApplicationsResponse struct {
-	common.BaseErrorResponse
-	Data GetApplications `json:"data"`
-}
-
-type GetApplicationBaseResponse struct {
-	Data ApplicationModelWrapper `json:"data"`
-}
-
-type UpdateApplicationResponse struct {
-	common.BaseErrorResponse
-	Data ExistingApplicationWithDetails `json:"data"`
+	Data Status `json:"data"`
 }

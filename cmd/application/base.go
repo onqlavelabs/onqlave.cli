@@ -51,7 +51,7 @@ func runBaseCommand(cmd *cobra.Command, args []string) {
 	common.NewDataTable(convertApplicationBaseInfo(application)).Render()
 }
 
-func convertApplicationBaseInfo(application contracts.ApplicationModelWrapper) []BaseApplication {
+func convertApplicationBaseInfo(application application.Technologies) []BaseApplication {
 	var list []BaseApplication
 
 	list = append(list, BaseApplication{Model: "Technologies", Flag: Tech.String()})
