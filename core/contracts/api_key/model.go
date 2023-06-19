@@ -36,9 +36,3 @@ type SensitiveData struct {
 	ArxUrl                string     `json:"arx_url"`
 	ProvidedAt            *time.Time `json:"provided_at"`
 }
-
-type NewAPIKey struct {
-	ApplicationID         string `json:"application_id" validate:"required"`
-	ClusterID             string `json:"cluster_id" validate:"required"`
-	ApplicationTechnology string `json:"application_technology" validate:"required"`
-}

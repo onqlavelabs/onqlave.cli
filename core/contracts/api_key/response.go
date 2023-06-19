@@ -18,12 +18,12 @@ type GetAPIKeyBaseInformationResponse struct {
 	common.BaseErrorResponse
 	Data GetAPIKeyBaseResponse `json:"data"`
 }
-type GetAPIKeyDetailResponse struct {
+type APIKeyDetailResponse struct {
 	common.BaseErrorResponse
 	Data APIKeyDetail `json:"data"`
 }
 
-type GetAPIKeySensitiveInfoResponse struct {
+type APIKeySensitiveDataResponse struct {
 	common.BaseErrorResponse
 	Data SensitiveData `json:"data"`
 }
