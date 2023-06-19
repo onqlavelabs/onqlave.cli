@@ -1,7 +1,5 @@
 package api_key
 
-//TODO: Replace NewApiKey in Api by CreateAPIKey
-
 type CreateAPIKeyRequest struct {
 	APIKey CreateAPIKey `json:"api_key" validate:"required"`
 }

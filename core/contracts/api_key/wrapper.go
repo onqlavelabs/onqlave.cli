@@ -7,16 +7,18 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 )
 
-type APIKey struct {
-	ID          string               `json:"id"`
-	AccessKey   string               `json:"access_key"`
-	CreatedAt   string               `json:"created_at"`
-	Status      string               `json:"status"`
-	CreatedBy   CreatedBy            `json:"created_by"`
-	Application ShortInfoApplication `json:"application"`
-	Cluster     ShortInfoCluster     `json:"cluster"`
-	ACL         acl.ACL              `json:"acl"`
-	ArxUrl      string               `json:"arx_url"`
+type APIKeyDetail struct {
+	ID            string                `json:"id"`
+	AccessKey     string                `json:"access_key"`
+	CreatedAt     string                `json:"created_at"`
+	Status        string                `json:"status"`
+	CreatedBy     *common.ShortUserInfo `json:"created_by"`
+	ApplicationID string                `json:"application_id,omitempty"`
+	Application   ShortInfoApplication  `json:"application"`
+	ClusterID     string                `json:"cluster_id,omitempty"`
+	Cluster       ShortInfoCluster      `json:"cluster"`
+	ACL           acl.ACL               `json:"acl"`
+	ArxUrl        string                `json:"arx_url"`
 }
 
 type Application struct {
@@ -41,27 +43,9 @@ type APIKeyModelsWrapper struct {
 	Clusters     []Cluster     `json:"clusters"`
 }
 
-//TODO: Can combine GetAPIKeysResponseWrapper and GetAPIKeyBaseResponse?
-
 type GetAPIKeysResponseWrapper struct {
 	ACL      acl.ACL             `json:"acl"`
-	APIKeys  []APIKey            `json:"api_keys"`
+	APIKeys  []APIKeyDetail      `json:"api_keys"`
 	Model    APIKeyModelsWrapper `json:"model"`
 	Insights Insights            `json:"insights"`
-}
-
-type GetAPIKeyBaseResponse struct {
-	ACL   acl.ACL             `json:"acl"`
-	Model APIKeyModelsWrapper `json:"model"`
-}
-
-type APIKeyDetail struct {
-	ID            string                `json:"id"`
-	ClusterID     string                `json:"cluster_id,omitempty"`
-	ApplicationID string                `json:"application_id,omitempty"`
-	CreatedAt     string                `json:"created_at"`
-	Status        string                `json:"status"`
-	AccessKey     string                `json:"access_key,omitempty"`
-	CreatedBy     *common.ShortUserInfo `json:"created_by,omitempty"`
-	ArxUrl        string                `json:"arx_url"`
 }
