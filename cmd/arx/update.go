@@ -15,7 +15,7 @@ import (
 	cliCommon "github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
-	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
@@ -64,7 +64,7 @@ func updateCommand() *cobra.Command {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
 
-				return cliCommon.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
+				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
 			}
 			_updateArx.arxId = args[0]
 			return nil
@@ -96,7 +96,7 @@ func updateCommand() *cobra.Command {
 			}
 
 			if arxDetail == nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx detail is required")))
+				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx detail is required")))
 			}
 
 			_, err = arxApiService.ValidateEditArxRequest(

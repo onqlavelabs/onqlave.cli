@@ -10,7 +10,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	contractApplication "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
-	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/application"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
@@ -36,7 +36,7 @@ func updateCommand() *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
-				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_editApplicationOperation.applicationID = args[0]
 			return nil

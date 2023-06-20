@@ -9,7 +9,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
@@ -29,7 +29,7 @@ func describeCommand() *cobra.Command {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
 
-				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
 			}
 			_describeArx.arxId = args[0]
 			return nil

@@ -9,7 +9,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
@@ -37,7 +37,7 @@ func updateCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantLabelUpdate == "" && tenantNameUpdate == "" {
-				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
 			}
 
 			cmd.SilenceUsage = false

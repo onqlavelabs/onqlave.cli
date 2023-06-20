@@ -14,7 +14,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
-	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
@@ -65,7 +65,7 @@ func addCommand() *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
-				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx name is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx name is required")))
 			}
 			_addArx.arxName = args[0]
 			return nil

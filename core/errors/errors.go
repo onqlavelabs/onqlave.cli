@@ -13,7 +13,10 @@ type InternalError struct {
 }
 
 func (e *InternalError) Error() string {
-	return fmt.Sprintf("%s", e.BaseError)
+	if e.Scope == ScopeCLI {
+		return fmt.Sprintf("%s", e.BaseError)
+	}
+	return fmt.Sprintf("%s error - key:%s", e.Scope, e.Key)
 }
 
 func NewInternalError(scope, key, cId, message string, base error) *InternalError {
@@ -68,6 +71,6 @@ func NewDbEmptyResultErr() error {
 	return NewRepoError(KeyDbEmptyErr, nil)
 }
 
-func NewCLIResultError(key string, err string) error {
-	return NewInternalError(ScopeCLI, key, "", err, fmt.Errorf("%s", err))
+func NewCLIError(key string, err string) error {
+	return NewInternalError(ScopeCLI, key, "", "", fmt.Errorf("%s", err))
 }

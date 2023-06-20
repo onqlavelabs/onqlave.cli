@@ -11,7 +11,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
@@ -119,7 +119,7 @@ func (m *DataTable) View() string {
 func (m *DataTable) Render() {
 	//return error if m is nil
 	if m == nil {
-		RenderCLIOutputError("There was an error rendering data: ", coreErr.NewCLIResultError(coreErr.KeyCLIRenderDataFailed, cli.BoldStyle.Render("Render table data failed")))
+		RenderCLIOutputError("There was an error rendering data: ", errors.NewCLIError(errors.KeyCLIRenderDataFailed, cli.BoldStyle.Render("Render table data failed")))
 		return
 	}
 
