@@ -91,5 +91,5 @@ func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 	fmt.Println(cli.RenderError(cli.BoldStyle.Render(fmt.Sprintf("%s", err))))
-	return ReplacePersistentPreRunE(cmd, err)
+	return err
 }
