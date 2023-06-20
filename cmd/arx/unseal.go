@@ -2,6 +2,9 @@ package arx
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
+	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 	"time"
@@ -13,9 +16,6 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type unsealArxOperation struct {
@@ -49,7 +49,7 @@ func unsealCommand() *cobra.Command {
 		Example: "onqlave arx unseal",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("ArxID is required")))
 			}
 			_unsealArx.arxId = args[0]
 			return nil
@@ -71,7 +71,7 @@ func runUnsealCommand(cmd *cobra.Command, args []string) {
 	}
 
 	if arxDetail.Acl.CanNot["unseal_reason"] != "" {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error unseal arx: %s", arxDetail.Acl.CanNot["unseal_reason"])))
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error unseal arx: %s", arxDetail.Acl.CanNot["unseal_reason"])))
 		return
 	}
 
@@ -83,23 +83,23 @@ func runUnsealCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Arx unseal sometime takes up to %d minutes.", _unsealArx.arxOperationTimeout)
-	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
 	// Run the function.
-	ui, err := cli.NewSpnnerTUI(cmd.Context(), cli.SpinnerOptions{
+	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
 		return
 	}
 	go _unsealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _unsealArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
 		return
 	}
 

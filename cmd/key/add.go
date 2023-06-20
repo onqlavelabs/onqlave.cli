@@ -2,6 +2,9 @@ package key
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/apiKey"
+	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 	"time"
@@ -14,9 +17,6 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/apiKey"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type addApiKeyOperation struct {
@@ -88,20 +88,20 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Api key creation sometime takes up to %d minutes.", _addApiKeyOperation.operationTimeout)
-	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := cli.NewSpnnerTUI(cmd.Context(), cli.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
+	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
 	if err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up api key creation operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up api key creation operation: %s", err)) + "\n")
 		return
 	}
 
 	go _addApiKeyOperation.waitForCompletion(apiService, keyID, communication.GetProducer(), _addApiKeyOperation.operationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up api key creation operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up api key creation operation: %s", err)) + "\n")
 		return
 	}
 

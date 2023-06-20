@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/configs"
 	"os"
 	"strings"
 
@@ -9,8 +11,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/configs"
 )
 
 func initCommand() *cobra.Command {

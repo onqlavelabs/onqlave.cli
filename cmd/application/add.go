@@ -2,6 +2,9 @@ package application
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/application"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/user"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 
@@ -11,9 +14,6 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	contractApplication "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/application"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type addApplicationOperation struct {

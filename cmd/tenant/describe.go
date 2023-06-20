@@ -3,6 +3,7 @@ package tenant
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,7 +11,6 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 )
 
 func describeCommand() *cobra.Command {

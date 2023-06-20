@@ -2,6 +2,7 @@ package arx
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 
@@ -11,7 +12,6 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type setDefaultArxOperation struct {

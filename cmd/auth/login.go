@@ -2,6 +2,9 @@ package auth
 
 import (
 	"fmt"
+	api2 "github.com/onqlavelabs/onqlave.cli/internal/cli/api"
+	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/configs"
 	"os"
 	"strings"
 	"time"
@@ -14,9 +17,6 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/configs"
 )
 
 func loginCommand() *cobra.Command {
@@ -27,10 +27,10 @@ func loginCommand() *cobra.Command {
 		Example: "onqlave auth login",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Email address is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Email address is required")))
 			}
 			if !validMailAddress(args[0]) {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIInvalidValue, cli.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIInvalidValue, cli2.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
 			}
 			emailAddress = args[0]
 
@@ -46,7 +46,7 @@ func loginCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantName == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant name should be provided")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Tenant name should be provided")))
 
 			}
 
@@ -68,47 +68,47 @@ func runLoginCommand(cmd *cobra.Command, args []string) {
 
 	token, err := apiService.SendLoginInvitation(emailAddress, tenantName)
 	if err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error sending the login email to email address '%s': %s", emailAddress, err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error sending the login email to email address '%s': %s", emailAddress, err)) + "\n")
 		return
 	}
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Login instruction is sent to email address '%s'. Please be mindful that the link provided in email is only valid for %d minutes.", emailAddress, common.Valid)
-	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	s.WriteString("\n")
 	fmt.Println(s.String())
 
-	communication := api.NewConcurrencyChannel()
-	ui, err := cli.NewSpnnerTUI(cmd.Context(), cli.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
+	communication := api2.NewConcurrencyChannel()
+	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
 	if err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up login operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up login operation: %s", err)) + "\n")
 		return
 	}
 
 	go _waitingLoginOperation(apiService, token, communication.GetProducer(), common.Valid)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up login operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up login operation: %s", err)) + "\n")
 		return
 	}
 
 	if ui.Error() != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error whilst waiting for login result: %s", ui.Error())) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error whilst waiting for login result: %s", ui.Error())) + "\n")
 	} else {
-		fmt.Println(cli.BoldStyle.Copy().Foreground(cli.Green).Render("🎉 Done! You successfully login to Onqlave platform. \n"))
+		fmt.Println(cli2.BoldStyle.Copy().Foreground(cli2.Green).Render("🎉 Done! You successfully login to Onqlave platform. \n"))
 	}
 
-	fmt.Println(cli.TextStyle.Render("For more information, read our documentation at https://docs.onqlave.com \n"))
+	fmt.Println(cli2.TextStyle.Render("For more information, read our documentation at https://docs.onqlave.com \n"))
 }
 
-func _waitingLoginOperation(apiService *api.APIIntegrationService, token string, producer *api.Producer, valid int) {
+func _waitingLoginOperation(apiService *api2.APIIntegrationService, token string, producer *api2.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	producer.Produce(api.ConcurrencyOperationResult{Result: "Waiting for login completion", Done: false, Error: nil})
+	producer.Produce(api2.ConcurrencyOperationResult{Result: "Waiting for login completion", Done: false, Error: nil})
 
 	for duration.Minutes() < float64(valid) {
 		result, authToken, tenantID, err := apiService.GetLoginOperationStatus(token)
-		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
+		producer.Produce(api2.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			if authToken != "" && err == nil {
 				viper.Set(common.FlagAuthKey, authToken)

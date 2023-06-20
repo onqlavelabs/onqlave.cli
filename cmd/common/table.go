@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"reflect"
 	"strings"
 	"time"
@@ -12,7 +13,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 var (

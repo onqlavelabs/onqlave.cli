@@ -3,11 +3,11 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/model"
 
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
 )
 
 var (

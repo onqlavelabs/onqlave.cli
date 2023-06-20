@@ -2,6 +2,7 @@ package application
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type disableApplicationOperation struct {

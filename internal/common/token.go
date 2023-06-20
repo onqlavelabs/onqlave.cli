@@ -2,9 +2,9 @@ package common
 
 import (
 	"context"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type Token struct {

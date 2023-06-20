@@ -2,11 +2,11 @@ package arx
 
 import (
 	"context"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
 )
 
 type FlagArx string

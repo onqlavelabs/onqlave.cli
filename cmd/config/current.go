@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"reflect"
 	"strings"
@@ -13,7 +14,6 @@ import (
 	"golang.org/x/term"
 
 	cliCommon "github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type CurrentConfig struct {
