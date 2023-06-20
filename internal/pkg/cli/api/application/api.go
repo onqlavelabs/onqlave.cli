@@ -8,8 +8,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts"
 	contractsApp "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
@@ -59,7 +59,7 @@ func (s *ApplicationAPIIntegrationService) ValidateApplication(baseInfo Applicat
 		Wrap(fmt.Errorf("invalid technology - must be in (%v)", strings.TrimLeft(validTechnologies, ",")))
 }
 
-func (s *ApplicationAPIIntegrationService) GetApplicationBaseInfoIDSlice(modelWrapper contractsApp.Technologies, validUser contracts.GetUsersResponse) ApplicationBaseInfo {
+func (s *ApplicationAPIIntegrationService) GetApplicationBaseInfoIDSlice(modelWrapper contractsApp.Technologies, validUser user.ListResponse) ApplicationBaseInfo {
 	baseInfo := ApplicationBaseInfo{
 		Technologies: map[string]bool{},
 		User:         []string{},
@@ -87,7 +87,7 @@ func (s *ApplicationAPIIntegrationService) GetBaseApplication() (contractsApp.Te
 	return response.Data, nil
 }
 
-func (s *ApplicationAPIIntegrationService) AddApplication(addApplicationRequest contractsApp.Application) (string, error) {
+func (s *ApplicationAPIIntegrationService) AddApplication(addApplicationRequest contractsApp.RequestApplication) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	applicationUrl := fmt.Sprintf("%s/%s/applications", api.UrlBuilder(api.TenantName.String()), tenantId)
 
@@ -101,7 +101,7 @@ func (s *ApplicationAPIIntegrationService) AddApplication(addApplicationRequest 
 	return string(response.Data.ID), nil
 }
 
-func (s *ApplicationAPIIntegrationService) EditApplication(applicationID string, editApplicationRequest contractsApp.Application) (string, error) {
+func (s *ApplicationAPIIntegrationService) EditApplication(applicationID string, editApplicationRequest contractsApp.RequestApplication) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	applicationUrl := fmt.Sprintf("%s/%s/applications/%s", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
 
@@ -115,24 +115,24 @@ func (s *ApplicationAPIIntegrationService) EditApplication(applicationID string,
 	return string(response.Data.ID), nil
 }
 
-func (s *ApplicationAPIIntegrationService) GetApplication(applicationID string) (contractsApp.Detail, error) {
+func (s *ApplicationAPIIntegrationService) GetApplication(applicationID string) (contractsApp.Application, error) {
 	tenantId := viper.Get("tenant_id")
 	applicationUrl := fmt.Sprintf("%s/%s/applications/%s", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
 
 	response, err := api.Get[contractsApp.DetailResponse](applicationUrl)
 	if err != nil {
-		return contractsApp.Detail{}, model.NewAppError("DescribeApplication", "cli.server_error.describe_applications", nil, "describe application failed", http.StatusInternalServerError).Wrap(err)
+		return contractsApp.Application{}, model.NewAppError("DescribeApplication", "cli.server_error.describe_applications", nil, "describe application failed", http.StatusInternalServerError).Wrap(err)
 	}
 	return response.Data, nil
 }
 
-func (s *ApplicationAPIIntegrationService) GetApplications() ([]contractsApp.Detail, error) {
+func (s *ApplicationAPIIntegrationService) GetApplications() ([]contractsApp.Application, error) {
 	tenantId := viper.Get("tenant_id")
 	applicationUrl := fmt.Sprintf("%s/%s/applications", api.UrlBuilder(api.TenantName.String()), tenantId)
 
 	response, err := api.Get[contractsApp.ListResponse](applicationUrl)
 	if err != nil {
-		return []contractsApp.Detail{}, model.NewAppError("GetApplications", "cli.server_error.applications", nil, "get application failed", http.StatusInternalServerError).Wrap(err)
+		return []contractsApp.Application{}, model.NewAppError("GetApplications", "cli.server_error.applications", nil, "get application failed", http.StatusInternalServerError).Wrap(err)
 	}
 
 	return response.Data.Applications, nil

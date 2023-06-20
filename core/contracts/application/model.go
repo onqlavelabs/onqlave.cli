@@ -7,7 +7,7 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 )
 
-type Application struct {
+type RequestApplication struct {
 	Name        string `json:"name" validate:"required,max=150"`
 	Description string `json:"description" validate:"max=500"`
 	Technology  string `json:"technology" validate:"required,max=20"`
@@ -15,14 +15,7 @@ type Application struct {
 	Cors        []Cors `json:"cors" validate:"max=10"`
 }
 
-type Applications struct {
-	ACL          acl.ACL      `json:"acl"`
-	Applications []Detail     `json:"applications"`
-	Models       Technologies `json:"model"`
-	Statistics   Statistics   `json:"statistics"`
-}
-
-type Detail struct {
+type Application struct {
 	ACL         acl.ACL              `json:"acl"`
 	ID          common.ApplicationId `json:"application_id" validate:"required"`
 	Name        string               `json:"name" validate:"required,max=150"`
@@ -32,6 +25,13 @@ type Detail struct {
 	APIKeys     int                  `json:"api_keys"`
 	Cors        []Cors               `json:"cors" validate:"max=10"`
 	Status      string               `json:"status" validate:"required"`
+}
+
+type Applications struct {
+	ACL          acl.ACL       `json:"acl"`
+	Applications []Application `json:"applications"`
+	Models       Technologies  `json:"model"`
+	Statistics   Statistics    `json:"statistics"`
 }
 
 type Technologies struct {
@@ -66,4 +66,9 @@ type Technology struct {
 	Icon        string `json:"icon" validate:"required"`
 	Enable      bool   `json:"enable" validate:"required"`
 	IsDefault   bool   `json:"is_default" validate:"required"`
+}
+
+type ClientType struct {
+	Id    int    `json:"id" validate:"required"`
+	Title string `json:"title" validate:"required"`
 }

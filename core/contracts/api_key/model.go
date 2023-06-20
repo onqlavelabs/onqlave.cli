@@ -54,13 +54,13 @@ type Application struct {
 
 type Arx struct {
 	ShortInfo     `json:",inline"`
-	Purpose       arx.ArxPurpose                 `json:"purpose"`
-	Plan          arx.ArxPlan                    `json:"plan"`
-	Provider      arx.ArxProvider                `json:"provider"`
-	Regions       []arx.ArxRegion                `json:"regions"`
-	Encryption    arx.ArxEncryptionMethod        `json:"encryption"`
-	RotationCycle arx.ArxEncryptionRotationCycle `json:"rotation_cycle"`
-	CreatedBy     *common.ShortUserInfo          `json:"created_by"`
+	Purpose       arx.Purpose                 `json:"purpose"`
+	Plan          arx.Plan                    `json:"plan"`
+	Provider      arx.Provider                `json:"provider"`
+	Regions       []arx.Region                `json:"regions"`
+	Encryption    arx.EncryptionMethod        `json:"encryption"`
+	RotationCycle arx.EncryptionRotationCycle `json:"rotation_cycle"`
+	CreatedBy     *common.ShortUserInfo       `json:"created_by"`
 }
 
 type ShortInfo struct {
@@ -79,4 +79,10 @@ type CreateAPIKey struct {
 	ApplicationID         string `json:"application_id" validate:"required"`
 	ClusterID             string `json:"cluster_id" validate:"required"`
 	ApplicationTechnology string `json:"application_technology" validate:"required"`
+}
+
+type APIKeyVersion struct {
+	Number    string    `json:"version_number" validate:"required"`
+	CreatedAt time.Time `json:"created_at" validate:"required"`
+	ExpiresAt time.Time `json:"expires_at" validate:"required"`
 }

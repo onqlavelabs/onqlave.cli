@@ -50,7 +50,7 @@ func runBaseCommand(cmd *cobra.Command, args []string) {
 	common.NewDataTable(convertArxBaseInfo(arx)).Render()
 }
 
-func convertArxBaseInfo(arx contracts.ArxModelWrapper) []BaseArx {
+func convertArxBaseInfo(arx contracts.BaseInfo) []BaseArx {
 	var list []BaseArx
 
 	list = append(list, BaseArx{Model: "Plan", Flag: Type.String()})

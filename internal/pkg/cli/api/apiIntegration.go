@@ -10,11 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth/requests"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth/responses"
-
 	"github.com/spf13/viper"
+
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth"
 )
 
 type RegisterationRequest struct {
@@ -388,14 +386,14 @@ func Delete[T any](apiBase string) (*T, error) {
 
 func (s *APIIntegrationService) SendSignupInvitation(emailAddress string, tenantName string, userFullName string) (string, error) {
 	registrationUrl := fmt.Sprintf("%s/registration", UrlBuilder(TenantName.String()))
-	request := requests.RegistrationRequest{
-		Registration: contracts.RegistrationDetails{
+	request := auth.RegistrationRequest{
+		Registration: auth.RegistrationDetails{
 			UserEmail:    emailAddress,
 			UserFullName: userFullName,
 			TenantName:   tenantName,
 		},
 	}
-	response, err := Post[responses.RegistrationResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationResponse](registrationUrl, request)
 	if err != nil {
 		return "", err
 	}
@@ -433,13 +431,13 @@ func (s *APIIntegrationService) UpdateTenant(tenantName string, tenantLabel stri
 
 func (s *APIIntegrationService) SendLoginInvitation(emailAddress string, tenantName string) (string, error) {
 	registrationUrl := fmt.Sprintf("%s/login", UrlBuilder(TenantName.String()))
-	request := requests.LoginRequest{
-		LoginDetails: contracts.LoginDetails{
+	request := auth.LoginRequest{
+		LoginDetails: auth.LoginDetails{
 			UserEmail:  emailAddress,
 			TenantName: tenantName,
 		},
 	}
-	response, err := Post[responses.RegistrationResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationResponse](registrationUrl, request)
 	if err != nil {
 		return "", err
 	}
@@ -448,12 +446,12 @@ func (s *APIIntegrationService) SendLoginInvitation(emailAddress string, tenantN
 
 func (s *APIIntegrationService) GetSignupOperationStatus(token string) (*APIIntegrationServiceOperationResult, error) {
 	registrationUrl := fmt.Sprintf("%s/status", UrlBuilder(TenantName.String()))
-	request := requests.RegistrationStatusRequest{
-		Request: contracts.RegistrationToken{
+	request := auth.RegistrationStatusRequest{
+		Request: auth.RegistrationToken{
 			Token: token,
 		},
 	}
-	response, err := Post[responses.RegistrationStatusResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationStatusResponse](registrationUrl, request)
 	if err != nil {
 		return &APIIntegrationServiceOperationResult{Done: false, Result: "Waiting for signup completion."}, err
 	}
@@ -467,14 +465,14 @@ func (s *APIIntegrationService) GetSignupOperationStatus(token string) (*APIInte
 
 func (s *APIIntegrationService) GetLoginOperationStatus(token string) (*APIIntegrationServiceOperationResult, string, string, error) {
 	registrationUrl := fmt.Sprintf("%s/status", UrlBuilder(TenantName.String()))
-	request := requests.RegistrationStatusRequest{
-		Request: contracts.RegistrationToken{
+	request := auth.RegistrationStatusRequest{
+		Request: auth.RegistrationToken{
 			Token: token,
 		},
 	}
 	var authToken string
 	var tenantID string
-	response, err := Post[responses.RegistrationStatusResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationStatusResponse](registrationUrl, request)
 	if err != nil {
 		return &APIIntegrationServiceOperationResult{Done: false, Result: "Waiting for login completion."}, authToken, tenantID, err
 	}

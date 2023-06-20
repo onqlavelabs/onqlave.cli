@@ -121,7 +121,7 @@ func runEditCommand(cmd *cobra.Command, args []string) {
 
 	applicationID, err := newApplicationAPIService(cmd.Context()).EditApplication(
 		_editApplicationOperation.applicationID,
-		contractApplication.Application{
+		contractApplication.RequestApplication{
 			Name:        _editApplicationOperation.applicationName,
 			Description: _editApplicationOperation.applicationDescription,
 			Technology:  _editApplicationOperation.applicationTechnology,

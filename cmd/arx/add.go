@@ -133,7 +133,7 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 
 	regions := strings.Split(_addArx.arxRegion, ",")
 
-	arxId, err := arxApiService.AddArx(contracts.NewCluster{
+	arxId, err := arxApiService.AddArx(contracts.NewArx{
 		Name:             _addArx.arxName,
 		Plan:             _addArx.arxType,
 		Provider:         _addArx.arxProvider,

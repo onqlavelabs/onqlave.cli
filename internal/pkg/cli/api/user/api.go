@@ -6,8 +6,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/user/responses"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 )
 
@@ -25,37 +24,37 @@ func NewUserAPIIntegrationService(opts UserAPIIntegrationServiceOptions) *UserAP
 	}
 }
 
-func (s *UserAPIIntegrationService) GetUsers() (contracts.GetUsersResponse, error) {
+func (s *UserAPIIntegrationService) GetUsers() (user.ListResponse, error) {
 	tenantID := viper.GetString("tenant_id")
 	userUrl := fmt.Sprintf("%s/%s/users", api.UrlBuilder(api.TenantName.String()), tenantID)
 
-	response, err := api.Get[responses.GetUsersResponse](userUrl)
+	response, err := api.Get[user.GetListResponse](userUrl)
 	if err != nil {
-		return contracts.GetUsersResponse{}, err
+		return user.ListResponse{}, err
 	}
 
 	return response.Data, nil
 }
 
-func (s *UserAPIIntegrationService) GetPlatformOwnerAndClusterAdmin() (contracts.GetUsersResponse, error) {
+func (s *UserAPIIntegrationService) GetPlatformOwnerAndClusterAdmin() (user.ListResponse, error) {
 	tenantId := viper.Get("tenant_id")
 	userUrl := fmt.Sprintf("%s/%s/users?roles=platform_owner,cluster_admin", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[responses.GetUsersResponse](userUrl)
+	response, err := api.Get[user.GetListResponse](userUrl)
 	if err != nil {
-		return contracts.GetUsersResponse{}, err
+		return user.ListResponse{}, err
 	}
 
 	return response.Data, nil
 }
 
-func (s *UserAPIIntegrationService) GetPlatformOwnerAndApplicationAdmin() (contracts.GetUsersResponse, error) {
+func (s *UserAPIIntegrationService) GetPlatformOwnerAndApplicationAdmin() (user.ListResponse, error) {
 	tenantId := viper.Get("tenant_id")
 	userUrl := fmt.Sprintf("%s/%s/users?roles=platform_owner,application_admin", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[responses.GetUsersResponse](userUrl)
+	response, err := api.Get[user.GetListResponse](userUrl)
 	if err != nil {
-		return contracts.GetUsersResponse{}, err
+		return user.ListResponse{}, err
 	}
 
 	return response.Data, nil

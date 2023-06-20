@@ -8,7 +8,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user/models"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
 )
 
 func listCommand() *cobra.Command {
@@ -30,7 +30,7 @@ func runListCommand(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	var userList models.UserList
+	var userList user.Users
 	for _, u := range response.Users {
 		userList.Users = append(userList.Users, u.User)
 	}

@@ -1,5 +1,5 @@
 package application
 
 type Request struct {
-	Application Application `json:"application" validate:"required"`
+	Application RequestApplication `json:"application" validate:"required"`
 }

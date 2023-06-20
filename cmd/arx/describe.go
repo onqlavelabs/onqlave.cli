@@ -48,9 +48,9 @@ func runDescribeCommand(cmd *cobra.Command, args []string) {
 	}
 
 	if viper.GetBool(common.FlagJson) {
-		common.CliRenderDescribeResourceOutput(width, arxDetail.ClusterDetail, common.ResourceArx, ArxID)
+		common.CliRenderDescribeResourceOutput(width, arxDetail.Detail, common.ResourceArx, ArxID)
 		return
 	}
 
-	common.NewDataTable(arxDetail.ClusterDetail).Render()
+	common.NewDataTable(arxDetail.Detail).Render()
 }

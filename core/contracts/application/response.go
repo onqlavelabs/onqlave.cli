@@ -6,7 +6,7 @@ import (
 
 type DetailResponse struct {
 	common.BaseErrorResponse
-	Data Detail `json:"data"`
+	Data Application `json:"data"`
 }
 
 type BaseResponse struct {

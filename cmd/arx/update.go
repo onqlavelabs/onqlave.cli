@@ -130,7 +130,7 @@ func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 	arxID := _updateArx.arxId
 
 	arxApiService := newArxAPIService(cmd.Context())
-	arxId, err := arxApiService.UpdateArx(contracts.UpdateCluster{
+	arxId, err := arxApiService.UpdateArx(contracts.UpdateArx{
 		ID:            common.ArxId(arxID),
 		Name:          _updateArx.arxName,
 		Regions:       []string{_updateArx.arxRegion},

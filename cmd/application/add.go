@@ -93,7 +93,7 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 		})
 	}
 
-	applicationID, err := newApplicationAPIService(cmd.Context()).AddApplication(contractApplication.Application{
+	applicationID, err := newApplicationAPIService(cmd.Context()).AddApplication(contractApplication.RequestApplication{
 		Name:        _addApplicationOperation.applicationName,
 		Description: _addApplicationOperation.applicationDescription,
 		Technology:  _addApplicationOperation.applicationTechnology,
