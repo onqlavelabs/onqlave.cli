@@ -1,7 +1,6 @@
 package application
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -9,6 +8,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type enableApplicationOperation struct {
@@ -26,7 +27,7 @@ func enableCommand() *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
-				return errors.New("applicationID is required")
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_enableApplication.applicationId = args[0]
 			return nil

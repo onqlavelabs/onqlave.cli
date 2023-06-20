@@ -42,7 +42,7 @@ func addCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.UnsetEnvError)
+				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
 			apiService := newKeyApiService(cmd.Context())

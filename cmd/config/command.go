@@ -13,7 +13,6 @@ func Command() *cobra.Command {
 		Example: "onqlave config",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SilenceUsage = true
-
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return err
 			}

@@ -1,7 +1,6 @@
 package tenant
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -10,6 +9,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 var tenantLabelUpdate string
@@ -29,14 +30,14 @@ func updateCommand() *cobra.Command {
 			}
 
 			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.UnsetEnvError)
+				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
 			if !common.IsEnvironmentConfigured() {
-				return common.ReplacePersistentPreRunE(cmd, errors.New("your environment is not configured. please run 'config init' before running any other command"))
+				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantLabelUpdate == "" && tenantNameUpdate == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.New("tenant Label and tenant Name cannot be both empty"))
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
 			}
 
 			cmd.SilenceUsage = false

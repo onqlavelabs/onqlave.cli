@@ -2,7 +2,6 @@ package apiKey
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -10,7 +9,9 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
 	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
 )
 
@@ -66,8 +67,7 @@ func (s *APIKeyIntegrationService) ValidateAPIKey(baseInfo api_key.Models, appID
 	}
 	if !isClusterIDValid {
 		return false, model.NewAppError("ValidateAPIKey", "cli.invalid.apikey_error", nil, "", http.StatusBadRequest).
-			Wrap(errors.New("cluster id is invalid"))
-
+			Wrap(coreErr.NewCLIResultError(coreErr.KeyCLIInvalidValue, cli.BoldStyle.Render("ArxID is invalid")))
 	}
 
 	var isAppIDValid bool
@@ -81,8 +81,7 @@ func (s *APIKeyIntegrationService) ValidateAPIKey(baseInfo api_key.Models, appID
 	}
 	if !isAppIDValid || !isTechValid {
 		return false, model.NewAppError("ValidateAPIKey", "cli.invalid.apikey_error", nil, "", http.StatusBadRequest).
-			Wrap(errors.New("app id or app technology is invalid"))
-
+			Wrap(coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("AppId or app technology is invalid")))
 	}
 
 	return true, nil

@@ -77,6 +77,16 @@ const (
 	ScopeService    = "service"
 	ScopeRepository = "repository"
 	ScopeInternal   = "internal"
+	ScopeCLI        = "cli"
+)
+
+const (
+	KeyCLINotLoggedIn          = "cli_not_logged_in"
+	KeyCLIMissingRequiredField = "cli_missing_required_field"
+	KeyCLIInvalidValue         = "cli_invalid_value"
+	KEyCLIEmptyData            = "cli_empty_data"
+	KeyCLIRenderDataFailed     = "cli_render_data_failed"
+	KeyCLIEnvironmentNotConfig = "cli_environment_not_config"
 )
 
 const (

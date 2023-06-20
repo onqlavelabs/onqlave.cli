@@ -74,8 +74,12 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if !IsEnvironmentConfigured() {
+		return ReplacePersistentPreRunE(cmd, ErrUnsetEnv)
+	}
+
 	if !IsLoggedIn() {
-		return ReplacePersistentPreRunE(cmd, ErrUnsupportedEnv)
+		return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
 	}
 
 	cmd.SilenceUsage = false
@@ -85,6 +89,6 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 
 func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
 	cmd.SilenceErrors = true
-	fmt.Println(cli.RenderError(fmt.Sprintf("%s", err)))
+	fmt.Println(cli.RenderError(cli.BoldStyle.Render(fmt.Sprintf("%s", err))))
 	return err
 }

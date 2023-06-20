@@ -2,9 +2,9 @@ package common
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/errors"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type Token struct {
@@ -20,7 +20,7 @@ type Token struct {
 
 func (t *Token) GetRoles(ctx context.Context) ([]string, error) {
 	if _, ok := t.Claims["roles"]; !ok {
-		return nil, errors.NewPackageError("", fmt.Errorf(""))
+		return nil, coreErr.NewCLIResultError(coreErr.KeyCLIInvalidValue, cli.BoldStyle.Render("Invalid roles"))
 	}
 	result := t.Claims["roles"].([]interface{})
 	roles := make([]string, len(result))

@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/configs"
@@ -29,10 +29,10 @@ func loginCommand() *cobra.Command {
 			cmd.SilenceUsage = true
 
 			if len(args) < 1 {
-				return errors.New("requires email address")
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Email address is required")))
 			}
 			if !validMailAddress(args[0]) {
-				return errors.New("email address is invalid. Please provide a valid email address")
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIInvalidValue, cli.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
 			}
 			emailAddress = args[0]
 
@@ -47,10 +47,10 @@ func loginCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 			if !common.IsEnvironmentConfigured() {
-				return common.ReplacePersistentPreRunE(cmd, errors.New("your environment is not configured. please run 'config init' before running any other command"))
+				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantName == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.New("tenant name should be provided"))
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant name should be provided")))
 
 			}
 

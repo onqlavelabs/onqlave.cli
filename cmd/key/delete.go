@@ -1,7 +1,6 @@
 package key
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/apiKey"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
@@ -36,7 +36,7 @@ func deleteCommand() *cobra.Command {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
 
-				return errors.New("key id is required")
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("KeyID is required")))
 			}
 
 			_deleteAPIKey.keyID = args[0]

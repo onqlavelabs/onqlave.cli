@@ -1,7 +1,6 @@
 package key
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -10,6 +9,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
 )
 
 type describeKeyOperation struct {
@@ -27,8 +28,7 @@ func describeCommand() *cobra.Command {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				cmd.SilenceUsage = true
-
-				return errors.New("api key id is required")
+				return common.ReplacePersistentPreRunE(cmd, coreErr.NewCLIResultError(coreErr.KeyCLIMissingRequiredField, cli.BoldStyle.Render("KeyID is required")))
 			}
 			_describeKey.keyId = args[0]
 			return nil
