@@ -8,13 +8,11 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core"
-	acl "github.com/onqlavelabs/onqlave.cli/internal/pkg/acl/contracts"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
+	arx "github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
 )
 
@@ -29,13 +27,13 @@ const (
 	DeleteOperation CommandOperation = "delete"
 )
 
-var expectedOperationStatus = map[CommandOperation]core.ArxStatus{
-	UpdateOperation: core.ArxActive,
-	RetryOperation:  core.ArxActive,
-	AddOperation:    core.ArxActive,
-	UnsealOperation: core.ArxActive,
-	SealOperation:   core.ArxSealed,
-	DeleteOperation: core.ArxDeleted,
+var expectedOperationStatus = map[CommandOperation]enumerations.ArxStatus{
+	UpdateOperation: enumerations.ArxActive,
+	RetryOperation:  enumerations.ArxActive,
+	AddOperation:    enumerations.ArxActive,
+	UnsealOperation: enumerations.ArxActive,
+	SealOperation:   enumerations.ArxSealed,
+	DeleteOperation: enumerations.ArxDeleted,
 }
 
 type ArxBaseInfo struct {
@@ -50,11 +48,11 @@ type ArxBaseInfo struct {
 type GetDetailArxResponse struct {
 	ID  string `json:"id"`
 	Acl acl.ACL
-	contracts.ClusterDetail
+	arx.Detail
 }
 
 type ListArxResponse struct {
-	Clusters []contracts.ExistingClusterWithDetails `json:"clusters"`
+	Clusters []arx.ExistingWithDetail `json:"clusters"`
 }
 
 type ArxAPIIntegrationService struct {
@@ -75,25 +73,25 @@ func (s *ArxAPIIntegrationService) CheckArxOperationState(clusterId string, oper
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/state", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
-	response, err := api.Get[responses.GetClusterStateResponse](clusterUrl)
+	response, err := api.Get[arx.StatusResponse](clusterUrl)
 	message := "Waiting for arx operation to complete."
 	if err != nil {
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, err
 	}
 
 	switch response.Data.State {
-	case core.ArxFailed.String():
+	case enumerations.ArxFailed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf(response.Data.Message)
-	case core.ArxInactive.String(),
-		core.ArxPending.String(),
-		core.ArxInitiated.String(),
-		core.ArxReInitiated.String(),
-		core.ArxUnsealed.String():
+	case enumerations.ArxInactive.String(),
+		enumerations.ArxPending.String(),
+		enumerations.ArxInitiated.String(),
+		enumerations.ArxReInitiated.String(),
+		enumerations.ArxUnsealed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case core.ArxActive.String(),
-		core.ArxSealed.String(),
-		core.ArxDeleted.String():
-		if expectedOperationStatus[operation] == core.ArxStatus(response.Data.State) {
+	case enumerations.ArxActive.String(),
+		enumerations.ArxSealed.String(),
+		enumerations.ArxDeleted.String():
+		if expectedOperationStatus[operation] == enumerations.ArxStatus(response.Data.State) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
@@ -102,13 +100,13 @@ func (s *ArxAPIIntegrationService) CheckArxOperationState(clusterId string, oper
 	}
 }
 
-func (s *ArxAPIIntegrationService) GetArxBaseInfo() (contracts.ArxModelWrapper, error) {
+func (s *ArxAPIIntegrationService) GetArxBaseInfo() (arx.BaseInfo, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/base", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[responses.GetClusterBaseInfoWrapper](clusterUrl)
+	response, err := api.Get[arx.BaseInfoResponse](clusterUrl)
 	if err != nil {
-		return contracts.ArxModelWrapper{}, model.NewAppError("GetClusterBaseInfo", "cli.server_error.cluster_base_info", nil, "get cluster base info failed", http.StatusInternalServerError).Wrap(err)
+		return arx.BaseInfo{}, model.NewAppError("GetClusterBaseInfo", "cli.server_error.cluster_base_info", nil, "get cluster base info failed", http.StatusInternalServerError).Wrap(err)
 	}
 
 	return response.Data, nil
@@ -118,7 +116,7 @@ func (s *ArxAPIIntegrationService) GetArxDetail(clusterID string) (*GetDetailArx
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/state?detail=true", api.UrlBuilder(api.TenantName.String()), tenantId, clusterID)
 
-	response, err := api.Get[responses.GetClusterStateResponse](clusterUrl)
+	response, err := api.Get[arx.StatusResponse](clusterUrl)
 	if err != nil {
 		return nil, model.NewAppError("GetClusterDetail", "cli.server_error.cluster_detail", nil, "get cluster detail failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -130,7 +128,7 @@ func (s *ArxAPIIntegrationService) GetArxDetail(clusterID string) (*GetDetailArx
 	}, nil
 }
 
-func (s *ArxAPIIntegrationService) GetArxBaseInfoIDSlice(data contracts.ArxModelWrapper) ArxBaseInfo {
+func (s *ArxAPIIntegrationService) GetArxBaseInfoIDSlice(data arx.BaseInfo) ArxBaseInfo {
 	var baseInfo ArxBaseInfo
 	var cloudProviderRegions = make(map[string][]string)
 	for _, provider := range data.Providers {
@@ -240,14 +238,14 @@ func (s ArxAPIIntegrationService) ValidateEditArxRequest(
 	return true, nil
 }
 
-func (s *ArxAPIIntegrationService) AddArx(addClusterRequest contracts.NewCluster) (string, error) {
+func (s *ArxAPIIntegrationService) AddArx(addClusterRequest arx.NewArx) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	request := requests.AddClusterRequest{
-		Cluster: addClusterRequest,
+	request := arx.AddRequest{
+		Arx: addClusterRequest,
 	}
-	response, err := api.Post[responses.AddClusterResponse](clusterUrl, request)
+	response, err := api.Post[arx.DetailResponse](clusterUrl, request)
 	if err != nil {
 		return "", model.NewAppError("AddCluster", "cli.server_error.cluster", nil, "create cluster failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -259,7 +257,7 @@ func (s *ArxAPIIntegrationService) RetryAddArx(clusterId string) (string, error)
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/retry", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
 	request := struct{}{}
-	response, err := api.Post[responses.ReinitiateClusterResponse](clusterUrl, request)
+	response, err := api.Post[arx.StatusResponse](clusterUrl, request)
 	if err != nil {
 		return "", err
 	}
@@ -270,7 +268,7 @@ func (s *ArxAPIIntegrationService) DeleteArx(clusterId string) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
-	response, err := api.Delete[responses.DeleteClusterResponse](clusterUrl)
+	response, err := api.Delete[arx.StatusResponse](clusterUrl)
 	if err != nil {
 		return "", model.NewAppError("DeleteCluster", "cli.server_error.delete_cluster", nil, "delete cluster failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -282,7 +280,7 @@ func (s *ArxAPIIntegrationService) SealArx(clusterId string) (string, error) {
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/seal", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
 	request := struct{}{}
-	response, err := api.Post[responses.SealClusterResponse](clusterUrl, request)
+	response, err := api.Post[arx.StatusResponse](clusterUrl, request)
 	if err != nil {
 		return "", model.NewAppError("SealCluster", "cli.server_error.seal_cluster", nil, "seal cluster failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -294,7 +292,7 @@ func (s *ArxAPIIntegrationService) UnsealArx(clusterId string) (string, error) {
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/unseal", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
 	request := struct{}{}
-	response, err := api.Post[responses.UnsealClusterResponse](clusterUrl, request)
+	response, err := api.Post[arx.StatusResponse](clusterUrl, request)
 	if err != nil {
 		return "", model.NewAppError("UnsealCluster", "cli.server_error.unseal_cluster", nil, "unseal cluster failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -306,20 +304,20 @@ func (s *ArxAPIIntegrationService) SetDefaultArx(clusterId string) (string, erro
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/default", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
 	request := struct{}{}
-	response, err := api.Put[responses.UpdateDefaultClusterResponse](clusterUrl, request)
+	response, err := api.Put[arx.StatusResponse](clusterUrl, request)
 	if err != nil {
 		return "", model.NewAppError("SetDefaultCluster", "cli.server_error.set_default_cluster", nil, "set default cluster failed", http.StatusInternalServerError).Wrap(err)
 	}
 	return string(response.Data.ID), nil
 }
 
-func (s *ArxAPIIntegrationService) UpdateArx(contract contracts.UpdateCluster) (string, error) {
+func (s *ArxAPIIntegrationService) UpdateArx(contract arx.UpdateArx) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s", api.UrlBuilder(api.TenantName.String()), tenantId, contract.ID)
-	request := requests.UpdateClusterRequest{
-		Cluster: contract,
+	request := arx.UpdateRequest{
+		Arx: contract,
 	}
-	response, err := api.Put[responses.UpdateClusterResponse](clusterUrl, request)
+	response, err := api.Put[arx.DetailResponse](clusterUrl, request)
 	if err != nil {
 		return "", model.NewAppError("UpdateCluster", "cli.server_error.update_cluster", nil, "update cluster failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -330,7 +328,8 @@ func (s *ArxAPIIntegrationService) GetArx() (ListArxResponse, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[responses.GetClustersResponse](clusterUrl)
+	response, err := api.Get[arx.ListResponse](clusterUrl)
+
 	if err != nil {
 		return ListArxResponse{}, model.NewAppError("GetClusters", "cli.server_error.get_clusters", nil, "get clusters failed", http.StatusInternalServerError).Wrap(err)
 	}

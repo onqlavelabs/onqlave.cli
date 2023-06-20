@@ -14,10 +14,10 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
 )
 
@@ -133,7 +133,7 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 
 	regions := strings.Split(_addArx.arxRegion, ",")
 
-	arxId, err := arxApiService.AddArx(contracts.NewCluster{
+	arxId, err := arxApiService.AddArx(contracts.NewArx{
 		Name:             _addArx.arxName,
 		Plan:             _addArx.arxType,
 		Provider:         _addArx.arxProvider,

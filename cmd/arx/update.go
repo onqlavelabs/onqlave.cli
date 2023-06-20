@@ -14,11 +14,11 @@ import (
 	"golang.org/x/term"
 
 	cliCommon "github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
 )
 
@@ -130,7 +130,7 @@ func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 	arxID := _updateArx.arxId
 
 	arxApiService := newArxAPIService(cmd.Context())
-	arxId, err := arxApiService.UpdateArx(contracts.UpdateCluster{
+	arxId, err := arxApiService.UpdateArx(contracts.UpdateArx{
 		ID:            common.ArxId(arxID),
 		Name:          _updateArx.arxName,
 		Regions:       []string{_updateArx.arxRegion},

@@ -10,11 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/requests"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts/responses"
-
 	"github.com/spf13/viper"
+
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth"
 )
 
 type RegisterationRequest struct {
@@ -203,20 +201,13 @@ const (
 	REGION_INVALID ClusterRegion = iota
 	REGION_AUS_EAST
 	REGION_AUS_WEST
-	// US_EAST
-	// US_WEST
-	// EU_EAST
-	// EU_WEST
-	// APAC_EAST
-	// APAC_WEST
-	// APAC_NORTH
 )
 
-var ArxProviders map[ArxProvider]string = map[ArxProvider]string{ProviderAWS: "AWS", ProviderAzure: "Azure", ProviderGCP: "GCP"}
-var ClusterTypes map[ClusterType]string = map[ClusterType]string{ServerlessCluster: "Serverless", DedicatedCluster: "Dedicated", OnPremCluster: "On-Premise"}
-var ClusterPurposes map[ClusterPurpose]string = map[ClusterPurpose]string{PurposeTesting: "Testing", PurposeProduction: "Production", PurposeStaging: "Staging"}
-var ClusterProvisioningStates map[ClusterProvisioningState]string = map[ClusterProvisioningState]string{StateCompleted: "Completed", StateFailed: "Failed", StateInitiated: "Initiated", StateInvalid: "Invalid", StatePending: "Pending", StateTimedout: "Timedout"}
-var ClusterRegions map[ClusterRegion]string = map[ClusterRegion]string{REGION_AUS_EAST: "AUS-EAST", REGION_AUS_WEST: "AUS-WEST"}
+var ArxProviders = map[ArxProvider]string{ProviderAWS: "AWS", ProviderAzure: "Azure", ProviderGCP: "GCP"}
+var ClusterTypes = map[ClusterType]string{ServerlessCluster: "Serverless", DedicatedCluster: "Dedicated", OnPremCluster: "On-Premise"}
+var ClusterPurposes = map[ClusterPurpose]string{PurposeTesting: "Testing", PurposeProduction: "Production", PurposeStaging: "Staging"}
+var ClusterProvisioningStates = map[ClusterProvisioningState]string{StateCompleted: "Completed", StateFailed: "Failed", StateInitiated: "Initiated", StateInvalid: "Invalid", StatePending: "Pending", StateTimedout: "Timedout"}
+var ClusterRegions = map[ClusterRegion]string{REGION_AUS_EAST: "AUS-EAST", REGION_AUS_WEST: "AUS-WEST"}
 
 func (c ArxProvider) String() string {
 	return ArxProviders[c]
@@ -282,9 +273,6 @@ func Put[Response any, Request any](apiBase string, request Request) (*Response,
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -317,9 +305,6 @@ func Post[Response any, Request any](apiBase string, request Request) (*Response
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -350,9 +335,6 @@ func Get[T any](apiBase string) (*T, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -382,9 +364,6 @@ func Delete[T any](apiBase string) (*T, error) {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("ONQLAVE-API-KEY", "")
-	req.Header.Add("ONQLAVE-VERSION", "1")
-	req.Header.Add("ONQLAVE-ID", "1")
-	req.Header.Add("ONQLAVE-ROUTE", "1")
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
@@ -407,14 +386,14 @@ func Delete[T any](apiBase string) (*T, error) {
 
 func (s *APIIntegrationService) SendSignupInvitation(emailAddress string, tenantName string, userFullName string) (string, error) {
 	registrationUrl := fmt.Sprintf("%s/registration", UrlBuilder(TenantName.String()))
-	request := requests.RegistrationRequest{
-		Registration: contracts.RegistrationDetails{
+	request := auth.RegistrationRequest{
+		Registration: auth.RegistrationDetails{
 			UserEmail:    emailAddress,
 			UserFullName: userFullName,
 			TenantName:   tenantName,
 		},
 	}
-	response, err := Post[responses.RegistrationResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationResponse](registrationUrl, request)
 	if err != nil {
 		return "", err
 	}
@@ -452,13 +431,13 @@ func (s *APIIntegrationService) UpdateTenant(tenantName string, tenantLabel stri
 
 func (s *APIIntegrationService) SendLoginInvitation(emailAddress string, tenantName string) (string, error) {
 	registrationUrl := fmt.Sprintf("%s/login", UrlBuilder(TenantName.String()))
-	request := requests.LoginRequest{
-		LoginDetails: contracts.LoginDetails{
+	request := auth.LoginRequest{
+		LoginDetails: auth.LoginDetails{
 			UserEmail:  emailAddress,
 			TenantName: tenantName,
 		},
 	}
-	response, err := Post[responses.RegistrationResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationResponse](registrationUrl, request)
 	if err != nil {
 		return "", err
 	}
@@ -467,12 +446,12 @@ func (s *APIIntegrationService) SendLoginInvitation(emailAddress string, tenantN
 
 func (s *APIIntegrationService) GetSignupOperationStatus(token string) (*APIIntegrationServiceOperationResult, error) {
 	registrationUrl := fmt.Sprintf("%s/status", UrlBuilder(TenantName.String()))
-	request := requests.RegistrationStatusRequest{
-		Request: contracts.RegistrationToken{
+	request := auth.RegistrationStatusRequest{
+		Request: auth.RegistrationToken{
 			Token: token,
 		},
 	}
-	response, err := Post[responses.RegistrationStatusResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationStatusResponse](registrationUrl, request)
 	if err != nil {
 		return &APIIntegrationServiceOperationResult{Done: false, Result: "Waiting for signup completion."}, err
 	}
@@ -486,14 +465,14 @@ func (s *APIIntegrationService) GetSignupOperationStatus(token string) (*APIInte
 
 func (s *APIIntegrationService) GetLoginOperationStatus(token string) (*APIIntegrationServiceOperationResult, string, string, error) {
 	registrationUrl := fmt.Sprintf("%s/status", UrlBuilder(TenantName.String()))
-	request := requests.RegistrationStatusRequest{
-		Request: contracts.RegistrationToken{
+	request := auth.RegistrationStatusRequest{
+		Request: auth.RegistrationToken{
 			Token: token,
 		},
 	}
 	var authToken string
 	var tenantID string
-	response, err := Post[responses.RegistrationStatusResponse](registrationUrl, request)
+	response, err := Post[auth.RegistrationStatusResponse](registrationUrl, request)
 	if err != nil {
 		return &APIIntegrationServiceOperationResult{Done: false, Result: "Waiting for login completion."}, authToken, tenantID, err
 	}

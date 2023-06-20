@@ -11,7 +11,6 @@ import (
 )
 
 func listCommand() *cobra.Command {
-	//_retryArx.arxOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "list",
 		Short:   "list arx",

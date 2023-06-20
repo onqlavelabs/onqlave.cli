@@ -8,7 +8,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
 )
 
 type BaseKey struct {
@@ -47,7 +47,7 @@ func runBaseCommand(cmd *cobra.Command, args []string) {
 	common.NewDataTable(convertKeyBaseInfo(data)).Render()
 }
 
-func convertKeyBaseInfo(key contracts.APIKeyModelsWrapper) []BaseKey {
+func convertKeyBaseInfo(key api_key.Models) []BaseKey {
 	var list []BaseKey
 
 	list = append(list, BaseKey{Model: "Applications", Flag: ApplicationID.String()})
@@ -60,7 +60,7 @@ func convertKeyBaseInfo(key contracts.APIKeyModelsWrapper) []BaseKey {
 	}
 
 	list = append(list, BaseKey{Model: "Arx", Flag: ArxID.String()})
-	for _, arx := range key.Clusters {
+	for _, arx := range key.Arx {
 		list = append(list, BaseKey{
 			Id:         arx.ID,
 			Name:       arx.Name,

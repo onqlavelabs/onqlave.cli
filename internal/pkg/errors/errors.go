@@ -26,44 +26,6 @@ func NewInternalError(scope, key, cId, message string, base error) *InternalErro
 	}
 }
 
-func NewHandlerError(key, cId, message string, err error) *InternalError {
-	intErr, ok := err.(*InternalError)
-	if ok && intErr != nil {
-		if intErr.Key != "" {
-			key = intErr.Key
-		}
-
-		if intErr.Message != "" {
-			message = intErr.Message
-		}
-	}
-
-	return NewInternalError(ScopeHandler, key, cId, message, err)
-}
-
-func NewServiceError(key, cId, message string, err error) *InternalError {
-	intErr, ok := err.(*InternalError)
-	if ok && intErr != nil {
-		if intErr.Key != "" {
-			key = intErr.Key
-		}
-
-		if intErr.Message != "" {
-			message = intErr.Message
-		}
-	}
-
-	return NewInternalError(ScopeService, key, cId, message, err)
-}
-
 func NewPackageError(key string, err error) *InternalError {
 	return NewInternalError(ScopeInternal, key, "", "", err)
-}
-
-func NewRepoError(key string, err error) *InternalError {
-	return NewInternalError(ScopeRepository, key, "", "", err)
-}
-
-func NewDbEmptyResultErr() error {
-	return NewRepoError(KeyDbEmptyErr, nil)
 }

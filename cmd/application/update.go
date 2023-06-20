@@ -10,9 +10,9 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	contractApplication "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/application"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 )
 
 type editApplicationOperation struct {
@@ -112,16 +112,16 @@ func updateCommand() *cobra.Command {
 func runEditCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
-	var applicationCors []contracts.ApplicationCors
+	var applicationCors []contractApplication.Cors
 	for _, cors := range strings.Split(_editApplicationOperation.applicationCors, ";") {
-		applicationCors = append(applicationCors, contracts.ApplicationCors{
+		applicationCors = append(applicationCors, contractApplication.Cors{
 			Address: cors,
 		})
 	}
 
 	applicationID, err := newApplicationAPIService(cmd.Context()).EditApplication(
 		_editApplicationOperation.applicationID,
-		contracts.UpdateApplication{
+		contractApplication.RequestApplication{
 			Name:        _editApplicationOperation.applicationName,
 			Description: _editApplicationOperation.applicationDescription,
 			Technology:  _editApplicationOperation.applicationTechnology,

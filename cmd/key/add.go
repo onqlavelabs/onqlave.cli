@@ -13,10 +13,10 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/apiKey"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
 )
 
 type addApiKeyOperation struct {
@@ -78,7 +78,7 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
-	keyID, err := apiService.AddKey(contracts.NewAPIKey{
+	keyID, err := apiService.AddKey(api_key.CreateAPIKey{
 		ApplicationID:         _addApiKeyOperation.applicationID,
 		ClusterID:             _addApiKeyOperation.arxID,
 		ApplicationTechnology: _addApiKeyOperation.applicationTechnology,

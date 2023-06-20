@@ -9,7 +9,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/tenant/contracts"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/application"
 )
 
 type BaseApplication struct {
@@ -51,7 +51,7 @@ func runBaseCommand(cmd *cobra.Command, args []string) {
 	common.NewDataTable(convertApplicationBaseInfo(application)).Render()
 }
 
-func convertApplicationBaseInfo(application contracts.ApplicationModelWrapper) []BaseApplication {
+func convertApplicationBaseInfo(application application.Technologies) []BaseApplication {
 	var list []BaseApplication
 
 	list = append(list, BaseApplication{Model: "Technologies", Flag: Tech.String()})
