@@ -31,6 +31,7 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -o ./bin/onqlave-linux .
           GOOS=darwin GOARCH=amd64 go build -o ./bin/onqlave-darwin .
+          GOOS=windows GOARCH=amd64 go build -o ./bin/onqlave-windows.exe .
 
       - name: Prepare Docker Registry
         id: prepare-registry
@@ -45,7 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           body: |
-            CLI Package Docker
+            CLI Package Docker Image
             ```
             docker pull ${{ steps.prepare-registry.outputs.docker_registry }}/${{ steps.prepare-registry.outputs.docker_tag }}
             ```
@@ -56,6 +57,7 @@ jobs:
           files: |
             ./bin/onqlave-linux
             ./bin/onqlave-darwin
+            ./bin/onqlave-windows.exe
 
 #      - name: Notify Slack // Enable again when finished
 #        id: notify-slack
