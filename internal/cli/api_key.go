@@ -45,6 +45,7 @@ func (s *ApiKeyServiceOp) Base() {
 func (s *ApiKeyServiceOp) Create() {
 
 }
+
 func (s *ApiKeyServiceOp) Delete() error {
 	return nil
 }

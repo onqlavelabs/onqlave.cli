@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
+	coreErr "github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/common"
-	pkgError "github.com/onqlavelabs/onqlave.cli/internal/pkg/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
 )
 
@@ -47,8 +47,8 @@ func RenderCLIOutputError(prefix string, err error) {
 
 	result = fmt.Sprintf("%s%s", prefix, message)
 
-	if status == pkgError.KeyServiceDecryptErr {
-		result = fmt.Sprintf("%s%s", prefix, pkgError.ERROR_ACTION_NOT_ALLOW)
+	if status == coreErr.KeyServiceDecryptErr {
+		result = fmt.Sprintf("%s%s", prefix, "You are unauthorized to perform this action")
 	}
 
 	fmt.Println(cli.RenderError(result) + "\n")
