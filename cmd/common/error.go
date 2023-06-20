@@ -2,18 +2,18 @@ package common
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/model"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/common"
-	pkgError "github.com/onqlavelabs/onqlave.cli/internal/pkg/errors"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
+	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 var (
-	ErrUnsupportedEnv = errors.New("environment is invalid. It should be either 'dev' or 'prod'")
-	UnsetEnvError     = errors.New(cli.BoldStyle.Render(`your environment is not configured | you are not logged in to the environment. Please run 'config init | config auth' before running any other command`))
+	ErrUnsupportedEnv = errors.NewCLIError(errors.KeyCLIInvalidValue, cli.BoldStyle.Render("Environment is invalid. It should be either 'dev' or 'prod'"))
+	ErrUnsetEnv       = errors.NewCLIError(errors.KeyCLIEnvironmentNotConfig, cli.BoldStyle.Render(`Your environment is not configured. Please run 'config init' before running any other command`))
+	ErrRequireLogIn   = errors.NewCLIError(errors.KeyCLINotLoggedIn, cli.BoldStyle.Render(`You are not logged in to the environment. Please run 'auth login' before running any other command`))
 )
 
 func GetStatusAndMessageErr(jsonString string) (string, string, error) {
@@ -22,7 +22,7 @@ func GetStatusAndMessageErr(jsonString string) (string, string, error) {
 
 	err := json.Unmarshal(jsonBytes, &jsonObj)
 	if err != nil {
-		return "", "", errors.New(jsonString)
+		return "", "", errors.NewCLIError(errors.KeyServiceErr, jsonString)
 	}
 
 	status := jsonObj.Error.Status
@@ -47,8 +47,8 @@ func RenderCLIOutputError(prefix string, err error) {
 
 	result = fmt.Sprintf("%s%s", prefix, message)
 
-	if status == pkgError.KeyServiceDecryptErr {
-		result = fmt.Sprintf("%s%s", prefix, pkgError.ERROR_ACTION_NOT_ALLOW)
+	if status == errors.KeyServiceDecryptErr {
+		result = fmt.Sprintf("%s%s", prefix, "You are unauthorized to perform this action")
 	}
 
 	fmt.Println(cli.RenderError(result) + "\n")

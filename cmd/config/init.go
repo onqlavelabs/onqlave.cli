@@ -2,6 +2,8 @@ package config
 
 import (
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/configs"
 	"os"
 	"strings"
 
@@ -9,8 +11,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/configs"
 )
 
 func initCommand() *cobra.Command {
@@ -20,8 +20,6 @@ func initCommand() *cobra.Command {
 		Long:    "This command is used to initialize your CLI environment variables.",
 		Example: "onqlave config init",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
@@ -61,7 +59,7 @@ func runInitCommand(cmd *cobra.Command, args []string) error {
 
 	err := configs.CreateFile(viper.GetString(common.FlagConfigPath))
 	if err != nil {
-		return err
+		return common.ReplacePersistentPreRunE(cmd, err)
 	}
 
 	fmt.Println("")

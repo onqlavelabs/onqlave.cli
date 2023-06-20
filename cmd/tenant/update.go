@@ -1,8 +1,8 @@
 package tenant
 
 import (
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,6 +10,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 var tenantLabelUpdate string
@@ -22,21 +23,19 @@ func updateCommand() *cobra.Command {
 		Long:    "This command is used to update tenant. Tenant name and tenant label are required.",
 		Example: "onqlave tenants update",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.UnsetEnvError)
+				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
 			if !common.IsEnvironmentConfigured() {
-				return common.ReplacePersistentPreRunE(cmd, errors.New("your environment is not configured. please run 'config init' before running any other command"))
+				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantLabelUpdate == "" && tenantNameUpdate == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.New("tenant Label and tenant Name cannot be both empty"))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
 			}
 
 			cmd.SilenceUsage = false

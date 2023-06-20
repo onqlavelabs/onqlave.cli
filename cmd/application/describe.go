@@ -1,8 +1,8 @@
 package application
 
 import (
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,6 +10,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 type describeApplicationOperation struct {
@@ -26,8 +27,7 @@ func describeCommand() *cobra.Command {
 		Example: "onqlave application describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-				return errors.New("applicationID is required")
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_describeApplication.applicationId = args[0]
 			return nil

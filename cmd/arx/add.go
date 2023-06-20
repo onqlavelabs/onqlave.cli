@@ -1,8 +1,11 @@
 package arx
 
 import (
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
+	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"os"
 	"strings"
 	"time"
@@ -15,10 +18,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/arx"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 type addArxOperation struct {
@@ -64,16 +64,13 @@ func addCommand() *cobra.Command {
 		Example: "onqlave arx add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-
-				return errors.New("arx name is required")
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Arx name is required")))
 			}
 			_addArx.arxName = args[0]
 			return nil
 		},
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
 
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
@@ -81,7 +78,7 @@ func addCommand() *cobra.Command {
 			}
 
 			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.UnsetEnvError)
+				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
 			arxApiService := newArxAPIService(cmd.Context())
@@ -152,24 +149,24 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Arx creation sometime takes up to %d minutes.", _addArx.arxOperationTimeout)
-	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
 	// Run the function.
-	ui, err := cli.NewSpnnerTUI(cmd.Context(), cli.SpinnerOptions{
+	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
 		return
 	}
 	go func() {
 		_addArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _addArx.arxOperationTimeout)
 	}()
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
+		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
 		return
 	}
 

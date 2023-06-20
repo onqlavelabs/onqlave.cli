@@ -1,14 +1,15 @@
 package application
 
 import (
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 type disableApplicationOperation struct {
@@ -25,8 +26,7 @@ func disableCommand() *cobra.Command {
 		Example: "onqlave application disable",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-				return errors.New("applicationID is required")
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_disableApplication.applicationId = args[0]
 			return nil

@@ -10,17 +10,17 @@ import (
 )
 
 type APIKey struct {
-	ID            string                `json:"id"`
-	AccessKey     string                `json:"access_key"`
-	CreatedAt     string                `json:"created_at"`
-	Status        string                `json:"status"`
-	CreatedBy     *common.ShortUserInfo `json:"created_by"`
-	ApplicationID string                `json:"application_id,omitempty"`
-	Application   ShortInfo             `json:"application"`
-	ArxID         string                `json:"cluster_id,omitempty"`
-	Arx           ShortInfo             `json:"cluster"`
-	ACL           acl.ACL               `json:"acl"`
-	ArxUrl        string                `json:"arx_url"`
+	ID            string                   `json:"id"`
+	AccessKey     string                   `json:"access_key"`
+	CreatedAt     string                   `json:"created_at"`
+	Status        string                   `json:"status"`
+	CreatedBy     *common.ShortUserInfo    `json:"created_by"`
+	ApplicationID string                   `json:"application_id,omitempty"`
+	Application   common.ShortResourceInfo `json:"application"`
+	ArxID         string                   `json:"cluster_id,omitempty"`
+	Arx           common.ShortResourceInfo `json:"cluster"`
+	ACL           acl.ACL                  `json:"acl"`
+	ArxUrl        string                   `json:"arx_url"`
 }
 
 type APIKeys struct {
@@ -47,26 +47,20 @@ type Models struct {
 }
 
 type Application struct {
-	ShortInfo             `json:",inline"`
-	Label                 string                 `json:"label"`
-	ApplicationTechnology application.Technology `json:"application_technology"`
+	common.ShortResourceInfo `json:",inline"`
+	Label                    string                 `json:"label"`
+	ApplicationTechnology    application.Technology `json:"application_technology"`
 }
 
 type Arx struct {
-	ShortInfo     `json:",inline"`
-	Purpose       arx.Purpose                 `json:"purpose"`
-	Plan          arx.Plan                    `json:"plan"`
-	Provider      arx.Provider                `json:"provider"`
-	Regions       []arx.Region                `json:"regions"`
-	Encryption    arx.EncryptionMethod        `json:"encryption"`
-	RotationCycle arx.EncryptionRotationCycle `json:"rotation_cycle"`
-	CreatedBy     *common.ShortUserInfo       `json:"created_by"`
-}
-
-type ShortInfo struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Label string `json:"label"`
+	common.ShortResourceInfo `json:",inline"`
+	Purpose                  arx.Purpose                 `json:"purpose"`
+	Plan                     arx.Plan                    `json:"plan"`
+	Provider                 arx.Provider                `json:"provider"`
+	Regions                  []arx.Region                `json:"regions"`
+	Encryption               arx.EncryptionMethod        `json:"encryption"`
+	RotationCycle            arx.EncryptionRotationCycle `json:"rotation_cycle"`
+	CreatedBy                *common.ShortUserInfo       `json:"created_by"`
 }
 
 type Insights struct {

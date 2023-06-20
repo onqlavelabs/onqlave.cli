@@ -3,6 +3,9 @@ package application
 import (
 	"context"
 	"fmt"
+	api2 "github.com/onqlavelabs/onqlave.cli/internal/cli/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/model"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"net/http"
 	"strings"
 
@@ -10,9 +13,6 @@ import (
 
 	contractsApp "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/utils"
 )
 
 type CommandOperation string
@@ -78,9 +78,9 @@ func (s *ApplicationAPIIntegrationService) GetApplicationBaseInfoIDSlice(modelWr
 
 func (s *ApplicationAPIIntegrationService) GetBaseApplication() (contractsApp.Technologies, error) {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications/base", api.UrlBuilder(api.TenantName.String()), tenantId)
+	applicationUrl := fmt.Sprintf("%s/%s/applications/base", api2.UrlBuilder(api2.TenantName.String()), tenantId)
 
-	response, err := api.Get[contractsApp.BaseResponse](applicationUrl)
+	response, err := api2.Get[contractsApp.BaseResponse](applicationUrl)
 	if err != nil {
 		return contractsApp.Technologies{}, model.NewAppError("Get Base Application", "cli.server_error.application", nil, "get base application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -89,12 +89,12 @@ func (s *ApplicationAPIIntegrationService) GetBaseApplication() (contractsApp.Te
 
 func (s *ApplicationAPIIntegrationService) AddApplication(addApplicationRequest contractsApp.RequestApplication) (string, error) {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications", api.UrlBuilder(api.TenantName.String()), tenantId)
+	applicationUrl := fmt.Sprintf("%s/%s/applications", api2.UrlBuilder(api2.TenantName.String()), tenantId)
 
 	request := contractsApp.Request{
 		Application: addApplicationRequest,
 	}
-	response, err := api.Post[contractsApp.DetailResponse](applicationUrl, request)
+	response, err := api2.Post[contractsApp.DetailResponse](applicationUrl, request)
 	if err != nil {
 		return "", model.NewAppError("CreateApplication", "cli.server_error.create_application", nil, "create application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -103,12 +103,12 @@ func (s *ApplicationAPIIntegrationService) AddApplication(addApplicationRequest 
 
 func (s *ApplicationAPIIntegrationService) EditApplication(applicationID string, editApplicationRequest contractsApp.RequestApplication) (string, error) {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications/%s", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
+	applicationUrl := fmt.Sprintf("%s/%s/applications/%s", api2.UrlBuilder(api2.TenantName.String()), tenantId, applicationID)
 
 	request := contractsApp.Request{
 		Application: editApplicationRequest,
 	}
-	response, err := api.Put[contractsApp.DetailResponse](applicationUrl, request)
+	response, err := api2.Put[contractsApp.DetailResponse](applicationUrl, request)
 	if err != nil {
 		return "", model.NewAppError("EditApplication", "cli.server_error.edit_application", nil, "create application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -117,9 +117,9 @@ func (s *ApplicationAPIIntegrationService) EditApplication(applicationID string,
 
 func (s *ApplicationAPIIntegrationService) GetApplication(applicationID string) (contractsApp.Application, error) {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications/%s", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
+	applicationUrl := fmt.Sprintf("%s/%s/applications/%s", api2.UrlBuilder(api2.TenantName.String()), tenantId, applicationID)
 
-	response, err := api.Get[contractsApp.DetailResponse](applicationUrl)
+	response, err := api2.Get[contractsApp.DetailResponse](applicationUrl)
 	if err != nil {
 		return contractsApp.Application{}, model.NewAppError("DescribeApplication", "cli.server_error.describe_applications", nil, "describe application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -128,9 +128,9 @@ func (s *ApplicationAPIIntegrationService) GetApplication(applicationID string) 
 
 func (s *ApplicationAPIIntegrationService) GetApplications() ([]contractsApp.Application, error) {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications", api.UrlBuilder(api.TenantName.String()), tenantId)
+	applicationUrl := fmt.Sprintf("%s/%s/applications", api2.UrlBuilder(api2.TenantName.String()), tenantId)
 
-	response, err := api.Get[contractsApp.ListResponse](applicationUrl)
+	response, err := api2.Get[contractsApp.ListResponse](applicationUrl)
 	if err != nil {
 		return []contractsApp.Application{}, model.NewAppError("GetApplications", "cli.server_error.applications", nil, "get application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -140,9 +140,9 @@ func (s *ApplicationAPIIntegrationService) GetApplications() ([]contractsApp.App
 
 func (s *ApplicationAPIIntegrationService) ArchiveApplication(applicationID string) error {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications/%s/archive", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
+	applicationUrl := fmt.Sprintf("%s/%s/applications/%s/archive", api2.UrlBuilder(api2.TenantName.String()), tenantId, applicationID)
 	request := struct{}{}
-	_, err := api.Post[contractsApp.DetailResponse](applicationUrl, request)
+	_, err := api2.Post[contractsApp.DetailResponse](applicationUrl, request)
 	if err != nil {
 		return model.NewAppError("ArchiveApplications", "cli.server_error.archive_applications", nil, "archive application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -151,9 +151,9 @@ func (s *ApplicationAPIIntegrationService) ArchiveApplication(applicationID stri
 
 func (s *ApplicationAPIIntegrationService) DisableApplication(applicationID string) error {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications/%s/disable", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
+	applicationUrl := fmt.Sprintf("%s/%s/applications/%s/disable", api2.UrlBuilder(api2.TenantName.String()), tenantId, applicationID)
 	request := struct{}{}
-	_, err := api.Post[contractsApp.DetailResponse](applicationUrl, request)
+	_, err := api2.Post[contractsApp.DetailResponse](applicationUrl, request)
 	if err != nil {
 		return model.NewAppError("DisableApplications", "cli.server_error.disable_applications", nil, "disable application failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -162,9 +162,9 @@ func (s *ApplicationAPIIntegrationService) DisableApplication(applicationID stri
 
 func (s *ApplicationAPIIntegrationService) EnableApplication(applicationID string) error {
 	tenantId := viper.Get("tenant_id")
-	applicationUrl := fmt.Sprintf("%s/%s/applications/%s/enable", api.UrlBuilder(api.TenantName.String()), tenantId, applicationID)
+	applicationUrl := fmt.Sprintf("%s/%s/applications/%s/enable", api2.UrlBuilder(api2.TenantName.String()), tenantId, applicationID)
 	request := struct{}{}
-	_, err := api.Post[contractsApp.DetailResponse](applicationUrl, request)
+	_, err := api2.Post[contractsApp.DetailResponse](applicationUrl, request)
 	if err != nil {
 		return model.NewAppError("EnableApplications", "cli.server_error.enable_applications", nil, "enable application failed", http.StatusInternalServerError).Wrap(err)
 	}

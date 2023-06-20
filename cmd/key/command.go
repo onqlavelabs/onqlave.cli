@@ -2,11 +2,11 @@ package key
 
 import (
 	"context"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/apiKey"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/apiKey"
 )
 
 type FlagApiKey string

@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"context"
-	"log"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/application"
 	"github.com/onqlavelabs/onqlave.cli/cmd/arx"
@@ -30,7 +29,7 @@ func Execute() {
 
 	err := rootCmd.ExecuteContext(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		os.Exit(1)
 	}
 }
 
@@ -43,7 +42,7 @@ func initConfig() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal(err)
+		os.Exit(1)
 	}
 }
 
@@ -59,7 +58,6 @@ func addCommands() {
 
 func RootPreRunE(cmd *cobra.Command, args []string) error {
 	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
-		cmd.SilenceUsage = true
 		return common.ReplacePersistentPreRunE(cmd, err)
 	}
 

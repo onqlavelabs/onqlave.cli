@@ -4,14 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
 	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 )
 
 type SpinnerTUI struct {

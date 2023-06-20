@@ -1,8 +1,8 @@
 package arx
 
 import (
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 
@@ -11,7 +11,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 type setDefaultArxOperation struct {
@@ -30,9 +30,7 @@ func setDefaultCommand() *cobra.Command {
 		Example: "onqlave arx default",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-
-				return errors.New("arx id is required")
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx id is required")))
 			}
 			_setDefaultArx.arxId = args[0]
 			return nil

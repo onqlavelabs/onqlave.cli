@@ -2,8 +2,8 @@ package common
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"reflect"
 	"strings"
 	"time"
@@ -12,7 +12,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 var (
@@ -119,7 +119,7 @@ func (m *DataTable) View() string {
 func (m *DataTable) Render() {
 	//return error if m is nil
 	if m == nil {
-		RenderCLIOutputError("There was an error rendering data: ", errors.New("render table data failed"))
+		RenderCLIOutputError("There was an error rendering data: ", errors.NewCLIError(errors.KeyCLIRenderDataFailed, cli.BoldStyle.Render("Render table data failed")))
 		return
 	}
 

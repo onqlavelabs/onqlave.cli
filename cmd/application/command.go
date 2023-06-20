@@ -2,11 +2,11 @@ package application
 
 import (
 	"context"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/application"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/application"
 )
 
 type FlagApplication string

@@ -2,11 +2,11 @@ package user
 
 import (
 	"context"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/user"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user"
 )
 
 func Command() *cobra.Command {

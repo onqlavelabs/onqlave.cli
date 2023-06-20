@@ -10,3 +10,9 @@ type ShortUserInfo struct {
 func (ShortUserInfo) TableName() string {
 	return "users"
 }
+
+type ShortResourceInfo struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Label string `json:"label"`
+}

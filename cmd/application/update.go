@@ -1,8 +1,10 @@
 package application
 
 import (
-	"errors"
 	"fmt"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/application"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/user"
+	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 
@@ -11,8 +13,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	contractApplication "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/application"
-	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api/user"
+	"github.com/onqlavelabs/onqlave.cli/core/errors"
 )
 
 type editApplicationOperation struct {
@@ -34,15 +35,13 @@ func updateCommand() *cobra.Command {
 		Example: "onqlave application update",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-				return errors.New("application id is required")
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_editApplicationOperation.applicationID = args[0]
 			return nil
 		},
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
 
 			apiService := application.NewApplicationAPIIntegrationService(application.ApplicationAPIIntegrationServiceOptions{Ctx: cmd.Context()})
 
@@ -72,14 +71,14 @@ func updateCommand() *cobra.Command {
 
 			modelWrapper, err := apiService.GetBaseApplication()
 			if err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			userApiService := user.NewUserAPIIntegrationService(user.UserAPIIntegrationServiceOptions{Ctx: cmd.Context()})
 
 			validUser, err := userApiService.GetPlatformOwnerAndApplicationAdmin()
 			if err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			baseInfo := apiService.GetApplicationBaseInfoIDSlice(modelWrapper, validUser)
@@ -91,7 +90,7 @@ func updateCommand() *cobra.Command {
 				_editApplicationOperation.applicationCors,
 			)
 			if err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			cmd.SilenceUsage = false
