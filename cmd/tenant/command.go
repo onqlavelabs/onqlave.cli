@@ -2,11 +2,11 @@ package tenant
 
 import (
 	"context"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
 )
 
 func Command() *cobra.Command {

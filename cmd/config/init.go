@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/configs"
 	"os"
 	"strings"
 
@@ -11,6 +9,8 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/config"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 func initCommand() *cobra.Command {
@@ -57,14 +57,14 @@ func runInitCommand(cmd *cobra.Command, args []string) error {
 	viper.Set(common.FlagEnv, cliEnv)
 	viper.Set(common.FlagApiBaseUrl, baseUrl)
 
-	err := configs.CreateFile(viper.GetString(common.FlagConfigPath))
+	err := config.CreateFile(viper.GetString(common.FlagConfigPath))
 	if err != nil {
 		return common.ReplacePersistentPreRunE(cmd, err)
 	}
 
 	fmt.Println("")
-	fmt.Println(cli.BoldStyle.Copy().Foreground(cli.Green).Render("🎉 Done! You successfully initialize your environment . Next step is to signup/login is you already haven't.\n"))
-	fmt.Println(cli.TextStyle.Render("For more information, read our documentation at https://docs.onqlave.com \n"))
+	fmt.Println(utils.BoldStyle.Copy().Foreground(utils.Green).Render("🎉 Done! You successfully initialize your environment . Next step is to signup/login is you already haven't.\n"))
+	fmt.Println(utils.TextStyle.Render("For more information, read our documentation at https://docs.onqlave.com \n"))
 
 	return nil
 }

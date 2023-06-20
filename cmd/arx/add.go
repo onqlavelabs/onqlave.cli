@@ -2,10 +2,7 @@ package arx
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
-	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+
 	"os"
 	"strings"
 	"time"
@@ -19,6 +16,9 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type addArxOperation struct {
@@ -36,7 +36,7 @@ type addArxOperation struct {
 	arxIsDefault        bool
 }
 
-func (o addArxOperation) waitForCompletion(apiService *arx.ArxAPIIntegrationService, arxId string, producer *api.Producer, valid int) {
+func (o addArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
 	message := "Waiting for arx creation to complete."
@@ -64,15 +64,12 @@ func addCommand() *cobra.Command {
 		Example: "onqlave arx add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Arx name is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx name is required")))
 			}
 			_addArx.arxName = args[0]
 			return nil
 		},
-		// used to overwrite/skip the parent commands persistentPreRunE func
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-
-			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
@@ -82,14 +79,12 @@ func addCommand() *cobra.Command {
 			}
 
 			arxApiService := newArxAPIService(cmd.Context())
-
 			modelWrapper, err := arxApiService.GetArxBaseInfo()
 			if err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
-
 			_, err = arxApiService.ValidateArx(
 				baseInfo,
 				_addArx.arxProvider,
@@ -125,11 +120,8 @@ func addCommand() *cobra.Command {
 
 func runAddCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-
 	arxApiService := newArxAPIService(cmd.Context())
-
 	regions := strings.Split(_addArx.arxRegion, ",")
-
 	arxId, err := arxApiService.AddArx(contracts.NewArx{
 		Name:             _addArx.arxName,
 		Plan:             _addArx.arxType,
@@ -149,24 +141,22 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Arx creation sometime takes up to %d minutes.", _addArx.arxOperationTimeout)
-	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	// Run the function.
-	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{
+	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
 		return
 	}
-	go func() {
-		_addArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _addArx.arxOperationTimeout)
-	}()
+	go _addArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _addArx.arxOperationTimeout)
+
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
 		return
 	}
 

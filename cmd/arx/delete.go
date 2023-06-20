@@ -2,9 +2,6 @@ package arx
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
-	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 	"time"
@@ -16,6 +13,9 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type deleteArxOperation struct {
@@ -23,11 +23,12 @@ type deleteArxOperation struct {
 	arxOperationTimeout int
 }
 
-func (o deleteArxOperation) waitForCompletion(apiService *arx.ArxAPIIntegrationService, arxId string, producer *api.Producer, valid int) {
+func (o deleteArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
 	message := "Waiting for arx deletion to complete."
 	producer.Produce(api.ConcurrencyOperationResult{Result: message, Done: false, Error: nil})
+
 	for duration.Minutes() < float64(valid) {
 		result, err := apiService.CheckArxOperationState(arxId, arx.DeleteOperation)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
@@ -49,7 +50,7 @@ func deleteCommand() *cobra.Command {
 		Example: "onqlave arx delete",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("ArxID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
 			_deleteArx.arxId = args[0]
 			return nil
@@ -71,23 +72,23 @@ func runDeleteCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Arx deletion sometime takes up to %d minutes.", _deleteArx.arxOperationTimeout)
-	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	// Run the function.
-	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{
+	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
 		return
 	}
+
 	go _deleteArx.waitForCompletion(arxApiService, arxID, communication.GetProducer(), _deleteArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
 		return
 	}
 

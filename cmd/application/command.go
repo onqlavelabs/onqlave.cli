@@ -2,11 +2,11 @@ package application
 
 import (
 	"context"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/application"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/application"
 )
 
 type FlagApplication string
@@ -42,8 +42,6 @@ func Command() *cobra.Command {
 	return applicationCmd
 }
 
-func newApplicationAPIService(ctx context.Context) *application.ApplicationAPIIntegrationService {
-	return application.NewApplicationAPIIntegrationService(application.ApplicationAPIIntegrationServiceOptions{
-		Ctx: ctx,
-	})
+func newApplicationAPIService(ctx context.Context) *application.Service {
+	return application.NewService(application.ServiceOpt{Ctx: ctx})
 }

@@ -2,8 +2,6 @@ package auth
 
 import (
 	"fmt"
-	api2 "github.com/onqlavelabs/onqlave.cli/internal/cli/api"
-	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"net/mail"
 	"os"
 	"strings"
@@ -17,6 +15,8 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 var (
@@ -38,10 +38,10 @@ func signupCommand() *cobra.Command {
 		Example: "onqlave auth signup",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Email address is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Email address is required")))
 			}
 			if !validMailAddress(args[0]) {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIInvalidValue, cli2.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIInvalidValue, utils.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
 			}
 			emailAddress = args[0]
 
@@ -58,10 +58,10 @@ func signupCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantName == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Tenant name should be provided")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Tenant name should be provided")))
 			}
 			if userFullName == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("User fullname should be provided")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("User fullname should be provided")))
 			}
 
 			cmd.SilenceUsage = false
@@ -82,23 +82,23 @@ func runSignupCommand(cmd *cobra.Command, args []string) {
 
 	token, err := apiService.SendSignupInvitation(emailAddress, tenantName, userFullName)
 	if err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error sending the signup email to email address '%s': %s", emailAddress, err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error sending the signup email to email address '%s': %s", emailAddress, err)) + "\n")
 		return
 	}
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Signup instruction is sent to email address '%s'. Please be mindful that the link provided in email is only Valid for %d minutes.", emailAddress, common.Valid)
-	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	s.WriteString("\n")
 	fmt.Println(s.String())
 
-	communication := api2.NewConcurrencyChannel()
-	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{
+	communication := api.NewConcurrencyChannel()
+	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up signup operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up signup operation: %s", err)) + "\n")
 		return
 	}
 
@@ -106,27 +106,27 @@ func runSignupCommand(cmd *cobra.Command, args []string) {
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up signup operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up signup operation: %s", err)) + "\n")
 		return
 	}
 
 	if ui.Error() != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error whilst waiting for sign up result: %s", ui.Error())) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error whilst waiting for sign up result: %s", ui.Error())) + "\n")
 	} else {
-		fmt.Println(cli2.BoldStyle.Copy().Foreground(cli2.Green).Render("🎉 Done! You successfully signup to Onqlave platform. \n"))
+		fmt.Println(utils.BoldStyle.Copy().Foreground(utils.Green).Render("🎉 Done! You successfully signup to Onqlave platform. \n"))
 	}
 
-	fmt.Println(cli2.TextStyle.Render("For more information, read our documentation at https://www.docs.onqlave.com \n"))
+	fmt.Println(utils.TextStyle.Render("For more information, read our documentation at https://www.docs.onqlave.com \n"))
 }
 
-func _waitingSignupOperation(apiService *api2.APIIntegrationService, token string, producer *api2.Producer, valid int) {
+func _waitingSignupOperation(apiService *api.APIIntegrationService, token string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	producer.Produce(api2.ConcurrencyOperationResult{Result: "Waiting for signup completion", Done: false, Error: nil})
+	producer.Produce(api.ConcurrencyOperationResult{Result: "Waiting for signup completion", Done: false, Error: nil})
 
 	for duration.Minutes() < float64(valid) {
 		result, err := apiService.GetSignupOperationStatus(token)
-		producer.Produce(api2.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
+		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			return
 		} else {

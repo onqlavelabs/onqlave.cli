@@ -2,7 +2,7 @@ package application
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ func describeCommand() *cobra.Command {
 		Example: "onqlave application describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
 			_describeApplication.applicationId = args[0]
 			return nil

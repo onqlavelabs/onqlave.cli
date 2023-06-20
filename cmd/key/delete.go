@@ -2,9 +2,6 @@ package key
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/apiKey"
-	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 	"time"
@@ -16,6 +13,9 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/apiKey"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type deleteAPIKeyOperation struct {
@@ -34,7 +34,7 @@ func deleteCommand() *cobra.Command {
 		Example: "onqlave key delete",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("KeyID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("KeyID is required")))
 			}
 
 			_deleteAPIKey.keyID = args[0]
@@ -57,27 +57,27 @@ func runDeleteCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Api key deletion sometime takes up to %d minutes.", _deleteAPIKey.operationTimeout)
-	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
+	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
 	if err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up api key delete operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up api key delete operation: %s", err)) + "\n")
 		return
 	}
 
 	go _deleteAPIKey.waitForCompletion(apiService, keyID, communication.GetProducer(), _deleteAPIKey.operationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up api key delete operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up api key delete operation: %s", err)) + "\n")
 		return
 	}
 
 	common.CliRenderUIErrorOutput(ui, common.ResourceKey, common.ActionDeleted, keyID)
 }
 
-func (o deleteAPIKeyOperation) waitForCompletion(apiService *apiKey.APIKeyIntegrationService, keyId string, producer *api.Producer, valid int) {
+func (o deleteAPIKeyOperation) waitForCompletion(apiService *apiKey.Service, keyId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
 	message := "Waiting for api key deletion completion."
