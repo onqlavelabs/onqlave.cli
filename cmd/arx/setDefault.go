@@ -2,7 +2,6 @@ package arx
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"strings"
 
@@ -12,6 +11,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type setDefaultArxOperation struct {
@@ -30,7 +30,7 @@ func setDefaultCommand() *cobra.Command {
 		Example: "onqlave arx default",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx id is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx id is required")))
 			}
 			_setDefaultArx.arxId = args[0]
 			return nil
@@ -51,7 +51,7 @@ func runSetDefaultCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Setting default arx sometime takes up to %d minutes.", _setDefaultArx.arxOperationTimeout)
-	s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	common.CliRenderSuccessActionResourceOutput(width, arxID, common.ResourceArx, common.ActionSetDefault)

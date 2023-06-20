@@ -2,7 +2,6 @@ package arx
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type describeArxOperation struct {
@@ -27,7 +27,7 @@ func describeCommand() *cobra.Command {
 		Example: "onqlave arx describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
 			_describeArx.arxId = args[0]
 			return nil

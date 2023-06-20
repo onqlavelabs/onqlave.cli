@@ -24,10 +24,7 @@ func Command() *cobra.Command {
 		},
 	}
 
-	configCmd.AddCommand(
-		initCommand(),
-		currentCommand(),
-	)
+	configCmd.AddCommand(initCommand(), currentCommand())
 
 	return configCmd
 }

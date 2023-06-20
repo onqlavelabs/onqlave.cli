@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 	"reflect"
 	"strings"
@@ -13,7 +12,8 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 
-	cliCommon "github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type CurrentConfig struct {
@@ -41,22 +41,22 @@ func runCurrentCommand(cmd *cobra.Command, args []string) {
 
 	configInfo := getConfigInfo()
 
-	if viper.GetBool(cliCommon.FlagJson) {
+	if viper.GetBool(common.FlagJson) {
 		s := &strings.Builder{}
-		s.WriteString(cli.BoldStyle.Copy().Foreground(cli.Color).Padding(1, 0, 0, 0).Render(wrap.String("Current Config information =>", width)))
+		s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String("Current Config information =>", width)))
 		s.WriteString("\n")
-		s.WriteString(cli.RenderAsJson(configInfo))
+		s.WriteString(utils.RenderAsJson(configInfo))
 		s.WriteString("\n")
 		fmt.Println(s.String())
 		return
 	}
 
-	cliCommon.NewDataTable(configInfo).Render()
+	common.NewDataTable(configInfo).Render()
 }
 
 func getConfigInfo() CurrentConfig {
-	url := viper.Get(cliCommon.FlagApiBaseUrl)
-	apiBaseUrl := viper.GetString(cliCommon.FlagApiBaseUrl)
+	url := viper.Get(common.FlagApiBaseUrl)
+	apiBaseUrl := viper.GetString(common.FlagApiBaseUrl)
 	if reflect.TypeOf(url).Kind() == reflect.Map {
 		var m struct {
 			Billing       string `json:"billings"`
@@ -70,9 +70,9 @@ func getConfigInfo() CurrentConfig {
 
 	return CurrentConfig{
 		ApiBaseUrl: apiBaseUrl,
-		Env:        viper.GetString(cliCommon.FlagEnv),
-		ConfigPath: viper.GetString(cliCommon.FlagConfigPath),
-		TenantId:   viper.GetString(cliCommon.FlagTenantID),
+		Env:        viper.GetString(common.FlagEnv),
+		ConfigPath: viper.GetString(common.FlagConfigPath),
+		TenantId:   viper.GetString(common.FlagTenantID),
 		TenantName: viper.GetString("tenant_name"),
 	}
 }

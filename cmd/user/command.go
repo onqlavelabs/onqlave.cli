@@ -2,11 +2,11 @@ package user
 
 import (
 	"context"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/user"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/user"
 )
 
 func Command() *cobra.Command {
@@ -23,6 +23,6 @@ func Command() *cobra.Command {
 	return userCmd
 }
 
-func newUserApiService(ctx context.Context) *user.UserAPIIntegrationService {
-	return user.NewUserAPIIntegrationService(user.UserAPIIntegrationServiceOptions{Ctx: ctx})
+func newUserApiService(ctx context.Context) *user.Service {
+	return user.NewService(user.ServiceOpt{Ctx: ctx})
 }

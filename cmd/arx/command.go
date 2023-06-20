@@ -2,11 +2,11 @@ package arx
 
 import (
 	"context"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
 )
 
 type FlagArx string
@@ -47,8 +47,6 @@ func Command() *cobra.Command {
 	return arxCmd
 }
 
-func newArxAPIService(ctx context.Context) *arx.ArxAPIIntegrationService {
-	return arx.NewArxAPIIntegrationService(arx.ArxAPIIntegrationServiceOptions{
-		Ctx: ctx,
-	})
+func newArxAPIService(ctx context.Context) *arx.Service {
+	return arx.NewService(arx.ServiceOpt{Ctx: ctx})
 }

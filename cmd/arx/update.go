@@ -2,10 +2,6 @@ package arx
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/arx"
-	cli2 "github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
-	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"os"
 	"strings"
 	"time"
@@ -20,6 +16,9 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type updateArxOperation struct {
@@ -33,7 +32,7 @@ type updateArxOperation struct {
 	arxIsDefault        bool
 }
 
-func (o updateArxOperation) waitForCompletion(apiService *arx.ArxAPIIntegrationService, arxId string, producer *api.Producer, valid int) {
+func (o updateArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
 	message := "Waiting for arx update to complete."
@@ -62,7 +61,7 @@ func updateCommand() *cobra.Command {
 		Example: "onqlave arx update",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("ArxID is required")))
+				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
 			_updateArx.arxId = args[0]
 			return nil
@@ -92,7 +91,7 @@ func updateCommand() *cobra.Command {
 			}
 
 			if arxDetail == nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli2.BoldStyle.Render("Arx detail is required")))
+				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx detail is required")))
 			}
 
 			_, err = arxApiService.ValidateEditArxRequest(
@@ -142,23 +141,23 @@ func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 
 	s := &strings.Builder{}
 	header := fmt.Sprintf("Arx update sometime takes up to %d minutes.", _updateArx.arxOperationTimeout)
-	s.WriteString(cli2.BoldStyle.Copy().Foreground(cli2.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
+	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
 	// Run the function.
-	ui, err := cli2.NewSpnnerTUI(cmd.Context(), cli2.SpinnerOptions{
+	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    cliCommon.Valid,
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
 		return
 	}
 	go _updateArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _updateArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(cli2.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
 		return
 	}
 

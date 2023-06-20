@@ -2,7 +2,6 @@ package tenant
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 var tenantLabelUpdate string
@@ -35,7 +35,7 @@ func updateCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantLabelUpdate == "" && tenantNameUpdate == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
 			}
 
 			cmd.SilenceUsage = false

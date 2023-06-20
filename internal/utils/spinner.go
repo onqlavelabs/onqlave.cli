@@ -1,10 +1,10 @@
-package cli
+package utils
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
 	"strings"
 	"time"
 

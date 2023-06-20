@@ -1,4 +1,4 @@
-package configs
+package config
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ type Config struct {
 }
 
 // FromFile returns a configuration object from a given file path and errors
-// if the file does not exists of it the file contexts can't be unmarshaled.
+// if the file does not exist of it the file contexts can't be unmarshaled.
 // expected format is yaml.
 func FromFile(path string) (*Config, error) {
 	cfgfile, err := os.ReadFile(path)

@@ -2,11 +2,11 @@ package key
 
 import (
 	"context"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/api/apiKey"
 
 	"github.com/spf13/cobra"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
+	"github.com/onqlavelabs/onqlave.cli/internal/api/apiKey"
 )
 
 type FlagApiKey string
@@ -40,6 +40,6 @@ func Command() *cobra.Command {
 	return keyCmd
 }
 
-func newKeyApiService(ctx context.Context) *apiKey.APIKeyIntegrationService {
-	return apiKey.NewAPIKeyIntegrationService(apiKey.APIKeyIntegrationServiceOptions{Ctx: ctx})
+func newKeyApiService(ctx context.Context) *apiKey.Service {
+	return apiKey.NewService(apiKey.ServiceOpt{Ctx: ctx})
 }

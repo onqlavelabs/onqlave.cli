@@ -3,7 +3,6 @@ package common
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"reflect"
 	"strings"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 var (
@@ -119,7 +119,7 @@ func (m *DataTable) View() string {
 func (m *DataTable) Render() {
 	//return error if m is nil
 	if m == nil {
-		RenderCLIOutputError("There was an error rendering data: ", errors.NewCLIError(errors.KeyCLIRenderDataFailed, cli.BoldStyle.Render("Render table data failed")))
+		RenderCLIOutputError("There was an error rendering data: ", errors.NewCLIError(errors.KeyCLIRenderDataFailed, utils.BoldStyle.Render("Render table data failed")))
 		return
 	}
 
@@ -132,7 +132,7 @@ func (m *DataTable) Render() {
 	m.table.SetHeight(m.Height)
 	m.table.SetStyles(table.Styles{
 		Cell:     lipgloss.NewStyle().Padding(0, 1, 0, 1),
-		Selected: lipgloss.NewStyle().Bold(true).Foreground(cli.Green),
+		Selected: lipgloss.NewStyle().Bold(true).Foreground(utils.Green),
 		Header:   lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).Padding(0, 1, 0, 1).BorderBottom(true),
 	})
 

@@ -2,7 +2,6 @@ package application
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/cli/cli"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
 type archiveApplicationOperation struct {
@@ -26,7 +26,7 @@ func archiveCommand() *cobra.Command {
 		Example: "onqlave application archive",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
+				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
 			_archiveApplication.applicationId = args[0]
 			return nil
