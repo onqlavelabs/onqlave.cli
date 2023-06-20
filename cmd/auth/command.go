@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/internal/pkg/cli/api"
 )
 
@@ -17,7 +18,7 @@ func Command() *cobra.Command {
 		Example: "onqlave auth",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 			return nil
 		},

@@ -30,8 +30,6 @@ func setDefaultCommand() *cobra.Command {
 		Example: "onqlave arx default",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx id is required")))
 			}
 			_setDefaultArx.arxId = args[0]

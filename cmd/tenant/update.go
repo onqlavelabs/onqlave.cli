@@ -23,8 +23,6 @@ func updateCommand() *cobra.Command {
 		Long:    "This command is used to update tenant. Tenant name and tenant label are required.",
 		Example: "onqlave tenants update",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}

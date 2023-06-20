@@ -49,8 +49,6 @@ func unsealCommand() *cobra.Command {
 		Example: "onqlave arx unseal",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
 			}
 			_unsealArx.arxId = args[0]

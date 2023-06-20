@@ -26,8 +26,6 @@ func loginCommand() *cobra.Command {
 		Long:    "This command is used to login to platform. A valid email address, tenant name are required. An invitation will be sent to the designated email.",
 		Example: "onqlave auth login",
 		Args: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if len(args) < 1 {
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Email address is required")))
 			}
@@ -41,8 +39,6 @@ func loginCommand() *cobra.Command {
 			return nil
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}

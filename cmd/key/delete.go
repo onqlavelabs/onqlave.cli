@@ -34,8 +34,6 @@ func deleteCommand() *cobra.Command {
 		Example: "onqlave key delete",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("KeyID is required")))
 			}
 

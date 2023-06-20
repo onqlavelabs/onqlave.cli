@@ -3,6 +3,8 @@ package config
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 )
 
 func Command() *cobra.Command {
@@ -12,9 +14,8 @@ func Command() *cobra.Command {
 		Long:    "This command is used to config your CLI environment variables.",
 		Example: "onqlave config",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			cmd.SilenceUsage = false

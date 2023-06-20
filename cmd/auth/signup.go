@@ -37,8 +37,6 @@ func signupCommand() *cobra.Command {
 		Long:    "This command is used to signup to platform. A valid email address, tenant name and full name are required. An invitation will be sent to the designated email.",
 		Example: "onqlave auth signup",
 		Args: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if len(args) < 1 {
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Email address is required")))
 			}
@@ -52,8 +50,6 @@ func signupCommand() *cobra.Command {
 			return nil
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)

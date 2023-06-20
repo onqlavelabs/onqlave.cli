@@ -34,7 +34,6 @@ func addCommand() *cobra.Command {
 		Example: "onqlave application add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Application name is required")))
 			}
 			_addApplicationOperation.applicationName = args[0]
@@ -42,20 +41,19 @@ func addCommand() *cobra.Command {
 		},
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
 
 			apiService := application.NewApplicationAPIIntegrationService(application.ApplicationAPIIntegrationServiceOptions{Ctx: cmd.Context()})
 
 			modelWrapper, err := apiService.GetBaseApplication()
 			if err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			userApiService := user.NewUserAPIIntegrationService(user.UserAPIIntegrationServiceOptions{Ctx: cmd.Context()})
 
 			validUser, err := userApiService.GetPlatformOwnerAndApplicationAdmin()
 			if err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			baseInfo := apiService.GetApplicationBaseInfoIDSlice(modelWrapper, validUser)
@@ -67,7 +65,7 @@ func addCommand() *cobra.Command {
 				_addApplicationOperation.applicationCors,
 			)
 			if err != nil {
-				return err
+				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
 			cmd.SilenceUsage = false

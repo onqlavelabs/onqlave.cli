@@ -62,16 +62,12 @@ func updateCommand() *cobra.Command {
 		Example: "onqlave arx update",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
-
 				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ArxID is required")))
 			}
 			_updateArx.arxId = args[0]
 			return nil
 		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return cliCommon.ReplacePersistentPreRunE(cmd, err)

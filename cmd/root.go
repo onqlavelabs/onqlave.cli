@@ -58,7 +58,6 @@ func addCommands() {
 
 func RootPreRunE(cmd *cobra.Command, args []string) error {
 	if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
-		cmd.SilenceUsage = true
 		return common.ReplacePersistentPreRunE(cmd, err)
 	}
 

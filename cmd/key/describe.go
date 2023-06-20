@@ -27,7 +27,6 @@ func describeCommand() *cobra.Command {
 		Example: "onqlave key describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("KeyID is required")))
 			}
 			_describeKey.keyId = args[0]

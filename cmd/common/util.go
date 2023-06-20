@@ -71,7 +71,7 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 	cmd.SilenceUsage = true
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
-		return err
+		return ReplacePersistentPreRunE(cmd, err)
 	}
 
 	if !IsEnvironmentConfigured() {
@@ -89,6 +89,7 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 
 func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
 	cmd.SilenceErrors = true
+	cmd.SilenceUsage = true
 	fmt.Println(cli.RenderError(cli.BoldStyle.Render(fmt.Sprintf("%s", err))))
-	return err
+	return ReplacePersistentPreRunE(cmd, err)
 }

@@ -26,7 +26,6 @@ func archiveCommand() *cobra.Command {
 		Example: "onqlave application archive",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_archiveApplication.applicationId = args[0]

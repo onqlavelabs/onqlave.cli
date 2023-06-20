@@ -26,7 +26,6 @@ func enableCommand() *cobra.Command {
 		Example: "onqlave application enable",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("ApplicationID is required")))
 			}
 			_enableApplication.applicationId = args[0]

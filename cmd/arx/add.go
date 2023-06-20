@@ -64,7 +64,6 @@ func addCommand() *cobra.Command {
 		Example: "onqlave arx add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				cmd.SilenceUsage = true
 				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, cli.BoldStyle.Render("Arx name is required")))
 			}
 			_addArx.arxName = args[0]
@@ -72,7 +71,6 @@ func addCommand() *cobra.Command {
 		},
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
 
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {

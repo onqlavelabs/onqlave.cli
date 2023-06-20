@@ -36,8 +36,6 @@ func addCommand() *cobra.Command {
 		Long:    "This command is used to create api key. Key application ID, arx ID and application technology is required.",
 		Example: "onqlave key add",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			cmd.SilenceUsage = true
-
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
