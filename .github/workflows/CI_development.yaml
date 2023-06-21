@@ -7,3 +7,5 @@ on:
 jobs:
   build-code:
     uses: ./.github/workflows/build_code.yaml
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

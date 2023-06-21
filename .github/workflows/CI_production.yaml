@@ -8,11 +8,17 @@ on:
 jobs:
   build-code:
     uses: ./.github/workflows/build_code.yaml
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
   build-docker:
     uses: ./.github/workflows/build_docker.yaml
     needs: [ build-code ]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
   release-cli:
     needs: [ build-docker ]
     uses: ./.github/workflows/release_asset.yaml
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

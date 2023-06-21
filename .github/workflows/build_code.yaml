@@ -1,10 +1,10 @@
 name: Build and Test Code
 on:
   workflow_call:
-    inputs:
-      username:
-        required: false
-        type: string
+    secrets:
+      SLACK_WEBHOOK:
+        description: 'Slack Webhook address, passed from the caller workflow'
+        required: true
 
 jobs:
   code-build:
@@ -46,3 +46,13 @@ jobs:
 
       - name: Run tests
         run: go test -race -vet=off `go list ./... | grep -v test | grep -v vendor`
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ci-notification
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_TITLE: code-build (onqlave.cli)
+          SLACK_USERNAME: ci-bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
