@@ -1,10 +1,10 @@
 name: Release CLI Package
 on:
   workflow_call:
-    inputs:
-      username:
-        required: false
-        type: string
+    secrets:
+      SLACK_WEBHOOK:
+        description: 'Slack Webhook address, passed from the caller workflow'
+        required: true
 
 jobs:
   release-cli:
@@ -59,14 +59,12 @@ jobs:
             ./bin/onqlave-darwin
             ./bin/onqlave-windows.exe
 
-#      - name: Notify Slack // Enable again when finished
-#        id: notify-slack
-#        uses: rtCamp/action-slack-notify@v2
-#        if: always()
-#        env:
-#          SLACK_CHANNEL: ci-notification
-#          SLACK_COLOR: ${{ job.status }}
-#          SLACK_ICON: https://github.com/rtCamp.png?size=48
-#          SLACK_TITLE: release-cli-package (onqlave.all)
-#          SLACK_USERNAME: ci-bot
-#          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ci-notification
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_TITLE: release-asset (onqlave.cli)
+          SLACK_USERNAME: ci-bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

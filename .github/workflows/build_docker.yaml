@@ -1,10 +1,10 @@
 name: Build Docker CLI Image
 on:
   workflow_call:
-    inputs:
-      username:
-        required: false
-        type: string
+    secrets:
+      SLACK_WEBHOOK:
+        description: 'Slack Webhook address, passed from the caller workflow'
+        required: true
 
 jobs:
   build-docker-cli:
@@ -51,3 +51,13 @@ jobs:
             ${{env.LATEST_TAG}}
           build-args: |
             CLI_ENV=prod
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ci-notification
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_TITLE: build-docker (onqlave.cli)
+          SLACK_USERNAME: ci-bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
