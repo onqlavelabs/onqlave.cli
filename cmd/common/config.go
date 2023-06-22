@@ -1,7 +1,9 @@
 package common
 
 import (
+	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -21,6 +23,10 @@ func GetConfigFilePath() string {
 
 func GetConfigDir() string {
 	dir, _ := os.UserHomeDir()
+	if runtime.GOOS == "windows" {
+		return fmt.Sprintf("%s/AppData/Local/Onqlave/", dir)
+	}
+
 	return dir + configDir
 }
 
