@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"context"
+	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/application"
 	"github.com/onqlavelabs/onqlave.cli/cmd/arx"
@@ -40,10 +41,7 @@ func initConfig() {
 	viper.SetConfigName(common.ConfigFile)     // Register config file name (no extension)
 	viper.SetConfigType(common.ConfigTypeJson) // Look for specific type
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		os.Exit(1)
-	}
+	_ = viper.ReadInConfig()
 }
 
 func addCommands() {

@@ -9,7 +9,7 @@ const (
 	BaseUrlProd = "https://api.onqlave.com"
 
 	ConfigFile     = "config"
-	configDir      = "/.onqlave/"
+	configDir      = "/.config/onqlave/"
 	ConfigTypeJson = "json"
 
 	FlagApiBaseUrl = "api_base_url"
