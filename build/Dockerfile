@@ -18,4 +18,4 @@ COPY --from=build /go/src/app/bin/onqlave /usr/local/bin/onqlave
 ENV ONQLAVE_ENV $CLI_ENV
 ENV TERM xterm-256color
 
-CMD ["bash", "-c", "onqlave config init && exec bash"]
+CMD ["bash", "-c", "onqlave && exec bash"]

@@ -25,20 +25,17 @@ type CurrentConfig struct {
 }
 
 func currentCommand() *cobra.Command {
-	currentCmd := &cobra.Command{
+	return &cobra.Command{
 		Use:     "current",
 		Short:   "get your current environment configuration",
 		Long:    "This command is used to get the current environment configuration",
 		Example: "onqlave config current",
 		Run:     runCurrentCommand,
 	}
-
-	return currentCmd
 }
 
 func runCurrentCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-
 	configInfo := getConfigInfo()
 
 	if viper.GetBool(common.FlagJson) {

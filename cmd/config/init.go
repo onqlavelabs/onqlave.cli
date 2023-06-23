@@ -63,7 +63,7 @@ func runInitCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println("")
-	fmt.Println(utils.BoldStyle.Copy().Foreground(utils.Green).Render("🎉 Done! You successfully initialize your environment . Next step is to signup/login is you already haven't.\n"))
+	fmt.Println(utils.BoldStyle.Copy().Foreground(utils.Green).Render("🎉 Done! You successfully initialize your environment . Next step is to signup or login.\n"))
 	fmt.Println(utils.TextStyle.Render("For more information, read our documentation at https://docs.onqlave.com \n"))
 
 	return nil
