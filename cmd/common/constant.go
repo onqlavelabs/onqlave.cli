@@ -9,13 +9,13 @@ const (
 	BaseUrlProd = "https://api.onqlave.com"
 
 	ConfigFile     = "config"
-	configDir      = "/.config/onqlave/"
+	configDir      = "onqlave"
 	ConfigTypeJson = "json"
 
 	FlagApiBaseUrl = "api_base_url"
 	FlagAuthKey    = "auth_key"
 	FlagConfigPath = "config_path"
-	FlagEnv        = "env"
+	FlagEnv        = "onqlave_env"
 	FlagJson       = "json"
 	FlagTenantID   = "tenant_id"
 
@@ -44,6 +44,4 @@ const (
 	TableViewMinColWidth = 11
 
 	OSWindows = "windows"
-	OSLinux   = "linux"
-	OSDarwin  = "darwin"
 )

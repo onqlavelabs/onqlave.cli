@@ -19,12 +19,10 @@ func Command() *cobra.Command {
 			}
 
 			cmd.SilenceUsage = false
-
 			return nil
 		},
 	}
 
 	configCmd.AddCommand(initCommand(), currentCommand())
-
 	return configCmd
 }
