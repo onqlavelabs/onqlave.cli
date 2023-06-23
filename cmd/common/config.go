@@ -22,12 +22,14 @@ func GetConfigFilePath() string {
 }
 
 func GetConfigDir() string {
-	dir, _ := os.UserHomeDir()
+	dir, _ := os.UserConfigDir()
+
+	separator := "/"
 	if runtime.GOOS == OSWindows {
-		return fmt.Sprintf("%s/AppData/Local/Onqlave/", dir)
+		separator = "\\"
 	}
 
-	return dir + configDir
+	return fmt.Sprintf("%s%s%s%s", dir, separator, configDir, separator)
 }
 
 func IsEnvironmentConfigured() bool {

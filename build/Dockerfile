@@ -15,7 +15,7 @@ FROM bash:5.2
 ARG CLI_ENV="prod"
 
 COPY --from=build /go/src/app/bin/onqlave /usr/local/bin/onqlave
-ENV ENV $CLI_ENV
+ENV ONQLAVE_ENV $CLI_ENV
 ENV TERM xterm-256color
 
 CMD ["bash", "-c", "onqlave config init && exec bash"]
