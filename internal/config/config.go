@@ -4,9 +4,13 @@ import (
 	"errors"
 	"os"
 	"path"
+	"runtime"
+	"strings"
 
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
+
+	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 )
 
 type Config struct {
@@ -51,20 +55,28 @@ func ToFile(filePath string, cfg *Config) error {
 func CreateFile(filePath string) error {
 	if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
 		d := path.Dir(filePath)
+		if runtime.GOOS == common.OSWindows {
+			lastSlashIndex := strings.LastIndex(filePath, "\\")
+			d = filePath[:lastSlashIndex]
+		}
+
 		if _, err := os.Stat(d); errors.Is(err, os.ErrNotExist) {
 			if err := os.MkdirAll(d, 0755); err != nil {
 				return err
 			}
 		}
+
 		f, err := os.Create(filePath)
 		if err != nil {
 			return err
 		}
 		defer f.Close()
 	}
+
 	err := viper.WriteConfig()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
