@@ -3,10 +3,10 @@ package user
 import (
 	"context"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/api"
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.core/contracts/user"
 )
 
 type Service struct {

@@ -3,17 +3,17 @@ package arx
 import (
 	"context"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"net/http"
 	"strings"
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/acl"
-	arx "github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
-	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/model"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	"github.com/onqlavelabs/onqlave.core/contracts/acl"
+	arx "github.com/onqlavelabs/onqlave.core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.core/enumerations"
 )
 
 type CommandOperation string

@@ -8,7 +8,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
+	"github.com/onqlavelabs/onqlave.core/contracts/user"
 )
 
 func listCommand() *cobra.Command {

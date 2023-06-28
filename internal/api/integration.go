@@ -12,7 +12,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/auth"
+	"github.com/onqlavelabs/onqlave.core/contracts/auth"
 )
 
 type RegisterationRequest struct {

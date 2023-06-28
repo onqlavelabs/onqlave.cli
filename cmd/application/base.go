@@ -9,7 +9,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/application"
+	"github.com/onqlavelabs/onqlave.core/contracts/application"
 )
 
 type BaseApplication struct {

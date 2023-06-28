@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/common"
-	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/model"
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	"github.com/onqlavelabs/onqlave.core/contracts/common"
+	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
 var (

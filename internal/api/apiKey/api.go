@@ -3,16 +3,16 @@ package apiKey
 import (
 	"context"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"net/http"
 
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/api_key"
-	"github.com/onqlavelabs/onqlave.cli/core/enumerations"
-	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/model"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	"github.com/onqlavelabs/onqlave.core/contracts/api_key"
+	"github.com/onqlavelabs/onqlave.core/enumerations"
+	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
 type CommandOperation string

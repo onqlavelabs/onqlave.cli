@@ -14,11 +14,11 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/arx"
-	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	"github.com/onqlavelabs/onqlave.core/contracts/arx"
+	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
 type addArxOperation struct {

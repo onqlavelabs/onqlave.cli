@@ -2,14 +2,14 @@ package application
 
 import (
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"os"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.cli/core/errors"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
 type enableApplicationOperation struct {
