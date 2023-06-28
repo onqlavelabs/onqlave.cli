@@ -14,8 +14,8 @@ main() {
 
   # onqlave.all repository is in private mode so this download is not yet working
   cli_package=""
-  cli_prefix="cli"
-  download_url="https://github.com/onqlavelabs/onqlave.cli/releases/download"
+#  download_url="https://github.com/onqlavelabs/onqlave.cli/releases/download"
+  download_url="https://github.com/Desmond-Onqlave/pet-project/releases/download"
 
   # validate version detail, version detail must be provided
   if [ -z "$version" ]; then
@@ -48,22 +48,29 @@ main() {
   esac
 
   # prepare download link
-  echo "${download_url}/${cli_prefix}${version}/${cli_package}"
+  echo "Asset URL: ${download_url}/${version}/${cli_package}"
 
   # download CLI package using curl
-  if curl --output /dev/null --silent --head --fail "${download_url}/${cli_prefix}${version}/${cli_package}"; then
-    curl -LJ "${download_url}/${cli_prefix}${version}/${cli_package}" >${cli_package}
+  if curl --output /dev/null --silent --head --fail "${download_url}/${version}/${cli_package}"; then
+    curl -LJ "${download_url}/${version}/${cli_package}" >${cli_package}
   else
     echo "Error: CLI version ${version} is not valid"
     exit 1
   fi
 
+  # copy onqlave executable file to PATH
   sudo cp $cli_package /usr/local/bin/onqlave
   sudo chmod +x /usr/local/bin/onqlave
 
-  # finalize result
-  echo "onqlave was installed successfully"
+  echo "onqlave executable was installed successfully at /usr/local/bin/onqlave"
   echo "Run 'onqlave --help' to get started"
+
+  # set onqlave env variable
+  if [ -z "$ONQLAVE_ENV" ]; then
+    export ONQLAVE_ENV=prod
+    echo "export ONQLAVE_ENV=prod" >> ~/.bashrc
+    bash
+  fi
 }
 
 main "$@"
