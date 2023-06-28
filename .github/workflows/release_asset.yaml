@@ -1,0 +1,70 @@
+name: Release CLI Package
+on:
+  workflow_call:
+    secrets:
+      SLACK_WEBHOOK:
+        description: 'Slack Webhook address, passed from the caller workflow'
+        required: true
+
+jobs:
+  release-cli:
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        go-version: [ 1.18.x ]
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checking out the code
+        id: checkout-the-code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        id: setup-go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Build CLI
+        id: build-cli
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o ./bin/onqlave-linux .
+          GOOS=darwin GOARCH=amd64 go build -o ./bin/onqlave-darwin .
+          GOOS=windows GOARCH=amd64 go build -o ./bin/onqlave-windows.exe .
+
+      - name: Prepare Docker Registry
+        id: prepare-registry
+        run: |
+          echo "docker_tag=onqlavelabs/$GITHUB_REPOSITORY:${GITHUB_REF#$"refs/tags/"}" >> $GITHUB_OUTPUT
+          echo "docker_registry=ghcr.io" >> $GITHUB_OUTPUT
+
+      - name: Create CLI Release
+        id: create-cli-release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body: |
+            CLI Package Docker Image
+            ```
+            docker pull ${{ steps.prepare-registry.outputs.docker_registry }}/${{ steps.prepare-registry.outputs.docker_tag }}
+            ```
+          tag_name: ${{ github.GITHUB_REF }}
+          name: ${{ github.GITHUB_REF }}
+          draft: false
+          prerelease: false
+          files: |
+            ./bin/onqlave-linux
+            ./bin/onqlave-darwin
+            ./bin/onqlave-windows.exe
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: ci-notification
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_TITLE: release-asset (onqlave.cli)
+          SLACK_USERNAME: ci-bot
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
