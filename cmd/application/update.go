@@ -9,11 +9,11 @@ import (
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	contractApplication "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
-	"github.com/onqlavelabs/onqlave.cli/core/errors"
 	"github.com/onqlavelabs/onqlave.cli/internal/api/application"
 	"github.com/onqlavelabs/onqlave.cli/internal/api/user"
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	contractApplication "github.com/onqlavelabs/onqlave.core/contracts/application"
+	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
 type editApplicationOperation struct {

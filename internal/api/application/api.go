@@ -3,16 +3,16 @@ package application
 import (
 	"context"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/api"
-	"github.com/onqlavelabs/onqlave.cli/internal/model"
-	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 	"net/http"
 	"strings"
 
 	"github.com/spf13/viper"
 
-	contractsApp "github.com/onqlavelabs/onqlave.cli/core/contracts/application"
-	"github.com/onqlavelabs/onqlave.cli/core/contracts/user"
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
+	"github.com/onqlavelabs/onqlave.cli/internal/model"
+	"github.com/onqlavelabs/onqlave.cli/internal/utils"
+	contractsApp "github.com/onqlavelabs/onqlave.core/contracts/application"
+	"github.com/onqlavelabs/onqlave.core/contracts/user"
 )
 
 type CommandOperation string
