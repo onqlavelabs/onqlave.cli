@@ -94,7 +94,7 @@ Use "onqlave [command] --help" for more information about a command
 
 ## **Inspiration**
 
-If you skipped the section about the meaning of Arx, you can **[have a look at the previous page](../../../web-app-guide/administration/arx).**
+If you skipped the section about the meaning of Arx, you can have a look at the previous page.
 
 ## **Before you start**
 
@@ -104,7 +104,7 @@ If you are familiar with allocating cloud computing resources for your company, 
 
 ### **Review the provided permission/role**
 
-Our current release includes 3 defined roles: Platform Owner, Platform Admin and Developer. Each role has its own set of permissions and supported operations. You may need to first skim through the **[documentation on roles and supported operations](../../../web-app-guide/platform/access)** before proceeding.
+Our current release includes 3 defined roles: Platform Owner, Platform Admin and Developer. Each role has its own set of permissions and supported operations. You may need to first skim through the documentation on roles and supported operations
 
 Next, you can explore a list of **[available commands](#explore-the-supported-interaction-commands-with-arx)** or explore the **[base value of supported configuration of Arx](#get-base-configuration-information-for-arx).**
 
@@ -114,7 +114,7 @@ When you are ready to interact, you can go through the below list of commands to
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 To create an Arx, simply input the following command into the CLI. Please pay attention to the flags and their available assigned values.
 There are several configurable attributes of an Arx that are grouped into 4 sections:
@@ -182,7 +182,7 @@ For more information, read our documentation at https://docs.onqlave.com/
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 Input command:
 ```
@@ -200,7 +200,7 @@ For more information, read our documentation at https://docs.onqlave.com/
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 You can retrieve all information of your Arx by using this command:
 ```
@@ -229,7 +229,7 @@ onqlave arx describe your_arx_id
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 To see a list of your Arx from CLI, simply use this command:
 
@@ -285,7 +285,7 @@ List Arx =>
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 Firstly, to get help on which fields can be updated in an Arx, use this command:
 
@@ -335,7 +335,7 @@ For more information, read our documentation at https://docs.onqlave.com
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 This is a feature supporting you to temporarily disable an Arx and enable it in the future without having to reconfigure everything from scratch. To seal an Arx, include its ID in this command:
 
@@ -356,7 +356,7 @@ For more information, read our documentation at https://docs.onqlave.com/
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 In contrary to seal, we just need to alter the command:
 ```
@@ -374,7 +374,7 @@ For more information, read our documentation at https://docs.onqlave.com/
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 ```
 onqlave arx delete your_arx_id
@@ -735,13 +735,13 @@ The CLI commands for your Application will allow you to create and allocate the 
 
 When the application reference is created, an API token and encryption key is established. Note that Onqlave does not allow you to permanently delete any applications, however they can be archived, which will then disable the respective API token and encryption key.
 
-You may need to look at the supported **[available commands for an application](#explore-availabe-commands).**
+You may need to look at the supported commands for an application
 
 ## **Create an application**
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 ```
 onqlave application add your_app_name -d 'this is my application' -t application_technology -o application_owner_id
@@ -758,7 +758,7 @@ For more information, read our documentation at https://docs.onqlave.com
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 ```
 onqlave application describe your_app_id
@@ -811,7 +811,7 @@ The output is formatted as a table:
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 ```
 onqlave application list
@@ -826,7 +826,7 @@ The output will be displayed as a table by default.
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 Currently, the Onqlave platform supports updating an application via its ID
 
@@ -864,7 +864,7 @@ Global Flags:
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 ```
 onqlave application disable your_app_id
@@ -874,7 +874,7 @@ onqlave application disable your_app_id
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 ```
 onqlave application enable your_app_id
@@ -884,7 +884,7 @@ onqlave application enable your_app_id
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
+- Platform Owner
 
 Since we do not support deleting applications, you can archive it. Before archiving an application, you have to disable it like the previous step.
 
@@ -976,14 +976,14 @@ The CLI commands to manage API Keys allow you to bring your Arx and applications
 
 When you create your key it is critical that you store it as **it will only be displayed once**. To preserve the integrity of the key, Onqlave does not keep a record of this. Do not close the final window  until you have made this record!
 
-You may need to look at the supported **[available commands for api keys](#explore-availabe-commands)** and **[base configuration information for API Keys](#get-base-configuration-information-for-api-keys)** before working with API Keys via CLI.
+You may need to look at the supported available commands for api keys and **[base configuration information for API Keys](#get-base-configuration-information-for-api-keys)** before working with API Keys via CLI.
 
 ## **Create an API key**
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../platform/access/#1-platform-owner)**
-- **[Developer](../../platform/access/#2-developer)**
+- Platform Owner
+- Developer
 
 To create your api key, your have to specify your application_id, application_technology and arx_id
 
@@ -1002,8 +1002,8 @@ For more information, read our documentation at https://docs.onqlave.com
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../platform/access/#1-platform-owner)**
-- **[Developer](../../platform/access/#2-developer)**
+- Platform Owner
+- Developer
 
 ```
 onqlave key describe your_app_key_id
@@ -1016,8 +1016,8 @@ Output will be formatted in tabular format
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../platform/access/#1-platform-owner)**
-- **[Developer](../../platform/access/#2-developer)**
+- Platform Owner
+- Developer
 
 ```
 onqlave key list
@@ -1032,8 +1032,8 @@ By default, the result will be formatted in a table.
 
 **Who can perform this operation?**
 
-- **[Platform Owner](../../../web-app-guide/platform/access/#1-platform-owner)**
-- **[Developer](../../../web-app-guide/platform/access/#2-developer)**
+- Platform Owner
+- Developer
 
 ```
 onqlave key delete your_app_key_id
@@ -1230,9 +1230,9 @@ API Key Base Information =>
 
 ## **Before you start**
 
-You can refer to [this section on the dashboard](../../../web-app-guide/platform/account) for more details.
+You can refer to this section on the dashboard for more details.
 
-Or you can refer to [this section for getting help about available commands](../../overview-cli/#looking-for-another-way-of-interaction).
+Or you can refer to this section for getting help about available commands.
 
 ## **Retrieving tenant information**
 
@@ -1377,4 +1377,4 @@ List Users =>
 =====
 ``` -->
 
-To add or invite new users, you need to do so [in the dashboard, as explained here](../../../web-app-guide/platform/access).
+To add or invite new users, you need to do so in the dashboard, as explained here
