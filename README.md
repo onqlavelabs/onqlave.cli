@@ -1,4 +1,5 @@
 # Overview
+Onqlave CLI is a cli executable package for developers to interact with Onqlave resources via command line interface.
 
 # Authentication
 
