@@ -2,8 +2,7 @@ name: CI Production
 on:
   push:
     tags:
-      - 'v0.1.*'
-      - 'v0.0.*'
+      - 'v*.*.*'
 
 jobs:
   build-code:
