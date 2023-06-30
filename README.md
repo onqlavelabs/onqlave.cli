@@ -1,124 +1,131 @@
+# Overview
 
-## Setup
+Onqlave CLI is a cli executable package for developers to interact with Onqlave resources via command line interface.
 
-Init configuration
+# Release asset
 
-```bash
-  go run main.go config init
+- CLI release will contain a release note of the docker
+  image [repository](https://github.com/onqlavelabs/onqlave.cli/pkgs/container/onqlavelabs%2Fonqlave.cli).
+- CLI packages for **Linux**, **MacOS**, and **Windows** are automatically created and uploaded as assets in each
+  release.
+
+# Download Onqlave CLI
+
+## Linux
+
+- Download Linux executable file `onqlave-linux` from the release assets
+- Grant executable permission to `onqlave-linux` file
+
+```
+sudo chmod +x onqlave-linux
 ```
 
-## Authentication
+- Make sure `onqlave-linux` is executable:
 
-Sign up new account
-
-```bash
-  go run main.go auth signup [email] --tenant_name [tenant_name] --full_name[full_name]
+```
+./onqlave-linux
 ```
 
-Login
+## MacOS
 
-```bash
-  go run main.go auth login [email] --tenant_name [tenant_name]
+- Download Linux executable file `onqlave-darwin` from the release assets
+- Grant executable permission to `onqlave-darwin` file
+
+```
+sudo chmod +x onqlave-darwin
 ```
 
-## User commands
+- Make sure `onqlave-darwin` is executable:
 
-List users
-
-```bash
-  go run main.go user list
+```
+./onqlave-darwin
 ```
 
-## API Key commands
+## Windows
 
-API key base info
+- Download Windows executable file `onqlave-windows.exe` from the release assets
+- Make sure `onqlave-windows.exe` is executable:
 
-```bash
-  go run main.go key base
+```
+.\onqlave-windows.exe
 ```
 
-List api keys
+## Docker
 
-```bash
-  go run main.go key list
+- Download the Docker image from the CLI release note
+
+```
+docker pull ghcr.io/onqlavelabs/onqlavelabs/onqlave.cli:{$version}
 ```
 
-Describe an api key
+- Verify the Docker image
 
-```bash
-  go run main.go key describe [keyid]
+```
+docker images
 ```
 
-Add an api key
+The Docker image for the CLI package should be visible in the Docker images list:
 
-```bash
-  go run main.go key add --key_application_id [appid] --key_arx_id [arxid] --key_application_technology [client|server]
+```
+REPOSITORY                                   TAG         IMAGE ID       CREATED         
+ghcr.io/onqlavelabs/onqlavelabs/onqlave.cli  {$version}  17a828917e85   45 hours ago
 ```
 
-Delete an api key
+- Run the Docker image in interactive mode
 
-```bash
-  go run main.go key delete [keyid]
+```
+docker run -it 17a828917e85
 ```
 
-## Arx commands
+- Make sure `onqlave` CLI package inside the docker image is executable:
 
-Arx base info
-
-```bash
-  go run main.go arx base
+```
+onqlave
 ```
 
-List arx
+## Installation Script
 
-```bash
-  go run main.go arx list
+- An installation shell script is provided to download any specific Onqlave CLI version
+- Download and execute the installation script:
+
+```shell
+curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/scripts/install.sh" | bash ${cli-version}
 ```
 
-Describe a arx
+- For Windows users, [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) is recommended before using this
+  installation script
 
-```bash
-  go run main.go arx describe [arxid]
+# How to use Onqlave CLI
+
+## Configure environment
+
+- Make sure you have a working Onqlave CLI executable
+- Configure the environment by execute the following command:
+
+```
+onqlave config init
 ```
 
-Add a arx
+- Make sure the environment is configured by execute the following command:
 
-```bash
-  go run main.go arx add [arx_name] --arx_provider [gcp|aws|azure] --arx_purpose [development|testing|staging|production] --arx_region [au|us|sg|gb] --arx_encryption_method [aes-gcm-128|cha-cha-20-poly-1305|aes-gcm-256] --arx_rotation_cycle [monthly|3-monthly|6-monthly|annually] --arx_owner [userid] --arx_spend_limit [int] --arx_is_default=[true|false]
+```
+onqlave config current
 ```
 
-Edit a arx
+- A configured environment should be as follows:
 
-```bash
-  go run main.go arx edit [arxid] --arx_name [arx_name] --arx_region [au|us|sg|gb] --arx_rotation_cycle [monthly|3-monthly|6-monthly|annually] --arx_owner [userid] --arx_spend_limit [int] --arx_is_default=[true|false]
+```
+┌───────────────────────────────────────────────────┐
+│ Key          Value                                     │
+│───────────────────────────────────────────────────│
+│ ApiBaseUrl   https://api.onqlave.com                   │
+│ ConfigPath   /home/$user/.config/onqlave/config        │
+│ Env          prod                                      │
+│ TenantId                                               │
+│ TenantName                                             │
+└───────────────────────────────────────────────────┘
 ```
 
-Delete a arx
+## Start using the CLI
 
-```bash
-  go run main.go arx delete [arxid]
-```
-
-Seal a arx
-
-```bash
-  go run main.go arx seal [arxid]
-```
-
-Unseal a arx
-
-```bash
-  go run main.go arx unseal [arxid]
-```
-
-Set a arx as default
-
-```bash
-  go run main.go arx default [arxid]
-```
-
-Reinitialize a arx
-
-```bash
-  go run main.go arx retry [arxid]
-```
+Full documentation of using the CLI can be found [here](https://docs.onqlave.com/guides/cli-guide/overview-cli/)
