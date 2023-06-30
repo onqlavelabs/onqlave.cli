@@ -14,8 +14,7 @@ main() {
 
   # onqlave.all repository is in private mode so this download is not yet working
   cli_package=""
-#  download_url="https://github.com/onqlavelabs/onqlave.cli/releases/download"
-  download_url="https://github.com/Desmond-Onqlave/pet-project/releases/download"
+  download_url="https://github.com/onqlavelabs/onqlave.cli/releases/download"
 
   # validate version detail, version detail must be provided
   if [ -z "$version" ]; then
