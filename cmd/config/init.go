@@ -47,11 +47,11 @@ func runInitCommand(cmd *cobra.Command, args []string) error {
 	switch cliEnv {
 	case common.EnvDev:
 		baseUrl = common.BaseUrlDev
-	case common.EnvProd:
-		baseUrl = common.BaseUrlProd
-	default:
+	case common.EnvLocal:
 		baseUrl = common.BaseUrlLocal
-		cliEnv = common.EnvLocal
+	default:
+		cliEnv = common.EnvProd
+		baseUrl = common.BaseUrlProd
 	}
 
 	viper.Set(common.FlagEnv, cliEnv)
