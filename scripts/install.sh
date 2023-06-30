@@ -23,12 +23,6 @@ main() {
     exit 1
   fi
 
-  # check operating system version
-  if [ "$OS" = "Windows_NT" ]; then
-    echo "Error: Official onqlave builds for Windows NT are not available" 1>&2
-    exit 1
-  fi
-
   # get cli package target based on os architecture
   case $(uname -sm) in
   "$linux_x86")
@@ -59,18 +53,11 @@ main() {
   fi
 
   # copy onqlave executable file to PATH
-  sudo cp $cli_package /usr/local/bin/onqlave
+  sudo mv $cli_package /usr/local/bin/onqlave
   sudo chmod +x /usr/local/bin/onqlave
 
-  echo "onqlave executable was installed successfully at /usr/local/bin/onqlave"
+  echo "onqlave executable was installed successfully"
   echo "Run 'onqlave --help' to get started"
-
-  # set onqlave env variable
-  if [ -z "$ONQLAVE_ENV" ]; then
-    export ONQLAVE_ENV=prod
-    echo "export ONQLAVE_ENV=prod" >> ~/.bashrc
-    bash
-  fi
 }
 
 main "$@"
