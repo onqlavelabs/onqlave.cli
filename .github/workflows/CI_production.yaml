@@ -1,5 +1,8 @@
 name: CI Production
 on:
+  pull_request:
+    branches:
+      - main
   push:
     tags:
       - 'v*.*.*'
@@ -11,12 +14,14 @@ jobs:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
   build-docker:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     uses: ./.github/workflows/build_docker.yaml
     needs: [ build-code ]
     secrets:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
   release-cli:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: [ build-docker ]
     uses: ./.github/workflows/release_asset.yaml
     secrets:
