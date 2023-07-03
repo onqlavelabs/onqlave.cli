@@ -92,7 +92,8 @@ onqlave
 curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/main/scripts/install.sh" | bash ${cli-version}
 ```
 
-- For Windows users, it is recommended to download the CLI package directly from the release
+- For Windows users, it is recommended to have bash executable installed such as `git bash` before using the
+  installation script; Or you can download the CLI executable directly from the release.
 
 # How to use Onqlave CLI
 
