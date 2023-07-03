@@ -89,7 +89,7 @@ onqlave
 - Download and execute the installation script:
 
 ```shell
-curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/main/scripts/install.sh" | bash ${cli-version}
+curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/main/scripts/install.sh" | bash -s ${cli-version}
 ```
 
 - For Windows users, it is recommended to have bash executable installed such as `git bash` before using the
