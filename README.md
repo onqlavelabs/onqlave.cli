@@ -6,7 +6,7 @@ Onqlave CLI is a cli executable package for developers to interact with Onqlave 
 
 - CLI release will contain a release note of the docker
   image [repository](https://github.com/onqlavelabs/onqlave.cli/pkgs/container/onqlavelabs%2Fonqlave.cli).
-- CLI packages for **Linux**, **MacOS**, and **Windows** are automatically created and uploaded as assets in each
+- CLI packages for **Linux**, **macOS**, and **Windows** are automatically created and uploaded as assets in each
   release.
 
 # Download Onqlave CLI
@@ -89,11 +89,11 @@ onqlave
 - Download and execute the installation script:
 
 ```shell
-curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/scripts/install.sh" | bash ${cli-version}
+curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/main/scripts/install.sh" | bash ${cli-version}
 ```
 
-- For Windows users, [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) is recommended before using this
-  installation script
+- For Windows users, it is recommended to have bash executable installed such as `git bash` before using the
+  installation script; Or you can download the CLI executable directly from the release.
 
 # How to use Onqlave CLI
 

@@ -5,6 +5,7 @@ set -e
 main() {
   # input version
   version=$1
+  os_type=$(uname -sm)
 
   # declare variable
   linux_x86="Linux x86_64"
@@ -12,10 +13,9 @@ main() {
   darwin_x86="Darwin x86_64"
   darwin_arm64="Darwin arm64"
 
-  # onqlave.all repository is in private mode so this download is not yet working
   cli_package=""
-#  download_url="https://github.com/onqlavelabs/onqlave.cli/releases/download"
-  download_url="https://github.com/Desmond-Onqlave/pet-project/releases/download"
+  cli_installed="onqlave"
+  download_url="https://github.com/onqlavelabs/onqlave.cli/releases/download"
 
   # validate version detail, version detail must be provided
   if [ -z "$version" ]; then
@@ -24,7 +24,7 @@ main() {
   fi
 
   # get cli package target based on os architecture
-  case $(uname -sm) in
+  case $os_type in
   "$linux_x86")
     cli_package="onqlave-linux"
     ;;
@@ -36,8 +36,12 @@ main() {
     cli_package="onqlave-darwin"
     ;;
   *)
-    echo "Error: Unknown os architecture" 1>&2
-    exit 1
+    if [ "$OSTYPE" == "msys" ]; then
+      cli_package="onqlave-windows.exe"
+    else
+      echo "Error: Unknown os architecture $os_type" 1>&2
+      exit 1
+    fi
     ;;
   esac
 
@@ -52,12 +56,16 @@ main() {
     exit 1
   fi
 
-  # copy onqlave executable file to PATH
-  sudo mv $cli_package /usr/local/bin/onqlave
-  sudo chmod +x /usr/local/bin/onqlave
+  if [ "$cli_package" != "onqlave-windows.exe" ]; then
+    # copy onqlave executable file to PATH, applied only for Linux and macOS
+    sudo mv $cli_package /usr/local/bin/onqlave
+    sudo chmod +x /usr/local/bin/onqlave
+  else
+    cli_installed="./onqlave-windows.exe"
+  fi
 
   echo "onqlave executable was installed successfully"
-  echo "Run 'onqlave --help' to get started"
+  echo "Run '$cli_installed --help' to get started"
 }
 
 main "$@"
