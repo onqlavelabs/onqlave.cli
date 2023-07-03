@@ -23,13 +23,6 @@ main() {
     exit 1
   fi
 
-  if [ "$os_type" = "MINGW64*" ]; then
-    cli_package="onqlave-windows.exe"
-  else
-    echo "Error: Unknown os architecture $os_type" 1>&2
-    exit 1
-  fi
-
   # get cli package target based on os architecture
   case $os_type in
   "$linux_x86")
@@ -46,7 +39,7 @@ main() {
     if [ "$OSTYPE" == "msys" ]; then
       cli_package="onqlave-windows.exe"
     else
-      echo "Error: Unknown os architecture" 1>&2
+      echo "Error: Unknown os architecture $os_type" 1>&2
       exit 1
     fi
     ;;
