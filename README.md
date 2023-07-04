@@ -68,19 +68,54 @@ The Docker image for the CLI package should be visible in the Docker images list
 
 ```
 REPOSITORY                                   TAG         IMAGE ID       CREATED         
-ghcr.io/onqlavelabs/onqlavelabs/onqlave.cli  {$version}  17a828917e85   45 hours ago
+ghcr.io/onqlavelabs/onqlavelabs/onqlave.cli  {$version}  ${image-id}   10 seconds ago
 ```
 
 - Run the Docker image in interactive mode
 
 ```
-docker run -it 17a828917e85
+docker run -it ${image-id}
+```
+
+If you want to save the config file permanently, or you want to use an existing config file, you
+can mount the directory that contains the config file when running the docker container
+
+```
+docker run -it -v ${path-to-config-file}:/root/.config/onqlave ${image-id}
 ```
 
 - Make sure `onqlave` CLI package inside the docker image is executable:
 
 ```
+bash-5.2# onqlave
+```
+
+**Result**
+
+```
+Usage:
+  onqlave [command]
+
+Examples:
 onqlave
+
+Available Commands:
+  application application management
+  arx         arx management
+  auth        authentication
+  completion  Generate the autocompletion script for the specified shell
+  config      config environment variables
+  help        Help about any command
+  key         api key management
+  tenant      tenant management
+  user        user management
+
+Flags:
+  -h, --help      help for onqlave
+      --json      JSON Output. Set to true if stdout is not a TTY.
+  -v, --version   version for onqlave
+
+Use "onqlave [command] --help" for more information about a command.
 ```
 
 ## Installation Script
@@ -93,7 +128,7 @@ curl -s "https://raw.githubusercontent.com/onqlavelabs/onqlave.cli/main/scripts/
 ```
 
 - For Windows users, it is recommended to have bash executable installed such as `git bash` before using the
-  installation script; Or you can download the CLI executable directly from the release.
+  installation script; or you can download the CLI executable directly from the release.
 
 # How to use Onqlave CLI
 
