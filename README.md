@@ -150,15 +150,15 @@ onqlave config current
 - A configured environment should be as follows:
 
 ```
-┌───────────────────────────────────────────────────┐
-│ Key          Value                                     │
-│───────────────────────────────────────────────────│
-│ ApiBaseUrl   https://api.onqlave.com                   │
-│ ConfigPath   /home/$user/.config/onqlave/config        │
-│ Env          prod                                      │
-│ TenantId                                               │
-│ TenantName                                             │
-└───────────────────────────────────────────────────┘
+┌───────────────────────────────────────────┐
+│ Key          Value                            │
+│───────────────────────────────────────────│
+│ ApiBaseUrl   https://api.onqlave.com          │
+│ ConfigPath   /root/.config/onqlave/config     │
+│ Env          prod                             │
+│ TenantId                                      │
+│ TenantName                                    │
+└───────────────────────────────────────────┘
 ```
 
 ## Start using the CLI
