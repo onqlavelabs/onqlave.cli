@@ -90,24 +90,7 @@ func NewDataTable(data any) *DataTable {
 func (m *DataTable) Init() tea.Cmd { return nil }
 
 func (m *DataTable) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc":
-			if m.table.Focused() {
-				m.table.Blur()
-			} else {
-				m.table.Focus()
-			}
-		case "q", "ctrl+c":
-			return m, tea.Quit
-		}
-	}
-
-	m.table, cmd = m.table.Update(msg)
-	return m, cmd
+	return m, tea.Quit
 }
 
 func (m *DataTable) View() string {
@@ -131,9 +114,8 @@ func (m *DataTable) Render() {
 	m.table.Focus()
 	m.table.SetHeight(m.Height)
 	m.table.SetStyles(table.Styles{
-		Cell:     lipgloss.NewStyle().Padding(0, 1, 0, 1),
-		Selected: lipgloss.NewStyle().Bold(true).Foreground(utils.Green),
-		Header:   lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).Padding(0, 1, 0, 1).BorderBottom(true),
+		Cell:   lipgloss.NewStyle().Padding(0, 1, 0, 1),
+		Header: lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).Padding(0, 1, 0, 1).BorderBottom(true),
 	})
 
 	_, err := tea.NewProgram(m).Run()
@@ -214,13 +196,7 @@ func importDataTable(rows []table.Row, columns []table.Column, isList bool) *Dat
 		tableColumns = append(tableColumns, table.Column{Title: column.Title, Width: columnWidth})
 	}
 
-	//set data table height
-	height := TableViewHeight
-	if !isList {
-		height = len(tableRows)
-	}
-
-	return &DataTable{table: table.New(table.WithColumns(tableColumns), table.WithRows(tableRows)), Height: height}
+	return &DataTable{table: table.New(table.WithColumns(tableColumns), table.WithRows(tableRows)), Height: len(tableRows)}
 }
 
 // getDataType return type of input data and input data is slice or not
