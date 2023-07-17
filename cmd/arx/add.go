@@ -84,6 +84,9 @@ func addCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
+			if viper.GetBool(common.FlagDebug) {
+				fmt.Println(common.DebugStart)
+			}
 			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
 			_, err = arxApiService.ValidateArx(
 				baseInfo,
@@ -119,6 +122,9 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		defer fmt.Println(common.DebugEnd)
+	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxApiService := newArxAPIService(cmd.Context())
 	regions := strings.Split(_addArx.arxRegion, ",")

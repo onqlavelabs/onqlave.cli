@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/TylerBrock/colorjson"
 	"io"
 	"net/http"
 	"strings"
@@ -263,7 +264,6 @@ func NewAPIIntegrationService(opts APIIntegrationServiceOptions) *APIIntegration
 }
 
 func Put[Response any, Request any](apiBase string, request Request) (*Response, error) {
-	client := &http.Client{}
 	payload, _ := json.Marshal(&request)
 
 	req, err := http.NewRequest(http.MethodPut, apiBase, bytes.NewBuffer(payload))
@@ -277,25 +277,17 @@ func Put[Response any, Request any](apiBase string, request Request) (*Response,
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	resp, err := client.Do(req)
+	debug := viper.GetBool("debug")
+
+	responseObject, err := DoRequest[Response](req)
+	LogDebug(http.MethodPut, apiBase, request, responseObject, err, debug)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject Response
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func Post[Response any, Request any](apiBase string, request Request) (*Response, error) {
-	client := &http.Client{}
 	payload, _ := json.Marshal(&request)
 
 	req, err := http.NewRequest(http.MethodPost, apiBase, bytes.NewBuffer(payload))
@@ -309,25 +301,17 @@ func Post[Response any, Request any](apiBase string, request Request) (*Response
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	resp, err := client.Do(req)
+	debug := viper.GetBool("debug")
+
+	responseObject, err := DoRequest[Response](req)
+	LogDebug(http.MethodPost, apiBase, request, responseObject, err, debug)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject Response
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func Get[T any](apiBase string) (*T, error) {
-	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, apiBase, nil)
 	if err != nil {
 		return nil, err
@@ -338,25 +322,18 @@ func Get[T any](apiBase string) (*T, error) {
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
-	resp, err := client.Do(req)
+
+	debug := viper.GetBool("debug")
+
+	responseObject, err := DoRequest[T](req)
+	LogDebug(http.MethodGet, apiBase, nil, responseObject, err, debug)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject T
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func Delete[T any](apiBase string) (*T, error) {
-	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodDelete, apiBase, nil)
 	if err != nil {
 		return nil, err
@@ -367,21 +344,15 @@ func Delete[T any](apiBase string) (*T, error) {
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
-	resp, err := client.Do(req)
+
+	debug := viper.GetBool("debug")
+
+	responseObject, err := DoRequest[T](req)
+	LogDebug(http.MethodDelete, apiBase, nil, responseObject, err, debug)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject T
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func (s *APIIntegrationService) SendSignupInvitation(emailAddress string, tenantName string, userFullName string) (string, error) {
@@ -487,4 +458,45 @@ func (s *APIIntegrationService) GetLoginOperationStatus(token string) (*APIInteg
 type APIIntegrationServiceOperationResult struct {
 	Done   bool
 	Result any
+}
+
+func LogDebug(method, url string, req interface{}, resp any, err error, isDebugMode bool) {
+	if !isDebugMode || strings.Contains(url, "state") {
+		return
+	}
+	fmt.Println(fmt.Sprintf("[%s]: %s", method, url))
+	fmt.Println("Request: ", RenderAsJson(req))
+	fmt.Println("Response: ", RenderAsJson(resp))
+	fmt.Println("Error: ", err)
+}
+
+func RenderAsJson(object interface{}) string {
+	var objMap map[string]interface{}
+	marshalledObj, _ := json.Marshal(object)
+	_ = json.Unmarshal(marshalledObj, &objMap)
+
+	f := colorjson.NewFormatter()
+	f.Indent = 4
+	bytes, _ := f.Marshal(objMap)
+	return string(bytes)
+}
+
+func DoRequest[Response any](req *http.Request) (*Response, error) {
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+
+	var responseObject Response
+	_ = json.Unmarshal(bodyBytes, &responseObject)
+	return &responseObject, nil
 }

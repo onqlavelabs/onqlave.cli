@@ -18,6 +18,10 @@ const (
 	FlagEnv        = "onqlave_env"
 	FlagJson       = "json"
 	FlagTenantID   = "tenant_id"
+	FlagDebug      = "debug"
+
+	DebugStart = "====================Debug Start===================="
+	DebugEnd   = "=====================Debug End====================="
 
 	Valid   = 30
 	Version = `0.0.1`

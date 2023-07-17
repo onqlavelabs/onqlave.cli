@@ -2,6 +2,7 @@ package arx
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 	"strings"
 	"time"
@@ -59,6 +60,10 @@ func sealCommand() *cobra.Command {
 }
 
 func runSealCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		fmt.Println(common.DebugStart)
+		defer fmt.Println(common.DebugEnd)
+	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _sealArx.arxId
 

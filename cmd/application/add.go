@@ -2,6 +2,7 @@ package application
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 
 	"os"
 	"strings"
@@ -42,6 +43,9 @@ func addCommand() *cobra.Command {
 		},
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if viper.GetBool(common.FlagDebug) {
+				fmt.Println(common.DebugStart)
+			}
 
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
 			modelWrapper, err := apiService.GetBaseApplication()
@@ -81,6 +85,9 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		defer fmt.Println(common.DebugEnd)
+	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	var applicationCors []contractApplication.Cors

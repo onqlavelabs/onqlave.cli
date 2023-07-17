@@ -37,6 +37,10 @@ func describeCommand() *cobra.Command {
 }
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		fmt.Println(common.DebugStart)
+		defer fmt.Println(common.DebugEnd)
+	}
 	keyId := _describeKey.keyId
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

@@ -72,6 +72,9 @@ func updateCommand() *cobra.Command {
 				return cliCommon.ReplacePersistentPreRunE(cmd, err)
 			}
 
+			if viper.GetBool(cliCommon.FlagDebug) {
+				fmt.Println(cliCommon.DebugStart)
+			}
 			if !cliCommon.IsLoggedIn() {
 				return cliCommon.ReplacePersistentPreRunE(cmd, cliCommon.ErrRequireLogIn)
 			}
@@ -121,6 +124,9 @@ func updateCommand() *cobra.Command {
 }
 
 func runArxUpdateCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(cliCommon.FlagDebug) {
+		defer fmt.Println(cliCommon.DebugEnd)
+	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _updateArx.arxId
 

@@ -2,6 +2,7 @@ package key
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 	"strings"
 	"time"
@@ -45,6 +46,10 @@ func deleteCommand() *cobra.Command {
 }
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		fmt.Println(common.DebugStart)
+		defer fmt.Println(common.DebugEnd)
+	}
 	deleteKeyID := _deleteAPIKey.keyID
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))

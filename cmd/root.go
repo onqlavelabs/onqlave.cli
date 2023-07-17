@@ -36,6 +36,7 @@ func Execute() {
 
 func initConfig() {
 	rootCmd.PersistentFlags().Bool(common.FlagJson, false, "JSON Output. Set to true if stdout is not a TTY.")
+	rootCmd.PersistentFlags().Bool(common.FlagDebug, false, "Debug mode. Set true if you want to debug.")
 	viper.SetDefault(common.FlagApiBaseUrl, "")
 	viper.AddConfigPath(common.GetConfigDir())
 	viper.SetConfigName(common.ConfigFile)     // Register config file name (no extension)

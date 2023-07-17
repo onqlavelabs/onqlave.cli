@@ -2,6 +2,7 @@ package application
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 	"strings"
 
@@ -42,6 +43,9 @@ func updateCommand() *cobra.Command {
 		},
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if viper.GetBool(common.FlagDebug) {
+				fmt.Println(common.DebugStart)
+			}
 
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
 			applicationDetail, err := apiService.GetApplication(_editApplicationOperation.applicationID)
@@ -107,6 +111,9 @@ func updateCommand() *cobra.Command {
 }
 
 func runEditCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		defer fmt.Println(common.DebugEnd)
+	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	var applicationCors []contractApplication.Cors

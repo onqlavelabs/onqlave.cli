@@ -39,6 +39,11 @@ func addCommand() *cobra.Command {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
+
+			if viper.GetBool(common.FlagDebug) {
+				fmt.Println(common.DebugStart)
+			}
+
 			if !common.IsLoggedIn() {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
@@ -73,6 +78,9 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		defer fmt.Println(common.DebugEnd)
+	}
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

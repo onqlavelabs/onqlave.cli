@@ -1,6 +1,7 @@
 package key
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -21,6 +22,10 @@ func listCommand() *cobra.Command {
 }
 
 func runListCommand(cmd *cobra.Command, args []string) {
+	if viper.GetBool(common.FlagDebug) {
+		fmt.Println(common.DebugStart)
+		defer fmt.Println(common.DebugEnd)
+	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	data, err := newKeyApiService(cmd.Context()).GetKeys()
