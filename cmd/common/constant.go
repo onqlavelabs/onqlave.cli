@@ -23,8 +23,7 @@ const (
 	DebugStart = "====================Debug Start===================="
 	DebugEnd   = "=====================Debug End====================="
 
-	Valid   = 30
-	Version = `0.0.1`
+	Valid = 30
 
 	ResourceArx         = "Arx"
 	ResourceApplication = "Application"

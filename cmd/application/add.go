@@ -2,12 +2,11 @@ package application
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
-
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
