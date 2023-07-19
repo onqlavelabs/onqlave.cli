@@ -279,8 +279,7 @@ func Put[Response any, Request any](apiBase string, request Request) (*Response,
 
 	debug := viper.GetBool("debug")
 
-	responseObject, err := DoRequest[Response](req)
-	LogDebug(http.MethodPut, apiBase, request, responseObject, err, debug)
+	responseObject, err := DoRequest[Response](req, request, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -303,8 +302,7 @@ func Post[Response any, Request any](apiBase string, request Request) (*Response
 
 	debug := viper.GetBool("debug")
 
-	responseObject, err := DoRequest[Response](req)
-	LogDebug(http.MethodPost, apiBase, request, responseObject, err, debug)
+	responseObject, err := DoRequest[Response](req, request, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -325,8 +323,7 @@ func Get[T any](apiBase string) (*T, error) {
 
 	debug := viper.GetBool("debug")
 
-	responseObject, err := DoRequest[T](req)
-	LogDebug(http.MethodGet, apiBase, nil, responseObject, err, debug)
+	responseObject, err := DoRequest[T](req, nil, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -347,8 +344,7 @@ func Delete[T any](apiBase string) (*T, error) {
 
 	debug := viper.GetBool("debug")
 
-	responseObject, err := DoRequest[T](req)
-	LogDebug(http.MethodDelete, apiBase, nil, responseObject, err, debug)
+	responseObject, err := DoRequest[T](req, nil, debug)
 	if err != nil {
 		return nil, err
 	}
@@ -481,22 +477,27 @@ func RenderAsJson(object interface{}) string {
 	return string(bytes)
 }
 
-func DoRequest[Response any](req *http.Request) (*Response, error) {
+func DoRequest[Response any](req *http.Request, request any, debug bool) (*Response, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		LogDebug(req.Method, req.URL.String(), request, nil, err, debug)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		LogDebug(req.Method, req.URL.String(), request, nil, err, debug)
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
+		err = fmt.Errorf(string(bodyBytes))
+		LogDebug(req.Method, req.URL.String(), request, nil, err, debug)
+		return nil, err
 	}
 
 	var responseObject Response
 	_ = json.Unmarshal(bodyBytes, &responseObject)
+	LogDebug(req.Method, req.URL.String(), request, responseObject, err, debug)
 	return &responseObject, nil
 }

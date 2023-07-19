@@ -78,15 +78,15 @@ func addCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
+			if viper.GetBool(common.FlagDebug) {
+				fmt.Println(common.DebugStart)
+			}
 			arxApiService := newArxAPIService(cmd.Context())
 			modelWrapper, err := arxApiService.GetArxBaseInfo()
 			if err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
 
-			if viper.GetBool(common.FlagDebug) {
-				fmt.Println(common.DebugStart)
-			}
 			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
 			_, err = arxApiService.ValidateArx(
 				baseInfo,
