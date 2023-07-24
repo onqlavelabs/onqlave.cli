@@ -17,7 +17,7 @@ import (
 
 type CommandOperation string
 
-type ApplicationBaseInfo struct {
+type BaseInfo struct {
 	Technologies map[string]bool
 	User         []string
 }
@@ -34,7 +34,7 @@ func NewService(opts ServiceOpt) *Service {
 	return &Service{opts: opts}
 }
 
-func (s *Service) ValidateApplication(baseInfo ApplicationBaseInfo, technology, owner, corsIp string) (bool, error) {
+func (s *Service) ValidateApplication(baseInfo BaseInfo, technology, owner, corsIp string) (bool, error) {
 	if !utils.Contains(baseInfo.User, owner) {
 		return false, model.NewAppError("ValidateApplication", "cli.invalid.application_owner", nil, "", http.StatusBadRequest).
 			Wrap(fmt.Errorf("invalid owner - must be in (%v)", strings.Join(baseInfo.User, ", ")))
@@ -57,18 +57,15 @@ func (s *Service) ValidateApplication(baseInfo ApplicationBaseInfo, technology, 
 		Wrap(fmt.Errorf("invalid technology - must be in (%v)", strings.TrimLeft(validTechnologies, ",")))
 }
 
-func (s *Service) GetApplicationBaseInfoIDSlice(modelWrapper contractsApp.Technologies, validUser user.ListResponse) ApplicationBaseInfo {
-	baseInfo := ApplicationBaseInfo{
-		Technologies: map[string]bool{},
-		User:         []string{},
-	}
+func (s *Service) GetApplicationBaseInfoIDSlice(modelWrapper contractsApp.Technologies, validUser user.ListResponse) BaseInfo {
+	baseInfo := BaseInfo{Technologies: map[string]bool{}, User: []string{}}
 
 	for _, technology := range modelWrapper.Technologies {
 		baseInfo.Technologies[technology.Id] = technology.Cors
 	}
 
-	for _, user := range validUser.Users {
-		baseInfo.User = append(baseInfo.User, user.ID)
+	for _, valUser := range validUser.Users {
+		baseInfo.User = append(baseInfo.User, valUser.ID)
 	}
 
 	return baseInfo
@@ -89,10 +86,7 @@ func (s *Service) AddApplication(addApplicationRequest contractsApp.RequestAppli
 	tenantId := viper.Get("tenant_id")
 	applicationUrl := fmt.Sprintf("%s/%s/applications", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	request := contractsApp.Request{
-		Application: addApplicationRequest,
-	}
-	response, err := api.Post[contractsApp.DetailResponse](applicationUrl, request)
+	response, err := api.Post[contractsApp.DetailResponse](applicationUrl, contractsApp.Request{Application: addApplicationRequest})
 	if err != nil {
 		return "", model.NewAppError("CreateApplication", "cli.server_error.create_application", nil, "create application failed", http.StatusInternalServerError).Wrap(err)
 	}
