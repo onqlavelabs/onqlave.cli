@@ -2,7 +2,6 @@ package arx
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"strings"
 	"time"
@@ -10,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/muesli/reflow/wrap"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
@@ -61,8 +61,10 @@ func unsealCommand() *cobra.Command {
 
 func runUnsealCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		fmt.Println(common.DebugStart)
-		defer fmt.Println(common.DebugEnd)
+		start := time.Now()
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(start))
+		}()
 	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _unsealArx.arxId

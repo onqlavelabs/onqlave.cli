@@ -24,6 +24,7 @@ type addApiKeyOperation struct {
 	arxID                 string
 	applicationTechnology string
 	operationTimeout      int
+	start                 time.Time
 }
 
 var _addApiKeyOperation addApiKeyOperation
@@ -41,7 +42,7 @@ func addCommand() *cobra.Command {
 			}
 
 			if viper.GetBool(common.FlagDebug) {
-				fmt.Println(common.DebugStart)
+				_addApiKeyOperation.start = time.Now()
 			}
 
 			if !common.IsLoggedIn() {
@@ -79,7 +80,9 @@ func addCommand() *cobra.Command {
 
 func runAddCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		defer fmt.Println(common.DebugEnd)
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(_addApiKeyOperation.start))
+		}()
 	}
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))

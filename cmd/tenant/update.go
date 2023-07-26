@@ -3,6 +3,7 @@ package tenant
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -52,8 +53,10 @@ func updateCommand() *cobra.Command {
 
 func runUpdateCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		fmt.Println(common.DebugStart)
-		defer fmt.Println(common.DebugEnd)
+		start := time.Now()
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(start))
+		}()
 	}
 	var tenantMap map[string]interface{}
 

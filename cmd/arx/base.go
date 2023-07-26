@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
-	"github.com/onqlavelabs/onqlave.core/contracts/arx"
+	contracts "github.com/onqlavelabs/onqlave.core/contracts/arx"
 )
 
 type BaseArx struct {
@@ -36,8 +37,10 @@ func baseCommand() *cobra.Command {
 
 func runBaseCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		fmt.Println(common.DebugStart)
-		defer fmt.Println(common.DebugEnd)
+		start := time.Now()
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(start))
+		}()
 	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

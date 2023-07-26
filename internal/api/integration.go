@@ -461,7 +461,7 @@ func LogDebug(method, url string, req interface{}, resp any, err error, isDebugM
 		return
 	}
 
-	fmt.Printf("[%s]: %s", method, url)
+	fmt.Printf("[%s]: %s\n", method, url)
 	fmt.Println("Request: ", RenderAsJson(req))
 	fmt.Println("Response: ", RenderAsJson(resp))
 	fmt.Println("Error: ", err)

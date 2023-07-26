@@ -3,6 +3,7 @@ package application
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,8 +24,10 @@ func listCommand() *cobra.Command {
 
 func runListCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		fmt.Println(common.DebugStart)
-		defer fmt.Println(common.DebugEnd)
+		start := time.Now()
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(start))
+		}()
 	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

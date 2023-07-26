@@ -78,8 +78,10 @@ func signupCommand() *cobra.Command {
 
 func runSignupCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		fmt.Println(common.DebugStart)
-		defer fmt.Println(common.DebugEnd)
+		start := time.Now()
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(start))
+		}()
 	}
 	apiService := newAuthAPIService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))

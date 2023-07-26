@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,6 +24,7 @@ type addApplicationOperation struct {
 	applicationTechnology  string
 	applicationOwner       string
 	applicationCors        string
+	start                  time.Time
 }
 
 var _addApplicationOperation addApplicationOperation
@@ -43,7 +45,7 @@ func addCommand() *cobra.Command {
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if viper.GetBool(common.FlagDebug) {
-				fmt.Println(common.DebugStart)
+				_addApplicationOperation.start = time.Now()
 			}
 
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
@@ -85,7 +87,9 @@ func addCommand() *cobra.Command {
 
 func runAddCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		defer fmt.Println(common.DebugEnd)
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(_addApplicationOperation.start))
+		}()
 	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

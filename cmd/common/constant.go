@@ -20,9 +20,6 @@ const (
 	FlagTenantID   = "tenant_id"
 	FlagDebug      = "debug"
 
-	DebugStart = "====================Debug Start===================="
-	DebugEnd   = "=====================Debug End====================="
-
 	Valid = 30
 
 	ResourceArx         = "Arx"

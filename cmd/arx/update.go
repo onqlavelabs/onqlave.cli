@@ -16,7 +16,7 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/internal/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
-	"github.com/onqlavelabs/onqlave.core/contracts/arx"
+	contracts "github.com/onqlavelabs/onqlave.core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.core/contracts/common"
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
@@ -30,6 +30,7 @@ type updateArxOperation struct {
 	arxRotationCycle    string
 	arxOwner            string
 	arxIsDefault        bool
+	start               time.Time
 }
 
 func (o updateArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
@@ -73,7 +74,7 @@ func updateCommand() *cobra.Command {
 			}
 
 			if viper.GetBool(cliCommon.FlagDebug) {
-				fmt.Println(cliCommon.DebugStart)
+				_updateArx.start = time.Now()
 			}
 			if !cliCommon.IsLoggedIn() {
 				return cliCommon.ReplacePersistentPreRunE(cmd, cliCommon.ErrRequireLogIn)
@@ -125,7 +126,9 @@ func updateCommand() *cobra.Command {
 
 func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(cliCommon.FlagDebug) {
-		defer fmt.Println(cliCommon.DebugEnd)
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(_updateArx.start))
+		}()
 	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _updateArx.arxId

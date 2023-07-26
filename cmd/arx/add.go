@@ -17,7 +17,7 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/internal/api"
 	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
-	"github.com/onqlavelabs/onqlave.core/contracts/arx"
+	contracts "github.com/onqlavelabs/onqlave.core/contracts/arx"
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
@@ -34,6 +34,7 @@ type addArxOperation struct {
 	arxRotationCycle    string
 	arxOwner            string
 	arxIsDefault        bool
+	start               time.Time
 }
 
 func (o addArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
@@ -79,7 +80,7 @@ func addCommand() *cobra.Command {
 			}
 
 			if viper.GetBool(common.FlagDebug) {
-				fmt.Println(common.DebugStart)
+				_addArx.start = time.Now()
 			}
 			arxApiService := newArxAPIService(cmd.Context())
 			modelWrapper, err := arxApiService.GetArxBaseInfo()
@@ -123,7 +124,9 @@ func addCommand() *cobra.Command {
 
 func runAddCommand(cmd *cobra.Command, args []string) {
 	if viper.GetBool(common.FlagDebug) {
-		defer fmt.Println(common.DebugEnd)
+		defer func() {
+			fmt.Printf("Took: %s\n", time.Since(_addArx.start))
+		}()
 	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxApiService := newArxAPIService(cmd.Context())
