@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
@@ -24,7 +22,6 @@ type addApplicationOperation struct {
 	applicationTechnology  string
 	applicationOwner       string
 	applicationCors        string
-	start                  time.Time
 }
 
 var _addApplicationOperation addApplicationOperation
@@ -44,10 +41,6 @@ func addCommand() *cobra.Command {
 		},
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if viper.GetBool(common.FlagDebug) {
-				_addApplicationOperation.start = time.Now()
-			}
-
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
 			modelWrapper, err := apiService.GetBaseApplication()
 			if err != nil {
@@ -86,11 +79,6 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(_addApplicationOperation.start))
-		}()
-	}
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	var applicationCors []contractApplication.Cors

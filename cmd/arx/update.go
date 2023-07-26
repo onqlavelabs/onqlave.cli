@@ -67,7 +67,7 @@ func updateCommand() *cobra.Command {
 			_updateArx.arxId = args[0]
 			return nil
 		},
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return cliCommon.ReplacePersistentPreRunE(cmd, err)
@@ -125,9 +125,6 @@ func updateCommand() *cobra.Command {
 }
 
 func runArxUpdateCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer cliCommon.LogResponseTime(start)
-
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _updateArx.arxId
 

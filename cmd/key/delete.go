@@ -45,9 +45,6 @@ func deleteCommand() *cobra.Command {
 }
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	deleteKeyID := _deleteAPIKey.keyID
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))

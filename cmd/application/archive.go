@@ -3,7 +3,6 @@ package application
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -37,9 +36,6 @@ func archiveCommand() *cobra.Command {
 }
 
 func runArchiveCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	AppID := _archiveApplication.applicationId
 

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,9 +27,6 @@ func describeCommand() *cobra.Command {
 }
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	var tenant api.TenantInfo
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

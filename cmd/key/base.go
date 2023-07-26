@@ -2,7 +2,6 @@ package key
 
 import (
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,9 +30,6 @@ func baseCommand() *cobra.Command {
 }
 
 func runBaseCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

@@ -3,7 +3,6 @@ package key
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -38,9 +37,6 @@ func describeCommand() *cobra.Command {
 }
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	keyId := _describeKey.keyId
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

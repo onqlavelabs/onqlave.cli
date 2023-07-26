@@ -113,9 +113,6 @@ func updateCommand() *cobra.Command {
 }
 
 func runEditCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	var applicationCors []contractApplication.Cors

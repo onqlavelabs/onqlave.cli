@@ -24,7 +24,6 @@ type addApiKeyOperation struct {
 	arxID                 string
 	applicationTechnology string
 	operationTimeout      int
-	start                 time.Time
 }
 
 var _addApiKeyOperation addApiKeyOperation
@@ -36,13 +35,9 @@ func addCommand() *cobra.Command {
 		Short:   "add api key by attributes",
 		Long:    "This command is used to create api key. Key application ID, arx ID and application technology is required.",
 		Example: "onqlave key add",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
-			}
-
-			if viper.GetBool(common.FlagDebug) {
-				_addApiKeyOperation.start = time.Now()
 			}
 
 			if !common.IsLoggedIn() {
@@ -79,8 +74,6 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
-	defer common.LogResponseTime(_addApiKeyOperation.start)
-
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

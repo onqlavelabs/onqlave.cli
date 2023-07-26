@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -9,6 +10,8 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/internal/api"
 )
+
+var start time.Time
 
 func Command() *cobra.Command {
 	authCommand := &cobra.Command{
@@ -20,6 +23,14 @@ func Command() *cobra.Command {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
+
+			start = time.Now()
+
+			return nil
+		},
+		PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+			common.LogResponseTime(start)
+
 			return nil
 		},
 	}

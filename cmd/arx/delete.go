@@ -60,9 +60,6 @@ func deleteCommand() *cobra.Command {
 }
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _deleteArx.arxId
 

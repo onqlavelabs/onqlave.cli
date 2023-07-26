@@ -21,11 +21,12 @@ func (flag FlagApplication) String() string {
 
 func Command() *cobra.Command {
 	applicationCmd := &cobra.Command{
-		Use:               "application",
-		Short:             "application management",
-		Long:              "This command is used to manage application resources.",
-		Example:           "onqlave application",
-		PersistentPreRunE: common.PersistentPreRun,
+		Use:                "application",
+		Short:              "application management",
+		Long:               "This command is used to manage application resources.",
+		Example:            "onqlave application",
+		PersistentPreRunE:  common.PersistentPreRun,
+		PersistentPostRunE: common.PersistentPostRunE,
 	}
 
 	applicationCmd.AddCommand(

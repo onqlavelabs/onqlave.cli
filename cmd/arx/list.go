@@ -2,7 +2,6 @@ package arx
 
 import (
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,9 +21,6 @@ func listCommand() *cobra.Command {
 }
 
 func runListCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	data, err := newArxAPIService(cmd.Context()).GetArx()

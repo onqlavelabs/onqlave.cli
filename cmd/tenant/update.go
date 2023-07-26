@@ -3,7 +3,6 @@ package tenant
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,7 +22,7 @@ func updateCommand() *cobra.Command {
 		Short:   "update tenant by name and label",
 		Long:    "This command is used to update tenant. Tenant name and tenant label are required.",
 		Example: "onqlave tenants update",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
@@ -52,9 +51,6 @@ func updateCommand() *cobra.Command {
 }
 
 func runUpdateCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	var tenantMap map[string]interface{}
 
 	apiService := newTenantApiService(cmd.Context())

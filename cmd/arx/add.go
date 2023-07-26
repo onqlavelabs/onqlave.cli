@@ -34,7 +34,6 @@ type addArxOperation struct {
 	arxRotationCycle    string
 	arxOwner            string
 	arxIsDefault        bool
-	start               time.Time
 }
 
 func (o addArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
@@ -70,7 +69,7 @@ func addCommand() *cobra.Command {
 			_addArx.arxName = args[0]
 			return nil
 		},
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
@@ -79,9 +78,6 @@ func addCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
-			if viper.GetBool(common.FlagDebug) {
-				_addArx.start = time.Now()
-			}
 			arxApiService := newArxAPIService(cmd.Context())
 			modelWrapper, err := arxApiService.GetArxBaseInfo()
 			if err != nil {
@@ -123,8 +119,6 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
-	defer common.LogResponseTime(_addArx.start)
-
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxApiService := newArxAPIService(cmd.Context())
 	regions := strings.Split(_addArx.arxRegion, ",")

@@ -11,11 +11,12 @@ import (
 
 func Command() *cobra.Command {
 	userCmd := &cobra.Command{
-		Use:               "user",
-		Short:             "user management",
-		Long:              "This command is used to manage users resources.",
-		Example:           "onqlave user",
-		PersistentPreRunE: common.PersistentPreRun,
+		Use:                "user",
+		Short:              "user management",
+		Long:               "This command is used to manage users resources.",
+		Example:            "onqlave user",
+		PersistentPreRunE:  common.PersistentPreRun,
+		PersistentPostRunE: common.PersistentPostRunE,
 	}
 
 	userCmd.AddCommand(listCommand())

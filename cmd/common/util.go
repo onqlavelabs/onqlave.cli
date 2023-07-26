@@ -12,6 +12,8 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
+var start time.Time
+
 func CliRenderListResourceOutputNoRecord(width int) {
 	s := &strings.Builder{}
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String("No record found", width)))
@@ -83,7 +85,15 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 		return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
 	}
 
+	start = time.Now()
+
 	cmd.SilenceUsage = false
+
+	return nil
+}
+
+func PersistentPostRunE(cmd *cobra.Command, args []string) error {
+	LogResponseTime(start)
 
 	return nil
 }

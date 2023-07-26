@@ -49,7 +49,7 @@ func signupCommand() *cobra.Command {
 
 			return nil
 		},
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
@@ -77,9 +77,6 @@ func signupCommand() *cobra.Command {
 }
 
 func runSignupCommand(cmd *cobra.Command, args []string) {
-	start := time.Now()
-	defer common.LogResponseTime(start)
-
 	apiService := newAuthAPIService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
