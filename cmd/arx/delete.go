@@ -9,7 +9,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/muesli/reflow/wrap"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
@@ -61,12 +60,9 @@ func deleteCommand() *cobra.Command {
 }
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		start := time.Now()
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(start))
-		}()
-	}
+	start := time.Now()
+	defer common.LogResponseTime(start)
+
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _deleteArx.arxId
 

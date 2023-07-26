@@ -123,11 +123,8 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(_addArx.start))
-		}()
-	}
+	defer common.LogResponseTime(_addArx.start)
+
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxApiService := newArxAPIService(cmd.Context())
 	regions := strings.Split(_addArx.arxRegion, ",")

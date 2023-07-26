@@ -125,11 +125,9 @@ func updateCommand() *cobra.Command {
 }
 
 func runArxUpdateCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(cliCommon.FlagDebug) {
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(_updateArx.start))
-		}()
-	}
+	start := time.Now()
+	defer cliCommon.LogResponseTime(start)
+
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	arxID := _updateArx.arxId
 

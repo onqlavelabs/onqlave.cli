@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
@@ -38,12 +37,9 @@ func archiveCommand() *cobra.Command {
 }
 
 func runArchiveCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		start := time.Now()
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(start))
-		}()
-	}
+	start := time.Now()
+	defer common.LogResponseTime(start)
+
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 	AppID := _archiveApplication.applicationId
 

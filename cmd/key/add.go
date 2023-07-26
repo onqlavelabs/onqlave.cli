@@ -79,11 +79,8 @@ func addCommand() *cobra.Command {
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(_addApiKeyOperation.start))
-		}()
-	}
+	defer common.LogResponseTime(_addApiKeyOperation.start)
+
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

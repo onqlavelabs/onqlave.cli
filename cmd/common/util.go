@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/muesli/reflow/wrap"
 	"github.com/spf13/cobra"
@@ -92,4 +93,12 @@ func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
 	cmd.SilenceUsage = true
 	fmt.Println(utils.RenderError(utils.BoldStyle.Render(fmt.Sprintf("%s", err))))
 	return err
+}
+
+func LogResponseTime(start time.Time) {
+	if !viper.GetBool(FlagDebug) {
+		return
+	}
+
+	fmt.Printf("Took: %s\n", time.Since(start))
 }

@@ -52,12 +52,9 @@ func updateCommand() *cobra.Command {
 }
 
 func runUpdateCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		start := time.Now()
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(start))
-		}()
-	}
+	start := time.Now()
+	defer common.LogResponseTime(start)
+
 	var tenantMap map[string]interface{}
 
 	apiService := newTenantApiService(cmd.Context())

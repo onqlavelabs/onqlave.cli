@@ -36,12 +36,9 @@ func baseCommand() *cobra.Command {
 }
 
 func runBaseCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		start := time.Now()
-		defer func() {
-			fmt.Printf("Took: %s\n", time.Since(start))
-		}()
-	}
+	start := time.Now()
+	defer common.LogResponseTime(start)
+
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	arx, err := newArxAPIService(cmd.Context()).GetArxBaseInfo()
