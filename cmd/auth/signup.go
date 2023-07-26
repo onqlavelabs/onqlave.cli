@@ -54,7 +54,7 @@ func signupCommand() *cobra.Command {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
-			if !common.IsEnvironmentConfigured() {
+			if !common.IsEnvConfigured() {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantName == "" {

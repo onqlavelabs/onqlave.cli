@@ -74,7 +74,7 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 		return ReplacePersistentPreRunE(cmd, err)
 	}
 
-	if !IsEnvironmentConfigured() {
+	if !IsEnvConfigured() {
 		return ReplacePersistentPreRunE(cmd, ErrUnsetEnv)
 	}
 

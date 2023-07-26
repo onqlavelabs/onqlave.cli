@@ -42,7 +42,7 @@ func loginCommand() *cobra.Command {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return common.ReplacePersistentPreRunE(cmd, err)
 			}
-			if !common.IsEnvironmentConfigured() {
+			if !common.IsEnvConfigured() {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantName == "" {
@@ -63,10 +63,6 @@ func loginCommand() *cobra.Command {
 }
 
 func runLoginCommand(cmd *cobra.Command, args []string) {
-	if viper.GetBool(common.FlagDebug) {
-		fmt.Println(common.DebugStart)
-		defer fmt.Println(common.DebugEnd)
-	}
 	apiService := newAuthAPIService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 

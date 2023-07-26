@@ -31,7 +31,7 @@ func updateCommand() *cobra.Command {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
 			}
 
-			if !common.IsEnvironmentConfigured() {
+			if !common.IsEnvConfigured() {
 				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
 			}
 			if tenantLabelUpdate == "" && tenantNameUpdate == "" {
