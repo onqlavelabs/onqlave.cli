@@ -19,10 +19,7 @@ func describeCommand() *cobra.Command {
 		Short:   "describe tenant",
 		Long:    "This command is used to describe tenant info. It will return information of your current user's tenant.",
 		Example: "onqlave tenant describe",
-		Args: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
-		Run: runDescribeCommand,
+		Run:     runDescribeCommand,
 	}
 }
 

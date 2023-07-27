@@ -2,6 +2,8 @@ module github.com/onqlavelabs/onqlave.cli
 
 go 1.18
 
+//replace github.com/onqlavelabs/onqlave.core => ../onqlave.core
+
 require (
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2
 	github.com/charmbracelet/bubbles v0.14.0
@@ -9,7 +11,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/gosimple/slug v1.13.1
 	github.com/muesli/reflow v0.3.0
-	github.com/onqlavelabs/onqlave.core v0.0.0-20230628074256-cdd8bf7ca2c7
+	github.com/onqlavelabs/onqlave.core v0.0.0-20230726015447-7907a4e07d20
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.3

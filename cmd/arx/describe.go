@@ -27,7 +27,7 @@ func describeCommand() *cobra.Command {
 		Example: "onqlave arx describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
 			_describeArx.arxId = args[0]
 			return nil

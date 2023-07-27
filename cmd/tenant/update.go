@@ -22,20 +22,9 @@ func updateCommand() *cobra.Command {
 		Short:   "update tenant by name and label",
 		Long:    "This command is used to update tenant. Tenant name and tenant label are required.",
 		Example: "onqlave tenants update",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
-			}
-
-			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
-			}
-
-			if !common.IsEnvironmentConfigured() {
-				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
-			}
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if tenantLabelUpdate == "" && tenantNameUpdate == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Tenant label and tenant name can not be both empty")))
 			}
 
 			cmd.SilenceUsage = false
