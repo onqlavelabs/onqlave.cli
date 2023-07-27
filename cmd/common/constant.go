@@ -18,9 +18,9 @@ const (
 	FlagEnv        = "onqlave_env"
 	FlagJson       = "json"
 	FlagTenantID   = "tenant_id"
+	FlagDebug      = "debug"
 
-	Valid   = 30
-	Version = `0.0.1`
+	Valid = 30
 
 	ResourceArx         = "Arx"
 	ResourceApplication = "Application"

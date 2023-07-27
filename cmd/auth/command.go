@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
 	"github.com/onqlavelabs/onqlave.cli/internal/api"
@@ -12,16 +11,12 @@ import (
 
 func Command() *cobra.Command {
 	authCommand := &cobra.Command{
-		Use:     "auth",
-		Short:   "authentication",
-		Long:    "This command is used to authenticate.",
-		Example: "onqlave auth",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
-			}
-			return nil
-		},
+		Use:               "auth",
+		Short:             "authentication",
+		Long:              "This command is used to authenticate.",
+		Example:           "onqlave auth",
+		PersistentPreRunE: common.PersistentPreRunE,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	authCommand.AddCommand(

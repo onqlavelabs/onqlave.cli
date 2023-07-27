@@ -32,8 +32,8 @@ func GetConfigDir() string {
 	return fmt.Sprintf("%s%s%s%s", dir, separator, configDir, separator)
 }
 
-func IsEnvironmentConfigured() bool {
-	return viper.Get(FlagApiBaseUrl) != nil
+func IsEnvConfigured() bool {
+	return viper.GetString(FlagApiBaseUrl) != "" && viper.GetString(FlagEnv) != ""
 }
 
 func IsLoggedIn() bool {

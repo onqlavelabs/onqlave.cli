@@ -1,8 +1,10 @@
 package common
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/muesli/reflow/wrap"
 	"github.com/spf13/cobra"
@@ -10,6 +12,10 @@ import (
 
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
+
+type CtxKey int
+
+const StartKey CtxKey = 0
 
 func CliRenderListResourceOutputNoRecord(width int) {
 	s := &strings.Builder{}
@@ -67,19 +73,23 @@ func CliRenderDescribeResourceOutput(width int, resource any, resourceName, reso
 	fmt.Println(s.String())
 }
 
-func PersistentPreRun(cmd *cobra.Command, args []string) error {
+func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 	cmd.SilenceUsage = true
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
-		return ReplacePersistentPreRunE(cmd, err)
+		return CliRenderErr(cmd, err)
 	}
 
-	if !IsEnvironmentConfigured() {
-		return ReplacePersistentPreRunE(cmd, ErrUnsetEnv)
+	if !IsEnvConfigured() {
+		return CliRenderErr(cmd, ErrUnsetEnv)
 	}
 
-	if !IsLoggedIn() {
-		return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
+	if cmd.Parent() != nil && cmd.Parent().Use != "auth" && !IsLoggedIn() {
+		return CliRenderErr(cmd, ErrRequireLogIn)
+	}
+
+	if viper.GetBool(FlagDebug) {
+		cmd.SetContext(context.WithValue(context.Background(), StartKey, time.Now()))
 	}
 
 	cmd.SilenceUsage = false
@@ -87,9 +97,20 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
+func PersistentPostRun(cmd *cobra.Command, args []string) {
+	if !viper.GetBool(FlagDebug) {
+		return
+	}
+
+	start, ok := cmd.Context().Value(StartKey).(time.Time)
+	if ok {
+		fmt.Printf("Time Elapsed: %s\n", time.Since(start))
+	}
+}
+
+func CliRenderErr(cmd *cobra.Command, err error) error {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
-	fmt.Println(utils.RenderError(utils.BoldStyle.Render(fmt.Sprintf("%s", err))))
+	fmt.Println(utils.RenderError(utils.BoldStyle.Render(err.Error())))
 	return err
 }

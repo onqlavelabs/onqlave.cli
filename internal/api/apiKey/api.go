@@ -23,8 +23,8 @@ const (
 )
 
 var expectedOperationStatus = map[CommandOperation]enumerations.ApiKeyStatus{
-	AddOperation:    enumerations.Active,
-	DeleteOperation: enumerations.Deleted,
+	AddOperation:    enumerations.ApiKeyStatusActive,
+	DeleteOperation: enumerations.ApiKeyStatusDeleted,
 }
 
 type ListKeysResponse struct {
@@ -96,11 +96,11 @@ func (s *Service) CheckAPIKeyOperationStatus(keyId string, operation CommandOper
 	}
 
 	switch response.Data.Status {
-	case enumerations.Failed.String():
+	case enumerations.ApiKeyStatusFailed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf("api key operation failed")
-	case enumerations.Pending.String(), enumerations.Disabled.String():
+	case enumerations.ApiKeyStatusPending.String(), enumerations.ApiKeyStatusDisabled.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case enumerations.Active.String(), enumerations.Deleted.String():
+	case enumerations.ApiKeyStatusActive.String(), enumerations.ApiKeyStatusDeleted.String():
 		if expectedOperationStatus[operation] == enumerations.ApiKeyStatus(response.Data.Status) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}

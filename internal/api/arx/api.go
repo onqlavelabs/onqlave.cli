@@ -28,15 +28,15 @@ const (
 )
 
 var expectedOperationStatus = map[CommandOperation]enumerations.ArxStatus{
-	UpdateOperation: enumerations.ArxActive,
-	RetryOperation:  enumerations.ArxActive,
-	AddOperation:    enumerations.ArxActive,
-	UnsealOperation: enumerations.ArxActive,
-	SealOperation:   enumerations.ArxSealed,
-	DeleteOperation: enumerations.ArxDeleted,
+	UpdateOperation: enumerations.ArxStatusActive,
+	RetryOperation:  enumerations.ArxStatusActive,
+	AddOperation:    enumerations.ArxStatusActive,
+	UnsealOperation: enumerations.ArxStatusActive,
+	SealOperation:   enumerations.ArxStatusSealed,
+	DeleteOperation: enumerations.ArxStatusDeleted,
 }
 
-type ArxBaseInfo struct {
+type BaseInfo struct {
 	ProviderIDs          []string
 	PlanIDs              []string
 	PurposeIDs           []string
@@ -78,17 +78,17 @@ func (s *Service) CheckArxOperationState(clusterId string, operation CommandOper
 	}
 
 	switch response.Data.State {
-	case enumerations.ArxFailed.String():
+	case enumerations.ArxStatusFailed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, fmt.Errorf(response.Data.Message)
-	case enumerations.ArxInactive.String(),
-		enumerations.ArxPending.String(),
-		enumerations.ArxInitiated.String(),
-		enumerations.ArxReInitiated.String(),
-		enumerations.ArxUnsealed.String():
+	case enumerations.ArxStatusInactive.String(),
+		enumerations.ArxStatusPending.String(),
+		enumerations.ArxStatusInitiated.String(),
+		enumerations.ArxStatusReInitiated.String(),
+		enumerations.ArxStatusUnsealed.String():
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, nil
-	case enumerations.ArxActive.String(),
-		enumerations.ArxSealed.String(),
-		enumerations.ArxDeleted.String():
+	case enumerations.ArxStatusActive.String(),
+		enumerations.ArxStatusSealed.String(),
+		enumerations.ArxStatusDeleted.String():
 		if expectedOperationStatus[operation] == enumerations.ArxStatus(response.Data.State) {
 			return &api.APIIntegrationServiceOperationResult{Done: true, Result: message}, nil
 		}
@@ -126,8 +126,8 @@ func (s *Service) GetArxDetail(clusterID string) (*GetDetailArxResponse, error) 
 	}, nil
 }
 
-func (s *Service) GetArxBaseInfoIDSlice(data arx.BaseInfo) ArxBaseInfo {
-	var baseInfo ArxBaseInfo
+func (s *Service) GetArxBaseInfoIDSlice(data arx.BaseInfo) BaseInfo {
+	var baseInfo BaseInfo
 	var cloudProviderRegions = make(map[string][]string)
 	for _, provider := range data.Providers {
 		if !utils.BoolValue(provider.Enable) {
@@ -172,7 +172,7 @@ func (s *Service) GetArxBaseInfoIDSlice(data arx.BaseInfo) ArxBaseInfo {
 }
 
 func (s *Service) ValidateArx(
-	baseInfo ArxBaseInfo,
+	baseInfo BaseInfo,
 	clusterProvider string,
 	clusterType string,
 	clusterPurpose string,
@@ -216,7 +216,7 @@ func (s *Service) ValidateArx(
 }
 
 func (s *Service) ValidateEditArxRequest(
-	baseInfo ArxBaseInfo,
+	baseInfo BaseInfo,
 	clusterProvider string,
 	clusterRegion string,
 	rotationCycle string,
