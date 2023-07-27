@@ -15,7 +15,7 @@ func Command() *cobra.Command {
 		Short:             "authentication",
 		Long:              "This command is used to authenticate.",
 		Example:           "onqlave auth",
-		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPreRunE: common.PersistentPreRunE,
 		PersistentPostRun: common.PersistentPostRun,
 	}
 

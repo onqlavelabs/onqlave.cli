@@ -64,24 +64,24 @@ func addCommand() *cobra.Command {
 		Example: "onqlave arx add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx name is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx name is required")))
 			}
 			_addArx.arxName = args[0]
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
+				return common.CliRenderErr(cmd, common.ErrRequireLogIn)
 			}
 
 			arxApiService := newArxAPIService(cmd.Context())
 			modelWrapper, err := arxApiService.GetArxBaseInfo()
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
@@ -95,7 +95,7 @@ func addCommand() *cobra.Command {
 				_addArx.arxRotationCycle,
 			)
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			cmd.SilenceUsage = false

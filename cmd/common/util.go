@@ -14,6 +14,7 @@ import (
 )
 
 type CtxKey int
+
 const StartKey CtxKey = 0
 
 func CliRenderListResourceOutputNoRecord(width int) {
@@ -72,21 +73,19 @@ func CliRenderDescribeResourceOutput(width int, resource any, resourceName, reso
 	fmt.Println(s.String())
 }
 
-func PersistentPreRun(cmd *cobra.Command, args []string) error {
+func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 	cmd.SilenceUsage = true
 
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
-		return ReplacePersistentPreRunE(cmd, err)
+		return CliRenderErr(cmd, err)
 	}
 
 	if !IsEnvConfigured() {
-		return ReplacePersistentPreRunE(cmd, ErrUnsetEnv)
+		return CliRenderErr(cmd, ErrUnsetEnv)
 	}
 
-	if cmd.Use != "login" {
-		if !IsLoggedIn() {
-			return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
-		}
+	if cmd.Parent() != nil && cmd.Parent().Use != "auth" && !IsLoggedIn() {
+		return CliRenderErr(cmd, ErrRequireLogIn)
 	}
 
 	if viper.GetBool(FlagDebug) {
@@ -103,16 +102,15 @@ func PersistentPostRun(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	ctx := cmd.Context()
-	startVal := ctx.Value(StartKey)
-	start, _ := startVal.(time.Time)
-
-	fmt.Printf("Took: %s\n", time.Since(start))
+	start, ok := cmd.Context().Value(StartKey).(time.Time)
+	if ok {
+		fmt.Printf("Time Elapsed: %s\n", time.Since(start))
+	}
 }
 
-func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
+func CliRenderErr(cmd *cobra.Command, err error) error {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
-	fmt.Println(utils.RenderError(utils.BoldStyle.Render(fmt.Sprintf("%s", err))))
+	fmt.Println(utils.RenderError(utils.BoldStyle.Render(err.Error())))
 	return err
 }

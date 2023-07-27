@@ -15,7 +15,7 @@ func Command() *cobra.Command {
 		Short:             "tenant management",
 		Long:              "This command is used to manage tenants resource.",
 		Example:           "onqlave tenant",
-		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPreRunE: common.PersistentPreRunE,
 		PersistentPostRun: common.PersistentPostRun,
 	}
 

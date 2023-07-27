@@ -27,10 +27,10 @@ func loginCommand() *cobra.Command {
 		Example: "onqlave auth login",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Email address is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Email address is required")))
 			}
 			if !validMailAddress(args[0]) {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIInvalidValue, utils.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIInvalidValue, utils.BoldStyle.Render("Email address is invalid. Please provide a valid email address")))
 			}
 			emailAddress = args[0]
 
@@ -39,15 +39,8 @@ func loginCommand() *cobra.Command {
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
-			}
-			if !common.IsEnvConfigured() {
-				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsetEnv)
-			}
 			if tenantName == "" {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Tenant name should be provided")))
-
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Tenant name should be provided")))
 			}
 
 			cmd.SilenceUsage = false

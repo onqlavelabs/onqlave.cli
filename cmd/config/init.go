@@ -21,11 +21,11 @@ func initCommand() *cobra.Command {
 		Example: "onqlave config init",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			if common.IsSupportedEnv() {
-				return common.ReplacePersistentPreRunE(cmd, common.ErrUnsupportedEnv)
+				return common.CliRenderErr(cmd, common.ErrUnsupportedEnv)
 			}
 
 			cmd.SilenceUsage = false
@@ -59,7 +59,7 @@ func runInitCommand(cmd *cobra.Command, args []string) error {
 
 	err := config.CreateFile(viper.GetString(common.FlagConfigPath))
 	if err != nil {
-		return common.ReplacePersistentPreRunE(cmd, err)
+		return common.CliRenderErr(cmd, err)
 	}
 
 	fmt.Println("")

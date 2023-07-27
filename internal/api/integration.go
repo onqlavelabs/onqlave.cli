@@ -5,12 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/TylerBrock/colorjson"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/TylerBrock/colorjson"
 	"github.com/spf13/viper"
 
 	"github.com/onqlavelabs/onqlave.core/contracts/auth"
@@ -130,85 +130,14 @@ type ClusterPurpose int64
 type ClusterProvisioningState int64
 type ClusterRegion int64
 
-func NewArxProvider(t string) ArxProvider {
-	for k, v := range ArxProviders {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return ProviderInvalid
-}
-
-func NewClusterType(t string) ClusterType {
-	for k, v := range ClusterTypes {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return InvalidCluster
-}
-
-func NewClusterPurpose(t string) ClusterPurpose {
-	for k, v := range ClusterPurposes {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return PurposeInvalid
-}
-
-func NewClusterProvisioningState(t string) ClusterProvisioningState {
-	for k, v := range ClusterProvisioningStates {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return StateInvalid
-}
-
-func NewClusterRegion(t string) ClusterRegion {
-	for k, v := range ClusterRegions {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return REGION_INVALID
-}
-
-const (
-	StateInvalid ClusterProvisioningState = iota
-	StateReInitiated
-	StateInitiated
-	StatePending
-	StateCompleted
-	StateFailed
-	StateTimedout
-)
-
 const (
 	ProviderInvalid ArxProvider = iota
 	ProviderAzure
 	ProviderAWS
 	ProviderGCP
 )
-const (
-	InvalidCluster ClusterType = iota
-	ServerlessCluster
-	DedicatedCluster
-	OnPremCluster
-)
-
-const (
-	REGION_INVALID ClusterRegion = iota
-	REGION_AUS_EAST
-	REGION_AUS_WEST
-)
 
 var ArxProviders = map[ArxProvider]string{ProviderAWS: "AWS", ProviderAzure: "Azure", ProviderGCP: "GCP"}
-var ClusterTypes = map[ClusterType]string{ServerlessCluster: "Serverless", DedicatedCluster: "Dedicated", OnPremCluster: "On-Premise"}
-var ClusterPurposes = map[ClusterPurpose]string{PurposeTesting: "Testing", PurposeProduction: "Production", PurposeStaging: "Staging"}
-var ClusterProvisioningStates = map[ClusterProvisioningState]string{StateCompleted: "Completed", StateFailed: "Failed", StateInitiated: "Initiated", StateInvalid: "Invalid", StatePending: "Pending", StateTimedout: "Timedout"}
-var ClusterRegions = map[ClusterRegion]string{REGION_AUS_EAST: "AUS-EAST", REGION_AUS_WEST: "AUS-WEST"}
 
 func (c ArxProvider) String() string {
 	return ArxProviders[c]
@@ -277,9 +206,8 @@ func Put[Response any, Request any](apiBase string, request Request) (*Response,
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	debug := viper.GetBool("debug")
-
-	responseObject, err := DoRequest[Response](req, request, debug)
+	responseObject, err := DoRequest[Response](req)
+	LogDebug(req.Method, req.URL.String(), request, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
@@ -300,9 +228,8 @@ func Post[Response any, Request any](apiBase string, request Request) (*Response
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	debug := viper.GetBool("debug")
-
-	responseObject, err := DoRequest[Response](req, request, debug)
+	responseObject, err := DoRequest[Response](req)
+	LogDebug(req.Method, req.URL.String(), request, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
@@ -321,9 +248,8 @@ func Get[T any](apiBase string) (*T, error) {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	debug := viper.GetBool("debug")
-
-	responseObject, err := DoRequest[T](req, nil, debug)
+	responseObject, err := DoRequest[T](req)
+	LogDebug(req.Method, req.URL.String(), nil, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
@@ -342,9 +268,8 @@ func Delete[T any](apiBase string) (*T, error) {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	debug := viper.GetBool("debug")
-
-	responseObject, err := DoRequest[T](req, nil, debug)
+	responseObject, err := DoRequest[T](req)
+	LogDebug(req.Method, req.URL.String(), nil, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
@@ -464,7 +389,10 @@ func LogDebug(method, url string, req interface{}, resp any, err error, isDebugM
 	fmt.Printf("[%s]: %s\n", method, url)
 	fmt.Println("Request: ", RenderAsJson(req))
 	fmt.Println("Response: ", RenderAsJson(resp))
-	fmt.Println("Error: ", err)
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
 }
 
 func RenderAsJson(object interface{}) string {
@@ -474,31 +402,33 @@ func RenderAsJson(object interface{}) string {
 
 	f := colorjson.NewFormatter()
 	f.Indent = 4
-	bytes, _ := f.Marshal(objMap)
-	return string(bytes)
+	objBytes, _ := f.Marshal(objMap)
+
+	return string(objBytes)
 }
 
-func DoRequest[Response any](req *http.Request, request any, debug bool) (*Response, error) {
+func DoRequest[Response any](req *http.Request) (*Response, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		LogDebug(req.Method, req.URL.String(), request, nil, err, debug)
-		return nil, err
-	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		LogDebug(req.Method, req.URL.String(), request, nil, err, debug)
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf(string(bodyBytes))
-		LogDebug(req.Method, req.URL.String(), request, nil, err, debug)
 		return nil, err
 	}
 
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+
 	var responseObject Response
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	LogDebug(req.Method, req.URL.String(), request, responseObject, err, debug)
+	err = json.Unmarshal(bodyBytes, &responseObject)
+	if err != nil {
+		return nil, err
+	}
+
 	return &responseObject, nil
 }

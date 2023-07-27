@@ -26,7 +26,7 @@ func Command() *cobra.Command {
 		Short:             "api key management",
 		Long:              "This command is used to manage api key resources.",
 		Example:           "onqlave key",
-		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPreRunE: common.PersistentPreRunE,
 		PersistentPostRun: common.PersistentPostRun,
 	}
 

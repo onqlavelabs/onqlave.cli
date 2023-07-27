@@ -61,7 +61,7 @@ func updateCommand() *cobra.Command {
 		Example: "onqlave arx update",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
 			_updateArx.arxId = args[0]
 			return nil
@@ -69,29 +69,29 @@ func updateCommand() *cobra.Command {
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// Bind Cobra flags with viper
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, err)
+				return cliCommon.CliRenderErr(cmd, err)
 			}
 
 			if !cliCommon.IsLoggedIn() {
-				return cliCommon.ReplacePersistentPreRunE(cmd, cliCommon.ErrRequireLogIn)
+				return cliCommon.CliRenderErr(cmd, cliCommon.ErrRequireLogIn)
 			}
 
 			arxApiService := newArxAPIService(cmd.Context())
 
 			modelWrapper, err := arxApiService.GetArxBaseInfo()
 			if err != nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, err)
+				return cliCommon.CliRenderErr(cmd, err)
 			}
 
 			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
 
 			arxDetail, err := arxApiService.GetArxDetail(_updateArx.arxId)
 			if err != nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, err)
+				return cliCommon.CliRenderErr(cmd, err)
 			}
 
 			if arxDetail == nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx detail is required")))
+				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx detail is required")))
 			}
 
 			_, err = arxApiService.ValidateEditArxRequest(
@@ -101,7 +101,7 @@ func updateCommand() *cobra.Command {
 				_updateArx.arxRotationCycle,
 			)
 			if err != nil {
-				return cliCommon.ReplacePersistentPreRunE(cmd, err)
+				return cliCommon.CliRenderErr(cmd, err)
 			}
 
 			cmd.SilenceUsage = false
