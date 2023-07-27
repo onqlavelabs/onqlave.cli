@@ -25,12 +25,12 @@ func (flag FlagArx) String() string {
 
 func Command() *cobra.Command {
 	arxCmd := &cobra.Command{
-		Use:                "arx",
-		Short:              "arx management",
-		Long:               "This command is used to manage arx resources.",
-		Example:            "onqlave arx",
-		PersistentPreRunE:  common.PersistentPreRun,
-		PersistentPostRunE: common.PersistentPostRunE,
+		Use:               "arx",
+		Short:             "arx management",
+		Long:              "This command is used to manage arx resources.",
+		Example:           "onqlave arx",
+		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	arxCmd.AddCommand(

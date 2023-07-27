@@ -22,12 +22,12 @@ func (flag FlagApiKey) String() string {
 
 func Command() *cobra.Command {
 	keyCmd := &cobra.Command{
-		Use:                "key",
-		Short:              "api key management",
-		Long:               "This command is used to manage api key resources.",
-		Example:            "onqlave key",
-		PersistentPreRunE:  common.PersistentPreRun,
-		PersistentPostRunE: common.PersistentPostRunE,
+		Use:               "key",
+		Short:             "api key management",
+		Long:              "This command is used to manage api key resources.",
+		Example:           "onqlave key",
+		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	keyCmd.AddCommand(

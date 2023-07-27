@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -12,7 +13,8 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/internal/utils"
 )
 
-var start time.Time
+type CtxKey int
+const StartKey CtxKey = 0
 
 func CliRenderListResourceOutputNoRecord(width int) {
 	s := &strings.Builder{}
@@ -85,17 +87,23 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 		return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
 	}
 
-	start = time.Now()
+	cmd.SetContext(context.WithValue(context.Background(), StartKey, time.Now()))
 
 	cmd.SilenceUsage = false
 
 	return nil
 }
 
-func PersistentPostRunE(cmd *cobra.Command, args []string) error {
-	LogResponseTime(start)
+func PersistentPostRun(cmd *cobra.Command, args []string) {
+	if !viper.GetBool(FlagDebug) {
+		return
+	}
 
-	return nil
+	ctx := cmd.Context()
+	startVal := ctx.Value(StartKey)
+	start, _ := startVal.(time.Time)
+
+	fmt.Printf("Took: %s\n", time.Since(start))
 }
 
 func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
@@ -103,12 +111,4 @@ func ReplacePersistentPreRunE(cmd *cobra.Command, err error) error {
 	cmd.SilenceUsage = true
 	fmt.Println(utils.RenderError(utils.BoldStyle.Render(fmt.Sprintf("%s", err))))
 	return err
-}
-
-func LogResponseTime(start time.Time) {
-	if !viper.GetBool(FlagDebug) {
-		return
-	}
-
-	fmt.Printf("Took: %s\n", time.Since(start))
 }

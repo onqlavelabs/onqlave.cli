@@ -11,12 +11,12 @@ import (
 
 func Command() *cobra.Command {
 	tenantCmd := &cobra.Command{
-		Use:                "tenant",
-		Short:              "tenant management",
-		Long:               "This command is used to manage tenants resource.",
-		Example:            "onqlave tenant",
-		PersistentPreRunE:  common.PersistentPreRun,
-		PersistentPostRunE: common.PersistentPostRunE,
+		Use:               "tenant",
+		Short:             "tenant management",
+		Long:              "This command is used to manage tenants resource.",
+		Example:           "onqlave tenant",
+		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	tenantCmd.AddCommand(
