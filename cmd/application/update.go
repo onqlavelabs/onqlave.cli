@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/term"
 
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
@@ -25,7 +23,6 @@ type editApplicationOperation struct {
 	applicationTechnology  string
 	applicationOwner       string
 	applicationCors        string
-	start                  time.Time
 }
 
 var _editApplicationOperation editApplicationOperation
@@ -45,10 +42,6 @@ func updateCommand() *cobra.Command {
 		},
 		// used to overwrite/skip the parent commands persistentPreRunE func
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if viper.GetBool(common.FlagDebug) {
-				_editApplicationOperation.start = time.Now()
-			}
-
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
 			applicationDetail, err := apiService.GetApplication(_editApplicationOperation.applicationID)
 			if err != nil {

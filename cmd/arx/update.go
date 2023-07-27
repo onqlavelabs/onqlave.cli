@@ -30,7 +30,6 @@ type updateArxOperation struct {
 	arxRotationCycle    string
 	arxOwner            string
 	arxIsDefault        bool
-	start               time.Time
 }
 
 func (o updateArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
@@ -73,9 +72,6 @@ func updateCommand() *cobra.Command {
 				return cliCommon.ReplacePersistentPreRunE(cmd, err)
 			}
 
-			if viper.GetBool(cliCommon.FlagDebug) {
-				_updateArx.start = time.Now()
-			}
 			if !cliCommon.IsLoggedIn() {
 				return cliCommon.ReplacePersistentPreRunE(cmd, cliCommon.ErrRequireLogIn)
 			}

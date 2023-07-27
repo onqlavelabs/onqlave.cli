@@ -83,11 +83,15 @@ func PersistentPreRun(cmd *cobra.Command, args []string) error {
 		return ReplacePersistentPreRunE(cmd, ErrUnsetEnv)
 	}
 
-	if !IsLoggedIn() {
-		return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
+	if cmd.Use != "login" {
+		if !IsLoggedIn() {
+			return ReplacePersistentPreRunE(cmd, ErrRequireLogIn)
+		}
 	}
 
-	cmd.SetContext(context.WithValue(context.Background(), StartKey, time.Now()))
+	if viper.GetBool(FlagDebug) {
+		cmd.SetContext(context.WithValue(context.Background(), StartKey, time.Now()))
+	}
 
 	cmd.SilenceUsage = false
 
