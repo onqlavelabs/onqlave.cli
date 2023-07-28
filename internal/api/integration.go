@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/TylerBrock/colorjson"
 	"github.com/spf13/viper"
 
 	"github.com/onqlavelabs/onqlave.core/contracts/auth"
@@ -129,85 +130,14 @@ type ClusterPurpose int64
 type ClusterProvisioningState int64
 type ClusterRegion int64
 
-func NewArxProvider(t string) ArxProvider {
-	for k, v := range ArxProviders {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return ProviderInvalid
-}
-
-func NewClusterType(t string) ClusterType {
-	for k, v := range ClusterTypes {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return InvalidCluster
-}
-
-func NewClusterPurpose(t string) ClusterPurpose {
-	for k, v := range ClusterPurposes {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return PurposeInvalid
-}
-
-func NewClusterProvisioningState(t string) ClusterProvisioningState {
-	for k, v := range ClusterProvisioningStates {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return StateInvalid
-}
-
-func NewClusterRegion(t string) ClusterRegion {
-	for k, v := range ClusterRegions {
-		if strings.EqualFold(strings.ToLower(v), strings.ToLower(t)) {
-			return k
-		}
-	}
-	return REGION_INVALID
-}
-
-const (
-	StateInvalid ClusterProvisioningState = iota
-	StateReInitiated
-	StateInitiated
-	StatePending
-	StateCompleted
-	StateFailed
-	StateTimedout
-)
-
 const (
 	ProviderInvalid ArxProvider = iota
 	ProviderAzure
 	ProviderAWS
 	ProviderGCP
 )
-const (
-	InvalidCluster ClusterType = iota
-	ServerlessCluster
-	DedicatedCluster
-	OnPremCluster
-)
-
-const (
-	REGION_INVALID ClusterRegion = iota
-	REGION_AUS_EAST
-	REGION_AUS_WEST
-)
 
 var ArxProviders = map[ArxProvider]string{ProviderAWS: "AWS", ProviderAzure: "Azure", ProviderGCP: "GCP"}
-var ClusterTypes = map[ClusterType]string{ServerlessCluster: "Serverless", DedicatedCluster: "Dedicated", OnPremCluster: "On-Premise"}
-var ClusterPurposes = map[ClusterPurpose]string{PurposeTesting: "Testing", PurposeProduction: "Production", PurposeStaging: "Staging"}
-var ClusterProvisioningStates = map[ClusterProvisioningState]string{StateCompleted: "Completed", StateFailed: "Failed", StateInitiated: "Initiated", StateInvalid: "Invalid", StatePending: "Pending", StateTimedout: "Timedout"}
-var ClusterRegions = map[ClusterRegion]string{REGION_AUS_EAST: "AUS-EAST", REGION_AUS_WEST: "AUS-WEST"}
 
 func (c ArxProvider) String() string {
 	return ArxProviders[c]
@@ -263,7 +193,6 @@ func NewAPIIntegrationService(opts APIIntegrationServiceOptions) *APIIntegration
 }
 
 func Put[Response any, Request any](apiBase string, request Request) (*Response, error) {
-	client := &http.Client{}
 	payload, _ := json.Marshal(&request)
 
 	req, err := http.NewRequest(http.MethodPut, apiBase, bytes.NewBuffer(payload))
@@ -277,25 +206,15 @@ func Put[Response any, Request any](apiBase string, request Request) (*Response,
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	resp, err := client.Do(req)
+	responseObject, err := DoRequest[Response](req)
+	LogDebug(req.Method, req.URL.String(), request, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject Response
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func Post[Response any, Request any](apiBase string, request Request) (*Response, error) {
-	client := &http.Client{}
 	payload, _ := json.Marshal(&request)
 
 	req, err := http.NewRequest(http.MethodPost, apiBase, bytes.NewBuffer(payload))
@@ -309,25 +228,15 @@ func Post[Response any, Request any](apiBase string, request Request) (*Response
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
 
-	resp, err := client.Do(req)
+	responseObject, err := DoRequest[Response](req)
+	LogDebug(req.Method, req.URL.String(), request, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject Response
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func Get[T any](apiBase string) (*T, error) {
-	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, apiBase, nil)
 	if err != nil {
 		return nil, err
@@ -338,25 +247,16 @@ func Get[T any](apiBase string) (*T, error) {
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
-	resp, err := client.Do(req)
+
+	responseObject, err := DoRequest[T](req)
+	LogDebug(req.Method, req.URL.String(), nil, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject T
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func Delete[T any](apiBase string) (*T, error) {
-	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodDelete, apiBase, nil)
 	if err != nil {
 		return nil, err
@@ -367,21 +267,13 @@ func Delete[T any](apiBase string) (*T, error) {
 	if viper.Get("auth_key") != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", viper.GetString("auth_key")))
 	}
-	resp, err := client.Do(req)
+
+	responseObject, err := DoRequest[T](req)
+	LogDebug(req.Method, req.URL.String(), nil, responseObject, err, viper.GetBool("debug"))
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(string(bodyBytes))
-	}
-	var responseObject T
-	_ = json.Unmarshal(bodyBytes, &responseObject)
-	return &responseObject, nil
+	return responseObject, nil
 }
 
 func (s *APIIntegrationService) SendSignupInvitation(emailAddress string, tenantName string, userFullName string) (string, error) {
@@ -487,4 +379,56 @@ func (s *APIIntegrationService) GetLoginOperationStatus(token string) (*APIInteg
 type APIIntegrationServiceOperationResult struct {
 	Done   bool
 	Result any
+}
+
+func LogDebug(method, url string, req interface{}, resp any, err error, isDebugMode bool) {
+	if !isDebugMode || strings.Contains(url, "state") {
+		return
+	}
+
+	fmt.Printf("[%s]: %s\n", method, url)
+	fmt.Println("Request: ", RenderAsJson(req))
+	fmt.Println("Response: ", RenderAsJson(resp))
+
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+}
+
+func RenderAsJson(object interface{}) string {
+	var objMap map[string]interface{}
+	marshalledObj, _ := json.Marshal(object)
+	_ = json.Unmarshal(marshalledObj, &objMap)
+
+	f := colorjson.NewFormatter()
+	f.Indent = 4
+	objBytes, _ := f.Marshal(objMap)
+
+	return string(objBytes)
+}
+
+func DoRequest[Response any](req *http.Request) (*Response, error) {
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(string(bodyBytes))
+	}
+
+	var responseObject Response
+	err = json.Unmarshal(bodyBytes, &responseObject)
+	if err != nil {
+		return nil, err
+	}
+
+	return &responseObject, nil
 }

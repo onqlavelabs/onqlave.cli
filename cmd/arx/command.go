@@ -29,7 +29,8 @@ func Command() *cobra.Command {
 		Short:             "arx management",
 		Long:              "This command is used to manage arx resources.",
 		Example:           "onqlave arx",
-		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPreRunE: common.PersistentPreRunE,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	arxCmd.AddCommand(

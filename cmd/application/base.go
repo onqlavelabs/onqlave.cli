@@ -38,24 +38,24 @@ func baseCommand() *cobra.Command {
 func runBaseCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
-	application, err := newApplicationAPIService(cmd.Context()).GetBaseApplication()
+	app, err := newApplicationAPIService(cmd.Context()).GetBaseApplication()
 	if err != nil {
 		common.RenderCLIOutputError("There was an error getting application base information: ", err)
 		return
 	}
 	if viper.GetBool(common.FlagJson) {
-		common.CliRenderBaseResourceOutput(width, application, common.ResourceApplication)
+		common.CliRenderBaseResourceOutput(width, app, common.ResourceApplication)
 		return
 	}
 
-	common.NewDataTable(convertApplicationBaseInfo(application)).Render()
+	common.NewDataTable(convertApplicationBaseInfo(app)).Render()
 }
 
-func convertApplicationBaseInfo(application application.Technologies) []BaseApplication {
+func convertApplicationBaseInfo(app application.Technologies) []BaseApplication {
 	var list []BaseApplication
 
 	list = append(list, BaseApplication{Model: "Technologies", Flag: Tech.String()})
-	for _, tech := range application.Technologies {
+	for _, tech := range app.Technologies {
 		list = append(list, BaseApplication{
 			Model:       "",
 			ID:          tech.Id,

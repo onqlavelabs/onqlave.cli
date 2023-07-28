@@ -35,18 +35,19 @@ func addCommand() *cobra.Command {
 		Short:   "add api key by attributes",
 		Long:    "This command is used to create api key. Key application ID, arx ID and application technology is required.",
 		Example: "onqlave key add",
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
+
 			if !common.IsLoggedIn() {
-				return common.ReplacePersistentPreRunE(cmd, common.ErrRequireLogIn)
+				return common.CliRenderErr(cmd, common.ErrRequireLogIn)
 			}
 
 			apiService := newKeyApiService(cmd.Context())
 			baseInfo, err := apiService.GetKeyBaseInfo()
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			_, err = apiService.ValidateAPIKey(baseInfo,
@@ -55,7 +56,7 @@ func addCommand() *cobra.Command {
 				_addApiKeyOperation.applicationTechnology,
 			)
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			cmd.SilenceUsage = false

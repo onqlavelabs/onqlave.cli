@@ -15,7 +15,8 @@ func Command() *cobra.Command {
 		Short:             "user management",
 		Long:              "This command is used to manage users resources.",
 		Example:           "onqlave user",
-		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPreRunE: common.PersistentPreRunE,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	userCmd.AddCommand(listCommand())

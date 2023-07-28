@@ -25,7 +25,8 @@ func Command() *cobra.Command {
 		Short:             "application management",
 		Long:              "This command is used to manage application resources.",
 		Example:           "onqlave application",
-		PersistentPreRunE: common.PersistentPreRun,
+		PersistentPreRunE: common.PersistentPreRunE,
+		PersistentPostRun: common.PersistentPostRun,
 	}
 
 	applicationCmd.AddCommand(

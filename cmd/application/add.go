@@ -2,7 +2,6 @@ package application
 
 import (
 	"fmt"
-
 	"os"
 	"strings"
 
@@ -35,24 +34,23 @@ func addCommand() *cobra.Command {
 		Example: "onqlave application add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.ReplacePersistentPreRunE(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Application name is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Application name is required")))
 			}
 			_addApplicationOperation.applicationName = args[0]
 			return nil
 		},
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
 			modelWrapper, err := apiService.GetBaseApplication()
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			userApiService := user.NewService(user.ServiceOpt{Ctx: cmd.Context()})
 			validUser, err := userApiService.GetPlatformOwnerAndApplicationAdmin()
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			baseInfo := apiService.GetApplicationBaseInfoIDSlice(modelWrapper, validUser)
@@ -63,7 +61,7 @@ func addCommand() *cobra.Command {
 				_addApplicationOperation.applicationCors,
 			)
 			if err != nil {
-				return common.ReplacePersistentPreRunE(cmd, err)
+				return common.CliRenderErr(cmd, err)
 			}
 
 			cmd.SilenceUsage = false
