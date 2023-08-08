@@ -85,7 +85,7 @@ func runSignupCommand(cmd *cobra.Command, args []string) {
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
@@ -94,7 +94,7 @@ func runSignupCommand(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	go _waitingSignupOperation(apiService, token, communication.GetProducer(), common.Valid)
+	go waitingSignupOperation(apiService, token, communication.GetProducer(), common.Valid)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up signup operation: %s", err)) + "\n")
@@ -110,7 +110,7 @@ func runSignupCommand(cmd *cobra.Command, args []string) {
 	fmt.Println(utils.TextStyle.Render("For more information, read our documentation at https://www.docs.onqlave.com \n"))
 }
 
-func _waitingSignupOperation(apiService *api.APIIntegrationService, token string, producer *api.Producer, valid int) {
+func waitingSignupOperation(apiService *api.APIIntegrationService, token string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
 	producer.Produce(api.ConcurrencyOperationResult{Result: "Waiting for signup completion", Done: false, Error: nil})

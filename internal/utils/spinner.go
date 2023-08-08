@@ -27,7 +27,7 @@ type SpinnerOptions struct {
 	Consumer *api.Consumer
 }
 
-func NewSpnnerTUI(ctx context.Context, opts SpinnerOptions) (*SpinnerTUI, error) {
+func NewSpinnerTUI(ctx context.Context, opts SpinnerOptions) (*SpinnerTUI, error) {
 	r := &SpinnerTUI{
 		options: opts,
 		waiting: spinner.New(),

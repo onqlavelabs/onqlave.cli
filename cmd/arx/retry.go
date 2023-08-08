@@ -82,7 +82,7 @@ package arx
 //
 //	communication := api.NewConcurrencyChannel()
 //	// Run the function.
-//	ui, err := cli.NewSpnnerTUI(cmd.Context(), cli.SpinnerOptions{
+//	ui, err := cli.NewSpinnerTUI(cmd.Context(), cli.SpinnerOptions{
 //		Valid:    common.Valid,
 //		Consumer: communication.GetConsumer(),
 //	})

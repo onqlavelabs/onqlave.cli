@@ -16,7 +16,7 @@ type archiveApplicationOperation struct {
 	applicationId string
 }
 
-var _archiveApplication archiveApplicationOperation
+var archiveApplication archiveApplicationOperation
 
 func archiveCommand() *cobra.Command {
 	return &cobra.Command{
@@ -28,7 +28,7 @@ func archiveCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
-			_archiveApplication.applicationId = args[0]
+			archiveApplication.applicationId = args[0]
 			return nil
 		},
 		Run: runArchiveCommand,
@@ -37,7 +37,7 @@ func archiveCommand() *cobra.Command {
 
 func runArchiveCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	AppID := _archiveApplication.applicationId
+	AppID := archiveApplication.applicationId
 
 	err := newApplicationAPIService(cmd.Context()).ArchiveApplication(AppID)
 	if err != nil {

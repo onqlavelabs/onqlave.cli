@@ -38,10 +38,10 @@ func (o sealArxOperation) waitForCompletion(apiService *arx.Service, arxId strin
 	}
 }
 
-var _sealArx sealArxOperation
+var sealArx sealArxOperation
 
 func sealCommand() *cobra.Command {
-	_sealArx.arxOperationTimeout = 10
+	sealArx.arxOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "seal",
 		Short:   "seal arx by ID",
@@ -51,7 +51,7 @@ func sealCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
-			_sealArx.arxId = args[0]
+			sealArx.arxId = args[0]
 			return nil
 		},
 		Run: runSealCommand,
@@ -60,7 +60,7 @@ func sealCommand() *cobra.Command {
 
 func runSealCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := _sealArx.arxId
+	arxID := sealArx.arxId
 
 	arxApiService := newArxAPIService(cmd.Context())
 	arxId, err := arxApiService.SealArx(arxID)
@@ -69,12 +69,12 @@ func runSealCommand(cmd *cobra.Command, args []string) {
 		return
 	}
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx seal sometime takes up to %d minutes.", _sealArx.arxOperationTimeout)
+	header := fmt.Sprintf("Arx seal sometime takes up to %d minutes.", sealArx.arxOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
@@ -82,7 +82,7 @@ func runSealCommand(cmd *cobra.Command, args []string) {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx seal operation: %s", err)) + "\n")
 		return
 	}
-	go _sealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _sealArx.arxOperationTimeout)
+	go sealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), sealArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx seal operation: %s", err)) + "\n")
