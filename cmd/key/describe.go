@@ -17,7 +17,7 @@ type describeKeyOperation struct {
 	keyId string
 }
 
-var _describeKey describeKeyOperation
+var describeKey describeKeyOperation
 
 func describeCommand() *cobra.Command {
 	return &cobra.Command{
@@ -29,7 +29,7 @@ func describeCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("KeyID is required")))
 			}
-			_describeKey.keyId = args[0]
+			describeKey.keyId = args[0]
 			return nil
 		},
 		Run: runDescribeCommand,
@@ -37,7 +37,7 @@ func describeCommand() *cobra.Command {
 }
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
-	keyId := _describeKey.keyId
+	keyId := describeKey.keyId
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	data, err := newKeyApiService(cmd.Context()).GetKeyDetail(keyId)

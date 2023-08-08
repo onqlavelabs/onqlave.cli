@@ -16,7 +16,7 @@ type disableApplicationOperation struct {
 	applicationId string
 }
 
-var _disableApplication disableApplicationOperation
+var disableApplication disableApplicationOperation
 
 func disableCommand() *cobra.Command {
 	return &cobra.Command{
@@ -28,7 +28,7 @@ func disableCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
-			_disableApplication.applicationId = args[0]
+			disableApplication.applicationId = args[0]
 			return nil
 		},
 		Run: runDisableCommand,
@@ -37,7 +37,7 @@ func disableCommand() *cobra.Command {
 
 func runDisableCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	AppID := _disableApplication.applicationId
+	AppID := disableApplication.applicationId
 
 	err := newApplicationAPIService(cmd.Context()).DisableApplication(AppID)
 	if err != nil {

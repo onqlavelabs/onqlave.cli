@@ -25,6 +25,7 @@ func RenderError(msg string) string {
 	content := lipgloss.NewStyle().Bold(true).Padding(0, 1).Render(msg)
 	return err + content
 }
+
 func RenderAsJson(object interface{}) string {
 	var objMap map[string]interface{}
 	marshalledObj, _ := json.Marshal(object)

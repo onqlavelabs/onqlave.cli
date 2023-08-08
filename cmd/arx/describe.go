@@ -17,7 +17,7 @@ type describeArxOperation struct {
 	arxId string
 }
 
-var _describeArx describeArxOperation
+var describeArx describeArxOperation
 
 func describeCommand() *cobra.Command {
 	return &cobra.Command{
@@ -29,7 +29,7 @@ func describeCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
-			_describeArx.arxId = args[0]
+			describeArx.arxId = args[0]
 			return nil
 		},
 		Run: runDescribeCommand,
@@ -38,7 +38,7 @@ func describeCommand() *cobra.Command {
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	ArxID := _describeArx.arxId
+	ArxID := describeArx.arxId
 
 	arxDetail, err := newArxAPIService(cmd.Context()).GetArxDetail(ArxID)
 	if err != nil {

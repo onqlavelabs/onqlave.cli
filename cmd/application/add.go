@@ -24,7 +24,7 @@ type addApplicationOperation struct {
 	applicationCors        string
 }
 
-var _addApplicationOperation addApplicationOperation
+var addApplication addApplicationOperation
 
 func addCommand() *cobra.Command {
 	init := &cobra.Command{
@@ -36,7 +36,7 @@ func addCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Application name is required")))
 			}
-			_addApplicationOperation.applicationName = args[0]
+			addApplication.applicationName = args[0]
 			return nil
 		},
 
@@ -56,9 +56,9 @@ func addCommand() *cobra.Command {
 			baseInfo := apiService.GetApplicationBaseInfoIDSlice(modelWrapper, validUser)
 			_, err = apiService.ValidateApplication(
 				baseInfo,
-				_addApplicationOperation.applicationTechnology,
-				_addApplicationOperation.applicationOwner,
-				_addApplicationOperation.applicationCors,
+				addApplication.applicationTechnology,
+				addApplication.applicationOwner,
+				addApplication.applicationCors,
 			)
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
@@ -70,10 +70,10 @@ func addCommand() *cobra.Command {
 		},
 		Run: runAddCommand,
 	}
-	init.Flags().StringVarP(&_addApplicationOperation.applicationDescription, "application_description", "d", "", "enter application description")
-	init.Flags().StringVarP(&_addApplicationOperation.applicationTechnology, "application_technology", "t", "", "enter application technology")
-	init.Flags().StringVarP(&_addApplicationOperation.applicationOwner, "application_owner", "o", "", "enter application owner")
-	init.Flags().StringVarP(&_addApplicationOperation.applicationCors, "application_cors", "c", "", "enter application cors")
+	init.Flags().StringVarP(&addApplication.applicationDescription, "application_description", "d", "", "enter application description")
+	init.Flags().StringVarP(&addApplication.applicationTechnology, "application_technology", "t", "", "enter application technology")
+	init.Flags().StringVarP(&addApplication.applicationOwner, "application_owner", "o", "", "enter application owner")
+	init.Flags().StringVarP(&addApplication.applicationCors, "application_cors", "c", "", "enter application cors")
 
 	return init
 }
@@ -82,22 +82,22 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	var applicationCors []contractApplication.Cors
-	for _, cors := range strings.Split(_addApplicationOperation.applicationCors, ";") {
+	for _, cors := range strings.Split(addApplication.applicationCors, ";") {
 		applicationCors = append(applicationCors, contractApplication.Cors{
 			Address: cors,
 		})
 	}
 
 	applicationID, err := newApplicationAPIService(cmd.Context()).AddApplication(contractApplication.RequestApplication{
-		Name:        _addApplicationOperation.applicationName,
-		Description: _addApplicationOperation.applicationDescription,
-		Technology:  _addApplicationOperation.applicationTechnology,
-		Owner:       _addApplicationOperation.applicationOwner,
+		Name:        addApplication.applicationName,
+		Description: addApplication.applicationDescription,
+		Technology:  addApplication.applicationTechnology,
+		Owner:       addApplication.applicationOwner,
 		Cors:        applicationCors,
 	})
 
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error creating application '%s': ", _addApplicationOperation.applicationName), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error creating application '%s': ", addApplication.applicationName), err)
 		return
 	}
 

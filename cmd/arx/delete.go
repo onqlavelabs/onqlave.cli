@@ -39,10 +39,10 @@ func (o deleteArxOperation) waitForCompletion(apiService *arx.Service, arxId str
 	}
 }
 
-var _deleteArx deleteArxOperation
+var deleteArx deleteArxOperation
 
 func deleteCommand() *cobra.Command {
-	_deleteArx.arxOperationTimeout = 10
+	deleteArx.arxOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "delete",
 		Short:   "delete arx by ID",
@@ -52,7 +52,7 @@ func deleteCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
-			_deleteArx.arxId = args[0]
+			deleteArx.arxId = args[0]
 			return nil
 		},
 		Run: runDeleteCommand,
@@ -61,7 +61,7 @@ func deleteCommand() *cobra.Command {
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := _deleteArx.arxId
+	arxID := deleteArx.arxId
 
 	arxApiService := newArxAPIService(cmd.Context())
 	_, err := arxApiService.DeleteArx(arxID)
@@ -71,12 +71,12 @@ func runDeleteCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx deletion sometime takes up to %d minutes.", _deleteArx.arxOperationTimeout)
+	header := fmt.Sprintf("Arx deletion sometime takes up to %d minutes.", deleteArx.arxOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
@@ -85,7 +85,7 @@ func runDeleteCommand(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	go _deleteArx.waitForCompletion(arxApiService, arxID, communication.GetProducer(), _deleteArx.arxOperationTimeout)
+	go deleteArx.waitForCompletion(arxApiService, arxID, communication.GetProducer(), deleteArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
