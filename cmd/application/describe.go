@@ -17,7 +17,7 @@ type describeApplicationOperation struct {
 	applicationId string
 }
 
-var _describeApplication describeApplicationOperation
+var describeApplication describeApplicationOperation
 
 func describeCommand() *cobra.Command {
 	return &cobra.Command{
@@ -29,7 +29,7 @@ func describeCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
-			_describeApplication.applicationId = args[0]
+			describeApplication.applicationId = args[0]
 			return nil
 		},
 		Run: runDescribeCommand,
@@ -37,7 +37,7 @@ func describeCommand() *cobra.Command {
 }
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
-	AppID := _describeApplication.applicationId
+	AppID := describeApplication.applicationId
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	applicationDetail, err := newApplicationAPIService(cmd.Context()).GetApplication(AppID)

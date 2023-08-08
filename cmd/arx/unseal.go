@@ -38,10 +38,10 @@ func (o unsealArxOperation) waitForCompletion(apiService *arx.Service, arxId str
 	}
 }
 
-var _unsealArx unsealArxOperation
+var unsealArx unsealArxOperation
 
 func unsealCommand() *cobra.Command {
-	_unsealArx.arxOperationTimeout = 10
+	unsealArx.arxOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "unseal",
 		Short:   "unseal arx by ID",
@@ -51,7 +51,7 @@ func unsealCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
-			_unsealArx.arxId = args[0]
+			unsealArx.arxId = args[0]
 			return nil
 		},
 		Run: runUnsealCommand,
@@ -60,7 +60,7 @@ func unsealCommand() *cobra.Command {
 
 func runUnsealCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := _unsealArx.arxId
+	arxID := unsealArx.arxId
 
 	arxApiService := newArxAPIService(cmd.Context())
 
@@ -82,12 +82,12 @@ func runUnsealCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx unseal sometime takes up to %d minutes.", _unsealArx.arxOperationTimeout)
+	header := fmt.Sprintf("Arx unseal sometime takes up to %d minutes.", unsealArx.arxOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    common.Valid,
 		Consumer: communication.GetConsumer(),
 	})
@@ -95,7 +95,7 @@ func runUnsealCommand(cmd *cobra.Command, args []string) {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
 		return
 	}
-	go _unsealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _unsealArx.arxOperationTimeout)
+	go unsealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), unsealArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")

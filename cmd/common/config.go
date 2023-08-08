@@ -33,7 +33,7 @@ func GetConfigDir() string {
 }
 
 func IsEnvConfigured() bool {
-	return viper.GetString(FlagApiBaseUrl) != "" && viper.GetString(FlagEnv) != ""
+	return fmt.Sprintf("%v", viper.Get(FlagApiBaseUrl)) != "" && viper.GetString(FlagEnv) != ""
 }
 
 func IsLoggedIn() bool {

@@ -23,10 +23,10 @@ type deleteAPIKeyOperation struct {
 	operationTimeout int
 }
 
-var _deleteAPIKey deleteAPIKeyOperation
+var deleteKey deleteAPIKeyOperation
 
 func deleteCommand() *cobra.Command {
-	_deleteAPIKey.operationTimeout = 10
+	deleteKey.operationTimeout = 10
 	return &cobra.Command{
 		Use:     "delete",
 		Short:   "delete api key by ID",
@@ -37,7 +37,7 @@ func deleteCommand() *cobra.Command {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("KeyID is required")))
 			}
 
-			_deleteAPIKey.keyID = args[0]
+			deleteKey.keyID = args[0]
 			return nil
 		},
 		Run: runDeleteCommand,
@@ -45,7 +45,7 @@ func deleteCommand() *cobra.Command {
 }
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
-	deleteKeyID := _deleteAPIKey.keyID
+	deleteKeyID := deleteKey.keyID
 	apiService := newKeyApiService(cmd.Context())
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
@@ -56,18 +56,18 @@ func runDeleteCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Api key deletion sometime takes up to %d minutes.", _deleteAPIKey.operationTimeout)
+	header := fmt.Sprintf("Api key deletion sometime takes up to %d minutes.", deleteKey.operationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
 	if err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up api key delete operation: %s", err)) + "\n")
 		return
 	}
 
-	go _deleteAPIKey.waitForCompletion(apiService, keyID, communication.GetProducer(), _deleteAPIKey.operationTimeout)
+	go deleteKey.waitForCompletion(apiService, keyID, communication.GetProducer(), deleteKey.operationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up api key delete operation: %s", err)) + "\n")

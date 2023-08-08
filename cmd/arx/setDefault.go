@@ -19,10 +19,10 @@ type setDefaultArxOperation struct {
 	arxOperationTimeout int
 }
 
-var _setDefaultArx setDefaultArxOperation
+var setDefaultArx setDefaultArxOperation
 
 func setDefaultCommand() *cobra.Command {
-	_setDefaultArx.arxOperationTimeout = 10
+	setDefaultArx.arxOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "default",
 		Short:   "set default arx by ID",
@@ -32,7 +32,7 @@ func setDefaultCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx id is required")))
 			}
-			_setDefaultArx.arxId = args[0]
+			setDefaultArx.arxId = args[0]
 			return nil
 		},
 		Run: runSetDefaultCommand,
@@ -41,7 +41,7 @@ func setDefaultCommand() *cobra.Command {
 
 func runSetDefaultCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := _setDefaultArx.arxId
+	arxID := setDefaultArx.arxId
 
 	_, err := newArxAPIService(cmd.Context()).SetDefaultArx(arxID)
 	if err != nil {
@@ -50,7 +50,7 @@ func runSetDefaultCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Setting default arx sometime takes up to %d minutes.", _setDefaultArx.arxOperationTimeout)
+	header := fmt.Sprintf("Setting default arx sometime takes up to %d minutes.", setDefaultArx.arxOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
