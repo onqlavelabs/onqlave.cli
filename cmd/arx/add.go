@@ -93,6 +93,7 @@ func addCommand() *cobra.Command {
 				addArx.arxRegion,
 				addArx.arxEncryptionMethod,
 				addArx.arxRotationCycle,
+				addArx.arxOwner,
 			)
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
