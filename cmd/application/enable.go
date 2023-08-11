@@ -16,7 +16,7 @@ type enableApplicationOperation struct {
 	applicationId string
 }
 
-var _enableApplication enableApplicationOperation
+var enableApplication enableApplicationOperation
 
 func enableCommand() *cobra.Command {
 	return &cobra.Command{
@@ -28,7 +28,7 @@ func enableCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
-			_enableApplication.applicationId = args[0]
+			enableApplication.applicationId = args[0]
 			return nil
 		},
 		Run: runEnableCommand,
@@ -37,7 +37,7 @@ func enableCommand() *cobra.Command {
 
 func runEnableCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	AppID := _enableApplication.applicationId
+	AppID := enableApplication.applicationId
 
 	err := newApplicationAPIService(cmd.Context()).EnableApplication(AppID)
 	if err != nil {

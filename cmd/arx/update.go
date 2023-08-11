@@ -48,10 +48,10 @@ func (o updateArxOperation) waitForCompletion(apiService *arx.Service, arxId str
 	}
 }
 
-var _updateArx updateArxOperation
+var updateArx updateArxOperation
 
 func updateCommand() *cobra.Command {
-	_updateArx.arxOperationTimeout = 10
+	updateArx.arxOperationTimeout = 10
 	init := &cobra.Command{
 		Use:   "update",
 		Short: "update arx by ID and attributes",
@@ -63,7 +63,7 @@ func updateCommand() *cobra.Command {
 			if len(args) < 1 {
 				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
 			}
-			_updateArx.arxId = args[0]
+			updateArx.arxId = args[0]
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -85,7 +85,7 @@ func updateCommand() *cobra.Command {
 
 			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
 
-			arxDetail, err := arxApiService.GetArxDetail(_updateArx.arxId)
+			arxDetail, err := arxApiService.GetArxDetail(updateArx.arxId)
 			if err != nil {
 				return cliCommon.CliRenderErr(cmd, err)
 			}
@@ -97,8 +97,8 @@ func updateCommand() *cobra.Command {
 			_, err = arxApiService.ValidateEditArxRequest(
 				baseInfo,
 				arxDetail.ProviderID,
-				_updateArx.arxRegion,
-				_updateArx.arxRotationCycle,
+				updateArx.arxRegion,
+				updateArx.arxRotationCycle,
 			)
 			if err != nil {
 				return cliCommon.CliRenderErr(cmd, err)
@@ -110,29 +110,29 @@ func updateCommand() *cobra.Command {
 		},
 		Run: runArxUpdateCommand,
 	}
-	init.Flags().StringVarP(&_updateArx.arxName, "arx_name", "n", "test", "enter arx name")
-	init.Flags().StringVarP(&_updateArx.arxRegion, "arx_region", "r", "", "enter arx region - (AUS-EAST, AUS-WEST)")
-	init.Flags().StringVarP(&_updateArx.arxRotationCycle, "arx_rotation_cycle", "c", "Default", "enter arx rotation cycle")
-	init.Flags().StringVarP(&_updateArx.arxOwner, "arx_owner", "o", "Default", "enter arx owner")
-	init.Flags().Uint64VarP(&_updateArx.arxSpendLimit, "arx_spend_limit", "l", 0, "enter arx spend limit")
-	init.Flags().BoolVarP(&_updateArx.arxIsDefault, "arx_is_default", "i", false, "enter arx is default")
+	init.Flags().StringVarP(&updateArx.arxName, "arx_name", "n", "test", "enter arx name")
+	init.Flags().StringVarP(&updateArx.arxRegion, "arx_region", "r", "", "enter arx region - (AUS-EAST, AUS-WEST)")
+	init.Flags().StringVarP(&updateArx.arxRotationCycle, "arx_rotation_cycle", "c", "Default", "enter arx rotation cycle")
+	init.Flags().StringVarP(&updateArx.arxOwner, "arx_owner", "o", "Default", "enter arx owner")
+	init.Flags().Uint64VarP(&updateArx.arxSpendLimit, "arx_spend_limit", "l", 0, "enter arx spend limit")
+	init.Flags().BoolVarP(&updateArx.arxIsDefault, "arx_is_default", "i", false, "enter arx is default")
 
 	return init
 }
 
 func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := _updateArx.arxId
+	arxID := updateArx.arxId
 
 	arxApiService := newArxAPIService(cmd.Context())
 	arxId, err := arxApiService.UpdateArx(contracts.UpdateArx{
 		ID:            common.ArxId(arxID),
-		Name:          _updateArx.arxName,
-		Regions:       []string{_updateArx.arxRegion},
-		RotationCycle: _updateArx.arxRotationCycle,
-		Owner:         _updateArx.arxOwner,
-		SpendLimit:    utils.UInt64(_updateArx.arxSpendLimit),
-		IsDefault:     utils.Bool(_updateArx.arxIsDefault),
+		Name:          updateArx.arxName,
+		Regions:       []string{updateArx.arxRegion},
+		RotationCycle: updateArx.arxRotationCycle,
+		Owner:         updateArx.arxOwner,
+		SpendLimit:    utils.UInt64(updateArx.arxSpendLimit),
+		IsDefault:     utils.Bool(updateArx.arxIsDefault),
 	})
 	if err != nil {
 		cliCommon.RenderCLIOutputError(fmt.Sprintf("There was an error updating arx '%s': ", arxID), err)
@@ -140,13 +140,13 @@ func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx update sometime takes up to %d minutes.", _updateArx.arxOperationTimeout)
+	header := fmt.Sprintf("Arx update sometime takes up to %d minutes.", updateArx.arxOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
 	// Run the function.
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{
 		Valid:    cliCommon.Valid,
 		Consumer: communication.GetConsumer(),
 	})
@@ -154,7 +154,7 @@ func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
 		return
 	}
-	go _updateArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), _updateArx.arxOperationTimeout)
+	go updateArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), updateArx.arxOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")

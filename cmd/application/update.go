@@ -25,7 +25,7 @@ type editApplicationOperation struct {
 	applicationCors        string
 }
 
-var _editApplicationOperation editApplicationOperation
+var updateApplication editApplicationOperation
 
 func updateCommand() *cobra.Command {
 	init := &cobra.Command{
@@ -37,33 +37,33 @@ func updateCommand() *cobra.Command {
 			if len(args) < 1 {
 				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ApplicationID is required")))
 			}
-			_editApplicationOperation.applicationID = args[0]
+			updateApplication.applicationID = args[0]
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			apiService := application.NewService(application.ServiceOpt{Ctx: cmd.Context()})
-			applicationDetail, err := apiService.GetApplication(_editApplicationOperation.applicationID)
+			applicationDetail, err := apiService.GetApplication(updateApplication.applicationID)
 			if err != nil {
-				return fmt.Errorf("There was an error describing application '%s': %s", _describeApplication.applicationId, err)
+				return fmt.Errorf("there was an error describing application '%s': %s", updateApplication.applicationID, err)
 			}
 
-			if _editApplicationOperation.applicationName == "" {
-				_editApplicationOperation.applicationName = applicationDetail.Name
+			if updateApplication.applicationName == "" {
+				updateApplication.applicationName = applicationDetail.Name
 			}
 
-			if _editApplicationOperation.applicationTechnology == "" {
-				_editApplicationOperation.applicationTechnology = applicationDetail.Technology
+			if updateApplication.applicationTechnology == "" {
+				updateApplication.applicationTechnology = applicationDetail.Technology
 			}
 
-			if _editApplicationOperation.applicationOwner == "" {
-				_editApplicationOperation.applicationOwner = applicationDetail.Owner
+			if updateApplication.applicationOwner == "" {
+				updateApplication.applicationOwner = applicationDetail.Owner
 			}
 
-			if _editApplicationOperation.applicationCors == "" {
+			if updateApplication.applicationCors == "" {
 				for _, corsAddress := range applicationDetail.Cors {
-					_editApplicationOperation.applicationCors = fmt.Sprintf("%s;%s", _editApplicationOperation.applicationCors, corsAddress.Address)
+					updateApplication.applicationCors = fmt.Sprintf("%s;%s", updateApplication.applicationCors, corsAddress.Address)
 				}
-				_editApplicationOperation.applicationCors = strings.TrimLeft(_editApplicationOperation.applicationCors, ";")
+				updateApplication.applicationCors = strings.TrimLeft(updateApplication.applicationCors, ";")
 			}
 
 			modelWrapper, err := apiService.GetBaseApplication()
@@ -81,9 +81,9 @@ func updateCommand() *cobra.Command {
 
 			_, err = apiService.ValidateApplication(
 				baseInfo,
-				_editApplicationOperation.applicationTechnology,
-				_editApplicationOperation.applicationOwner,
-				_editApplicationOperation.applicationCors,
+				updateApplication.applicationTechnology,
+				updateApplication.applicationOwner,
+				updateApplication.applicationCors,
 			)
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
@@ -95,11 +95,11 @@ func updateCommand() *cobra.Command {
 		},
 		Run: runEditCommand,
 	}
-	init.Flags().StringVarP(&_editApplicationOperation.applicationName, "application_name", "n", "", "enter application name")
-	init.Flags().StringVarP(&_editApplicationOperation.applicationDescription, "application_description", "d", "", "enter application description")
-	init.Flags().StringVarP(&_editApplicationOperation.applicationTechnology, "application_technology", "t", "", "enter application technology")
-	init.Flags().StringVarP(&_editApplicationOperation.applicationOwner, "application_owner", "o", "", "enter application owner")
-	init.Flags().StringVarP(&_editApplicationOperation.applicationCors, "application_cors", "c", "", "enter application cors")
+	init.Flags().StringVarP(&updateApplication.applicationName, "application_name", "n", "", "enter application name")
+	init.Flags().StringVarP(&updateApplication.applicationDescription, "application_description", "d", "", "enter application description")
+	init.Flags().StringVarP(&updateApplication.applicationTechnology, "application_technology", "t", "", "enter application technology")
+	init.Flags().StringVarP(&updateApplication.applicationOwner, "application_owner", "o", "", "enter application owner")
+	init.Flags().StringVarP(&updateApplication.applicationCors, "application_cors", "c", "", "enter application cors")
 
 	return init
 }
@@ -108,24 +108,24 @@ func runEditCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	var applicationCors []contractApplication.Cors
-	for _, cors := range strings.Split(_editApplicationOperation.applicationCors, ";") {
+	for _, cors := range strings.Split(updateApplication.applicationCors, ";") {
 		applicationCors = append(applicationCors, contractApplication.Cors{
 			Address: cors,
 		})
 	}
 
 	applicationID, err := newApplicationAPIService(cmd.Context()).EditApplication(
-		_editApplicationOperation.applicationID,
+		updateApplication.applicationID,
 		contractApplication.RequestApplication{
-			Name:        _editApplicationOperation.applicationName,
-			Description: _editApplicationOperation.applicationDescription,
-			Technology:  _editApplicationOperation.applicationTechnology,
-			Owner:       _editApplicationOperation.applicationOwner,
+			Name:        updateApplication.applicationName,
+			Description: updateApplication.applicationDescription,
+			Technology:  updateApplication.applicationTechnology,
+			Owner:       updateApplication.applicationOwner,
 			Cors:        applicationCors,
 		})
 
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error updating application '%s': ", _addApplicationOperation.applicationName), err)
+		common.RenderCLIOutputError(fmt.Sprintf("there was an error updating application '%s': ", updateApplication.applicationName), err)
 		return
 	}
 

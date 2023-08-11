@@ -19,7 +19,7 @@ func (sn ServiceName) String() string {
 }
 
 func IsLocal() bool {
-	return viper.GetString("env") == "local"
+	return viper.GetString("onqlave_env") == "local"
 }
 
 func GetBaseUrl(serviceName string) string {

@@ -26,10 +26,10 @@ type addApiKeyOperation struct {
 	operationTimeout      int
 }
 
-var _addApiKeyOperation addApiKeyOperation
+var addKey addApiKeyOperation
 
 func addCommand() *cobra.Command {
-	_addApiKeyOperation.operationTimeout = 10
+	addKey.operationTimeout = 10
 	init := &cobra.Command{
 		Use:     "add",
 		Short:   "add api key by attributes",
@@ -51,9 +51,9 @@ func addCommand() *cobra.Command {
 			}
 
 			_, err = apiService.ValidateAPIKey(baseInfo,
-				_addApiKeyOperation.applicationID,
-				_addApiKeyOperation.arxID,
-				_addApiKeyOperation.applicationTechnology,
+				addKey.applicationID,
+				addKey.arxID,
+				addKey.applicationTechnology,
 			)
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
@@ -66,9 +66,9 @@ func addCommand() *cobra.Command {
 		Run: runAddCommand,
 	}
 
-	init.Flags().StringVarP(&_addApiKeyOperation.applicationID, "key_application_id", "a", "", "enter application id")
-	init.Flags().StringVarP(&_addApiKeyOperation.arxID, "key_arx_id", "c", "", "enter arx id")
-	init.Flags().StringVarP(&_addApiKeyOperation.applicationTechnology, "key_application_technology", "t", "", "enter application technology")
+	init.Flags().StringVarP(&addKey.applicationID, "key_application_id", "a", "", "enter application id")
+	init.Flags().StringVarP(&addKey.arxID, "key_arx_id", "c", "", "enter arx id")
+	init.Flags().StringVarP(&addKey.applicationTechnology, "key_application_technology", "t", "", "enter application technology")
 
 	return init
 }
@@ -78,9 +78,9 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	keyID, err := apiService.AddKey(api_key.CreateAPIKey{
-		ApplicationID:         _addApiKeyOperation.applicationID,
-		ClusterID:             _addApiKeyOperation.arxID,
-		ApplicationTechnology: _addApiKeyOperation.applicationTechnology,
+		ApplicationID:         addKey.applicationID,
+		ClusterID:             addKey.arxID,
+		ApplicationTechnology: addKey.applicationTechnology,
 	})
 	if err != nil {
 		common.RenderCLIOutputError("There was an error creating api key: ", err)
@@ -88,18 +88,18 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Api key creation sometime takes up to %d minutes.", _addApiKeyOperation.operationTimeout)
+	header := fmt.Sprintf("Api key creation sometime takes up to %d minutes.", addKey.operationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
 	if err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up api key creation operation: %s", err)) + "\n")
 		return
 	}
 
-	go _addApiKeyOperation.waitForCompletion(apiService, keyID, communication.GetProducer(), _addApiKeyOperation.operationTimeout)
+	go addKey.waitForCompletion(apiService, keyID, communication.GetProducer(), addKey.operationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up api key creation operation: %s", err)) + "\n")

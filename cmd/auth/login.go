@@ -61,7 +61,7 @@ func runLoginCommand(cmd *cobra.Command, args []string) {
 
 	token, err := apiService.SendLoginInvitation(emailAddress, tenantName)
 	if err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error sending the login email to email address '%s': %s", emailAddress, err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error sending the login email to '%s': %s", emailAddress, err)) + "\n")
 		return
 	}
 
@@ -72,13 +72,13 @@ func runLoginCommand(cmd *cobra.Command, args []string) {
 	fmt.Println(s.String())
 
 	communication := api.NewConcurrencyChannel()
-	ui, err := utils.NewSpnnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
+	ui, err := utils.NewSpinnerTUI(cmd.Context(), utils.SpinnerOptions{Valid: common.Valid, Consumer: communication.GetConsumer()})
 	if err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up login operation: %s", err)) + "\n")
 		return
 	}
 
-	go _waitingLoginOperation(apiService, token, communication.GetProducer(), common.Valid)
+	go waitingLoginOperation(apiService, token, communication.GetProducer(), common.Valid)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
 		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up login operation: %s", err)) + "\n")
@@ -94,7 +94,7 @@ func runLoginCommand(cmd *cobra.Command, args []string) {
 	fmt.Println(utils.TextStyle.Render("For more information, read our documentation at https://docs.onqlave.com \n"))
 }
 
-func _waitingLoginOperation(apiService *api.APIIntegrationService, token string, producer *api.Producer, valid int) {
+func waitingLoginOperation(apiService *api.APIIntegrationService, token string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
 	producer.Produce(api.ConcurrencyOperationResult{Result: "Waiting for login completion", Done: false, Error: nil})
