@@ -173,43 +173,49 @@ func (s *Service) GetArxBaseInfoIDSlice(data arx.BaseInfo) BaseInfo {
 
 func (s *Service) ValidateArx(
 	baseInfo BaseInfo,
-	clusterProvider string,
-	clusterType string,
-	clusterPurpose string,
-	clusterRegion string,
-	encryptionMethod string,
-	rotationCycle string,
+	arxProvider string,
+	arxType,
+	arxPurpose,
+	arxRegion,
+	encryptionMethod,
+	rotationCycle,
+	arxOwner string,
 ) (bool, error) {
-	if !utils.Contains(baseInfo.ProviderIDs, clusterProvider) {
-		return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_cloud_provider", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid cluster provider - must be in (%v)", strings.Join(baseInfo.ProviderIDs, ", ")))
+	if strings.TrimSpace(arxOwner) == "" {
+		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_owner", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("arx owner is request and cannot be blank"))
 	}
 
-	if regions, ok := baseInfo.CloudProviderRegions[clusterProvider]; ok {
-		if !utils.Contains(regions, clusterRegion) {
-			return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_cloud_provider_region", nil, "", http.StatusBadRequest).
-				Wrap(fmt.Errorf("invalid cluster provider - must be in (%v)", strings.Join(regions, ", ")))
+	if !utils.Contains(baseInfo.ProviderIDs, arxProvider) {
+		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_cloud_provider", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid arx provider - must be in (%v)", strings.Join(baseInfo.ProviderIDs, ", ")))
+	}
+
+	if regions, ok := baseInfo.CloudProviderRegions[arxProvider]; ok {
+		if !utils.Contains(regions, arxRegion) {
+			return false, model.NewAppError("ValidateArx", "cli.invalid.arx_cloud_provider_region", nil, "", http.StatusBadRequest).
+				Wrap(fmt.Errorf("invalid arx provider - must be in (%v)", strings.Join(regions, ", ")))
 		}
 	}
 
-	if !utils.Contains(baseInfo.PlanIDs, clusterType) {
-		return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_plan", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid cluster type - must be in (%v)", strings.Join(baseInfo.PlanIDs, ", ")))
+	if !utils.Contains(baseInfo.PlanIDs, arxType) {
+		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_plan", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid arx type - must be in (%v)", strings.Join(baseInfo.PlanIDs, ", ")))
 	}
 
-	if !utils.Contains(baseInfo.PurposeIDs, clusterPurpose) {
-		return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_purpose", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid cluster purpose - must be in (%v)", strings.Join(baseInfo.PurposeIDs, ", ")))
+	if !utils.Contains(baseInfo.PurposeIDs, arxPurpose) {
+		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_purpose", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid arx purpose - must be in (%v)", strings.Join(baseInfo.PurposeIDs, ", ")))
 	}
 
 	if !utils.Contains(baseInfo.EncryptionMethodIDs, encryptionMethod) {
-		return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_encryption_method", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid cluster encryption method - must be in (%v)", strings.Join(baseInfo.EncryptionMethodIDs, ", ")))
+		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_encryption_method", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid arx encryption method - must be in (%v)", strings.Join(baseInfo.EncryptionMethodIDs, ", ")))
 	}
 
 	if !utils.Contains(baseInfo.RotationCycleIDs, rotationCycle) {
-		return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_rotation_cycle", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid cluster rotation cycle - must be in (%v)", strings.Join(baseInfo.RotationCycleIDs, ", ")))
+		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_rotation_cycle", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid arx rotation cycle - must be in (%v)", strings.Join(baseInfo.RotationCycleIDs, ", ")))
 	}
 
 	return true, nil
