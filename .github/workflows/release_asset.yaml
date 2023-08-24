@@ -29,9 +29,9 @@ jobs:
       - name: Build CLI
         id: build-cli
         run: |
-          GOOS=linux GOARCH=amd64 go build -o ./bin/onqlave-linux .
-          GOOS=darwin GOARCH=amd64 go build -o ./bin/onqlave-darwin .
-          GOOS=windows GOARCH=amd64 go build -o ./bin/onqlave-windows.exe .
+          GOOS=linux GOARCH=amd64 go build -ldflags="-X 'github.com/onqlavelabs/onqlave.cli/cmd.Version=${GITHUB_REF#$"refs/tags/"}'" -o ./bin/onqlave-linux .
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'github.com/onqlavelabs/onqlave.cli/cmd.Version=${GITHUB_REF#$"refs/tags/"}'" -o ./bin/onqlave-darwin .
+          GOOS=windows GOARCH=amd64 go build -ldflags="-X 'github.com/onqlavelabs/onqlave.cli/cmd.Version=${GITHUB_REF#$"refs/tags/"}'" -o ./bin/onqlave-windows.exe .
 
       - name: Prepare Docker Registry
         id: prepare-registry
