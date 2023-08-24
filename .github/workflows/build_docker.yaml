@@ -50,7 +50,7 @@ jobs:
             ${{env.VERSION_TAG}}
             ${{env.LATEST_TAG}}
           build-args: |
-            CLI_ENV=prod
+            CLI_VERSION=${{env.VERSION_TAG}}
 
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
