@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/onqlavelabs/onqlave.cli/internal/api"
 	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"github.com/onqlavelabs/onqlave.cli/internal/api"
 )
 
 type SpinnerTUI struct {
@@ -50,7 +51,7 @@ func (ui *SpinnerTUI) Error() error {
 func (ui *SpinnerTUI) Init() tea.Cmd {
 	go ui.runOperation()
 
-	return spinner.Tick
+	return spinner.New().Tick
 }
 
 func (ui *SpinnerTUI) runOperation() {
