@@ -17,8 +17,9 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/cmd/user"
 )
 
+var Version = "alpha"
 var rootCmd = &cobra.Command{
-	Version:           "0.0.1",
+	Version:           Version,
 	Use:               "onqlave CLI helps you manage your Onqlave environment.",
 	Example:           "onqlave",
 	PersistentPreRunE: RootPreRunE,
@@ -35,8 +36,10 @@ func Execute() {
 }
 
 func initConfig() {
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
 	rootCmd.PersistentFlags().Bool(common.FlagJson, false, "JSON Output. Set to true if stdout is not a TTY.")
 	rootCmd.PersistentFlags().Bool(common.FlagDebug, false, "Debug mode. Set true for debugging.")
+
 	viper.SetDefault(common.FlagApiBaseUrl, "")
 	viper.AddConfigPath(common.GetConfigDir())
 	viper.SetConfigName(common.ConfigFile)     // Register config file name (no extension)
