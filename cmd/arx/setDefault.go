@@ -14,25 +14,25 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type setDefaultArxOperation struct {
-	arxId               string
-	arxOperationTimeout int
+type setDefaultProjectOperation struct {
+	projectId               string
+	projectOperationTimeout int
 }
 
-var setDefaultArx setDefaultArxOperation
+var setDefaultProject setDefaultProjectOperation
 
 func setDefaultCommand() *cobra.Command {
-	setDefaultArx.arxOperationTimeout = 10
+	setDefaultProject.projectOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "default",
-		Short:   "set default arx by ID",
-		Long:    "This command is used to set default arx by ID. Arx id is required.",
-		Example: "onqlave arx default",
+		Short:   "set default project by ID",
+		Long:    "This command is used to set default project by ID. Project id is required.",
+		Example: "onqlave project default",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx id is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project id is required")))
 			}
-			setDefaultArx.arxId = args[0]
+			setDefaultProject.projectId = args[0]
 			return nil
 		},
 		Run: runSetDefaultCommand,
@@ -41,18 +41,18 @@ func setDefaultCommand() *cobra.Command {
 
 func runSetDefaultCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := setDefaultArx.arxId
+	projectID := setDefaultProject.projectId
 
-	_, err := newArxAPIService(cmd.Context()).SetDefaultArx(arxID)
+	_, err := newProjectAPIService(cmd.Context()).SetDefaultProject(projectID)
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error setting default arx '%s': ", arxID), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error setting default project '%s': ", projectID), err)
 		return
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Setting default arx sometime takes up to %d minutes.", setDefaultArx.arxOperationTimeout)
+	header := fmt.Sprintf("Setting default project sometime takes up to %d minutes.", setDefaultProject.projectOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
-	common.CliRenderSuccessActionResourceOutput(width, arxID, common.ResourceArx, common.ActionSetDefault)
+	common.CliRenderSuccessActionResourceOutput(width, projectID, common.ResourceProject, common.ActionSetDefault)
 }

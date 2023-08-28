@@ -45,14 +45,14 @@ type BaseInfo struct {
 	CloudProviderRegions map[string][]string
 }
 
-type GetDetailArxResponse struct {
+type GetDetailProjectResponse struct {
 	ID  string `json:"id"`
 	Acl acl.ACL
 	arx.Detail
 }
 
-type ListArxResponse struct {
-	Clusters []arx.ExistingWithDetail `json:"clusters"`
+type ListProjectResponse struct {
+	Projects []arx.ExistingWithDetail `json:"clusters"`
 }
 
 type Service struct {
@@ -67,12 +67,12 @@ func NewService(opts ServiceOpt) *Service {
 	return &Service{opts: opts}
 }
 
-func (s *Service) CheckArxOperationState(clusterId string, operation CommandOperation) (*api.APIIntegrationServiceOperationResult, error) {
+func (s *Service) CheckProjectOperationState(clusterId string, operation CommandOperation) (*api.APIIntegrationServiceOperationResult, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/state", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
 	response, err := api.Get[arx.StatusResponse](clusterUrl)
-	message := "Waiting for arx operation to complete."
+	message := "Waiting for project operation to complete."
 	if err != nil {
 		return &api.APIIntegrationServiceOperationResult{Done: false, Result: message}, err
 	}
@@ -98,7 +98,7 @@ func (s *Service) CheckArxOperationState(clusterId string, operation CommandOper
 	}
 }
 
-func (s *Service) GetArxBaseInfo() (arx.BaseInfo, error) {
+func (s *Service) GetProjectBaseInfo() (arx.BaseInfo, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/base", api.UrlBuilder(api.TenantName.String()), tenantId)
 
@@ -110,7 +110,7 @@ func (s *Service) GetArxBaseInfo() (arx.BaseInfo, error) {
 	return response.Data, nil
 }
 
-func (s *Service) GetArxDetail(clusterID string) (*GetDetailArxResponse, error) {
+func (s *Service) GetProjectDetail(clusterID string) (*GetDetailProjectResponse, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/state?detail=true", api.UrlBuilder(api.TenantName.String()), tenantId, clusterID)
 
@@ -119,14 +119,14 @@ func (s *Service) GetArxDetail(clusterID string) (*GetDetailArxResponse, error) 
 		return nil, model.NewAppError("GetClusterDetail", "cli.server_error.cluster_detail", nil, "get cluster detail failed", http.StatusInternalServerError).Wrap(err)
 	}
 
-	return &GetDetailArxResponse{
+	return &GetDetailProjectResponse{
 		string(response.Data.ID),
 		response.Data.ACL,
 		*response.Data.Cluster,
 	}, nil
 }
 
-func (s *Service) GetArxBaseInfoIDSlice(data arx.BaseInfo) BaseInfo {
+func (s *Service) GetProjectBaseInfoIDSlice(data arx.BaseInfo) BaseInfo {
 	var baseInfo BaseInfo
 	var cloudProviderRegions = make(map[string][]string)
 	for _, provider := range data.Providers {
@@ -171,7 +171,7 @@ func (s *Service) GetArxBaseInfoIDSlice(data arx.BaseInfo) BaseInfo {
 	return baseInfo
 }
 
-func (s *Service) ValidateArx(
+func (s *Service) ValidateProject(
 	baseInfo BaseInfo,
 	arxProvider string,
 	arxType,
@@ -221,7 +221,7 @@ func (s *Service) ValidateArx(
 	return true, nil
 }
 
-func (s *Service) ValidateEditArxRequest(
+func (s *Service) ValidateEditProjectRequest(
 	baseInfo BaseInfo,
 	clusterProvider string,
 	clusterRegion string,
@@ -242,7 +242,7 @@ func (s *Service) ValidateEditArxRequest(
 	return true, nil
 }
 
-func (s *Service) AddArx(addClusterRequest arx.NewArx) (string, error) {
+func (s *Service) AddProject(addClusterRequest arx.NewArx) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters", api.UrlBuilder(api.TenantName.String()), tenantId)
 
@@ -256,7 +256,7 @@ func (s *Service) AddArx(addClusterRequest arx.NewArx) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) RetryAddArx(clusterId string) (string, error) {
+func (s *Service) RetryAddProject(clusterId string) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/retry", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
@@ -268,7 +268,7 @@ func (s *Service) RetryAddArx(clusterId string) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) DeleteArx(clusterId string) (string, error) {
+func (s *Service) DeleteProject(clusterId string) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
@@ -279,7 +279,7 @@ func (s *Service) DeleteArx(clusterId string) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) SealArx(clusterId string) (string, error) {
+func (s *Service) SealProject(clusterId string) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/seal", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
@@ -291,7 +291,7 @@ func (s *Service) SealArx(clusterId string) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) UnsealArx(clusterId string) (string, error) {
+func (s *Service) UnsealProject(clusterId string) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/unseal", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
@@ -303,7 +303,7 @@ func (s *Service) UnsealArx(clusterId string) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) SetDefaultArx(clusterId string) (string, error) {
+func (s *Service) SetDefaultProject(clusterId string) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s/default", api.UrlBuilder(api.TenantName.String()), tenantId, clusterId)
 
@@ -315,7 +315,7 @@ func (s *Service) SetDefaultArx(clusterId string) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) UpdateArx(contract arx.UpdateArx) (string, error) {
+func (s *Service) UpdateProject(contract arx.UpdateArx) (string, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters/%s", api.UrlBuilder(api.TenantName.String()), tenantId, contract.ID)
 	request := arx.UpdateRequest{
@@ -328,16 +328,16 @@ func (s *Service) UpdateArx(contract arx.UpdateArx) (string, error) {
 	return string(response.Data.ID), nil
 }
 
-func (s *Service) GetArx() (ListArxResponse, error) {
+func (s *Service) GetProject() (ListProjectResponse, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/clusters", api.UrlBuilder(api.TenantName.String()), tenantId)
 
 	response, err := api.Get[arx.ListResponse](clusterUrl)
 
 	if err != nil {
-		return ListArxResponse{}, model.NewAppError("GetClusters", "cli.server_error.get_clusters", nil, "get clusters failed", http.StatusInternalServerError).Wrap(err)
+		return ListProjectResponse{}, model.NewAppError("GetClusters", "cli.server_error.get_clusters", nil, "get clusters failed", http.StatusInternalServerError).Wrap(err)
 	}
-	return ListArxResponse{
-		Clusters: response.Data.Clusters,
+	return ListProjectResponse{
+		Projects: response.Data.Clusters,
 	}, nil
 }
