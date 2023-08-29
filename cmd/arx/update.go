@@ -99,6 +99,7 @@ func updateCommand() *cobra.Command {
 				projectDetail.ProviderID,
 				updateProject.projectRegion,
 				updateProject.projectRotationCycle,
+				updateProject.projectOwner,
 			)
 			if err != nil {
 				return cliCommon.CliRenderErr(cmd, err)
@@ -112,8 +113,8 @@ func updateCommand() *cobra.Command {
 	}
 	init.Flags().StringVarP(&updateProject.projectName, "project_name", "n", "test", "enter project name")
 	init.Flags().StringVarP(&updateProject.projectRegion, "project_region", "r", "", "enter project region - (AUS-EAST, AUS-WEST)")
-	init.Flags().StringVarP(&updateProject.projectRotationCycle, "project_rotation_cycle", "c", "Default", "enter project rotation cycle")
-	init.Flags().StringVarP(&updateProject.projectOwner, "project_owner", "o", "Default", "enter project owner")
+	init.Flags().StringVarP(&updateProject.projectRotationCycle, "project_rotation_cycle", "c", "", "enter project rotation cycle")
+	init.Flags().StringVarP(&updateProject.projectOwner, "project_owner", "o", "", "enter project owner")
 	init.Flags().Uint64VarP(&updateProject.projectSpendLimit, "project_spend_limit", "l", 0, "enter project spend limit")
 	init.Flags().BoolVarP(&updateProject.projectIsDefault, "project_is_default", "i", false, "enter project is default")
 

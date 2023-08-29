@@ -173,49 +173,49 @@ func (s *Service) GetProjectBaseInfoIDSlice(data arx.BaseInfo) BaseInfo {
 
 func (s *Service) ValidateProject(
 	baseInfo BaseInfo,
-	arxProvider string,
-	arxType,
-	arxPurpose,
-	arxRegion,
+	projectProvider string,
+	projectType,
+	projectPurpose,
+	projectRegion,
 	encryptionMethod,
 	rotationCycle,
-	arxOwner string,
+	projectOwner string,
 ) (bool, error) {
-	if strings.TrimSpace(arxOwner) == "" {
-		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_owner", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("arx owner is request and cannot be blank"))
+	if strings.TrimSpace(projectOwner) == "" {
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_owner", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("project owner is required and cannot be blank"))
 	}
 
-	if !utils.Contains(baseInfo.ProviderIDs, arxProvider) {
-		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_cloud_provider", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid arx provider - must be in (%v)", strings.Join(baseInfo.ProviderIDs, ", ")))
+	if !utils.Contains(baseInfo.ProviderIDs, projectProvider) {
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_cloud_provider", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid project provider - must be in (%v)", strings.Join(baseInfo.ProviderIDs, ", ")))
 	}
 
-	if regions, ok := baseInfo.CloudProviderRegions[arxProvider]; ok {
-		if !utils.Contains(regions, arxRegion) {
-			return false, model.NewAppError("ValidateArx", "cli.invalid.arx_cloud_provider_region", nil, "", http.StatusBadRequest).
-				Wrap(fmt.Errorf("invalid arx provider - must be in (%v)", strings.Join(regions, ", ")))
+	if regions, ok := baseInfo.CloudProviderRegions[projectProvider]; ok {
+		if !utils.Contains(regions, projectRegion) {
+			return false, model.NewAppError("ValidateProject", "cli.invalid.project_cloud_provider_region", nil, "", http.StatusBadRequest).
+				Wrap(fmt.Errorf("invalid project provider - must be in (%v)", strings.Join(regions, ", ")))
 		}
 	}
 
-	if !utils.Contains(baseInfo.PlanIDs, arxType) {
-		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_plan", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid arx type - must be in (%v)", strings.Join(baseInfo.PlanIDs, ", ")))
+	if !utils.Contains(baseInfo.PlanIDs, projectType) {
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_plan", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid project type - must be in (%v)", strings.Join(baseInfo.PlanIDs, ", ")))
 	}
 
-	if !utils.Contains(baseInfo.PurposeIDs, arxPurpose) {
-		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_purpose", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid arx purpose - must be in (%v)", strings.Join(baseInfo.PurposeIDs, ", ")))
+	if !utils.Contains(baseInfo.PurposeIDs, projectPurpose) {
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_purpose", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid project purpose - must be in (%v)", strings.Join(baseInfo.PurposeIDs, ", ")))
 	}
 
 	if !utils.Contains(baseInfo.EncryptionMethodIDs, encryptionMethod) {
-		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_encryption_method", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid arx encryption method - must be in (%v)", strings.Join(baseInfo.EncryptionMethodIDs, ", ")))
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_encryption_method", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid project encryption method - must be in (%v)", strings.Join(baseInfo.EncryptionMethodIDs, ", ")))
 	}
 
 	if !utils.Contains(baseInfo.RotationCycleIDs, rotationCycle) {
-		return false, model.NewAppError("ValidateArx", "cli.invalid.arx_rotation_cycle", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid arx rotation cycle - must be in (%v)", strings.Join(baseInfo.RotationCycleIDs, ", ")))
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_rotation_cycle", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid project rotation cycle - must be in (%v)", strings.Join(baseInfo.RotationCycleIDs, ", ")))
 	}
 
 	return true, nil
@@ -226,17 +226,23 @@ func (s *Service) ValidateEditProjectRequest(
 	clusterProvider string,
 	clusterRegion string,
 	rotationCycle string,
+	projectOwner string,
 ) (bool, error) {
+	if strings.TrimSpace(projectOwner) == "" {
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_owner", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("project owner is required and cannot be blank"))
+	}
+
 	if regions, ok := baseInfo.CloudProviderRegions[clusterProvider]; ok {
 		if !utils.Contains(regions, clusterRegion) {
-			return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_cloud_provider_region", nil, "", http.StatusBadRequest).
-				Wrap(fmt.Errorf("invalid cluster provider - must be in (%v)", strings.Join(regions, ", ")))
+			return false, model.NewAppError("ValidateProject", "cli.invalid.project_cloud_provider_region", nil, "", http.StatusBadRequest).
+				Wrap(fmt.Errorf("invalid project provider - must be in (%v)", strings.Join(regions, ", ")))
 		}
 	}
 
 	if !utils.Contains(baseInfo.RotationCycleIDs, rotationCycle) {
-		return false, model.NewAppError("ValidateCluster", "cli.invalid.cluster_rotation_cycle", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("invalid cluster rotation cycle - must be in (%v)", strings.Join(baseInfo.RotationCycleIDs, ", ")))
+		return false, model.NewAppError("ValidateProject", "cli.invalid.project_rotation_cycle", nil, "", http.StatusBadRequest).
+			Wrap(fmt.Errorf("invalid project rotation cycle - must be in (%v)", strings.Join(baseInfo.RotationCycleIDs, ", ")))
 	}
 
 	return true, nil
