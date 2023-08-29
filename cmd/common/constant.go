@@ -22,7 +22,7 @@ const (
 
 	Valid = 30
 
-	ResourceArx         = "Arx"
+	ResourceProject     = "Project"
 	ResourceApplication = "Application"
 	ResourceKey         = "API Key"
 	ResourceTenant      = "Tenant"

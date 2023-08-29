@@ -18,18 +18,18 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type sealArxOperation struct {
-	arxId               string
-	arxOperationTimeout int
+type sealProjectOperation struct {
+	projectId               string
+	projectOperationTimeout int
 }
 
-func (o sealArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
+func (o sealProjectOperation) waitForCompletion(apiService *arx.Service, projectId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	message := "Waiting for arx seal to complete."
+	message := "Waiting for project seal to complete."
 	producer.Produce(api.ConcurrencyOperationResult{Result: message, Done: false, Error: nil})
 	for duration.Minutes() < float64(valid) {
-		result, err := apiService.CheckArxOperationState(arxId, arx.SealOperation)
+		result, err := apiService.CheckProjectOperationState(projectId, arx.SealOperation)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			return
@@ -38,20 +38,20 @@ func (o sealArxOperation) waitForCompletion(apiService *arx.Service, arxId strin
 	}
 }
 
-var sealArx sealArxOperation
+var sealProject sealProjectOperation
 
 func sealCommand() *cobra.Command {
-	sealArx.arxOperationTimeout = 10
+	sealProject.projectOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "seal",
-		Short:   "seal arx by ID",
-		Long:    "This command is used to seal arx by ID. Arx id is required.",
-		Example: "onqlave arx seal",
+		Short:   "seal project by ID",
+		Long:    "This command is used to seal project by ID. Project id is required.",
+		Example: "onqlave project seal",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project id is required")))
 			}
-			sealArx.arxId = args[0]
+			sealProject.projectId = args[0]
 			return nil
 		},
 		Run: runSealCommand,
@@ -60,16 +60,16 @@ func sealCommand() *cobra.Command {
 
 func runSealCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := sealArx.arxId
+	projectID := sealProject.projectId
 
-	arxApiService := newArxAPIService(cmd.Context())
-	arxId, err := arxApiService.SealArx(arxID)
+	projectApiService := newProjectAPIService(cmd.Context())
+	_, err := projectApiService.SealProject(projectID)
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error retry sealing arx '%s': ", arxID), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error retry sealing project '%s': ", projectID), err)
 		return
 	}
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx seal sometime takes up to %d minutes.", sealArx.arxOperationTimeout)
+	header := fmt.Sprintf("Project seal sometime takes up to %d minutes.", sealProject.projectOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
@@ -79,15 +79,15 @@ func runSealCommand(cmd *cobra.Command, args []string) {
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx seal operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project seal operation: %s", err)) + "\n")
 		return
 	}
-	go sealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), sealArx.arxOperationTimeout)
+	go sealProject.waitForCompletion(projectApiService, projectID, communication.GetProducer(), sealProject.projectOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx seal operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project seal operation: %s", err)) + "\n")
 		return
 	}
-	common.CliRenderUIErrorOutput(ui, common.ResourceArx, common.ActionSealed, arxID)
+	common.CliRenderUIErrorOutput(ui, common.ResourceProject, common.ActionSealed, projectID)
 
 }

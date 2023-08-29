@@ -18,19 +18,19 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type deleteArxOperation struct {
-	arxId               string
-	arxOperationTimeout int
+type deleteProjectOperation struct {
+	projectId               string
+	projectOperationTimeout int
 }
 
-func (o deleteArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
+func (o deleteProjectOperation) waitForCompletion(apiService *arx.Service, projectId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	message := "Waiting for arx deletion to complete."
+	message := "Waiting for project deletion to complete."
 	producer.Produce(api.ConcurrencyOperationResult{Result: message, Done: false, Error: nil})
 
 	for duration.Minutes() < float64(valid) {
-		result, err := apiService.CheckArxOperationState(arxId, arx.DeleteOperation)
+		result, err := apiService.CheckProjectOperationState(projectId, arx.DeleteOperation)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			return
@@ -39,20 +39,20 @@ func (o deleteArxOperation) waitForCompletion(apiService *arx.Service, arxId str
 	}
 }
 
-var deleteArx deleteArxOperation
+var deleteProject deleteProjectOperation
 
 func deleteCommand() *cobra.Command {
-	deleteArx.arxOperationTimeout = 10
+	deleteProject.projectOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "delete",
-		Short:   "delete arx by ID",
-		Long:    "This command is used to delete arx by ID. Arx id is required.",
-		Example: "onqlave arx delete",
+		Short:   "delete project by ID",
+		Long:    "This command is used to delete project by ID. Project id is required.",
+		Example: "onqlave project delete",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project id is required")))
 			}
-			deleteArx.arxId = args[0]
+			deleteProject.projectId = args[0]
 			return nil
 		},
 		Run: runDeleteCommand,
@@ -61,17 +61,17 @@ func deleteCommand() *cobra.Command {
 
 func runDeleteCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := deleteArx.arxId
+	projectID := deleteProject.projectId
 
-	arxApiService := newArxAPIService(cmd.Context())
-	_, err := arxApiService.DeleteArx(arxID)
+	projectApiService := newProjectAPIService(cmd.Context())
+	_, err := projectApiService.DeleteProject(projectID)
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error retry deleting arx '%s': ", arxID), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error retry deleting project '%s': ", projectID), err)
 		return
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx deletion sometime takes up to %d minutes.", deleteArx.arxOperationTimeout)
+	header := fmt.Sprintf("Project deletion sometime takes up to %d minutes.", deleteProject.projectOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
@@ -81,16 +81,16 @@ func runDeleteCommand(cmd *cobra.Command, args []string) {
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project delete operation: %s", err)) + "\n")
 		return
 	}
 
-	go deleteArx.waitForCompletion(arxApiService, arxID, communication.GetProducer(), deleteArx.arxOperationTimeout)
+	go deleteProject.waitForCompletion(projectApiService, projectID, communication.GetProducer(), deleteProject.projectOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx delete operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project delete operation: %s", err)) + "\n")
 		return
 	}
 
-	common.CliRenderUIErrorOutput(ui, common.ResourceArx, common.ActionDeleted, arxID)
+	common.CliRenderUIErrorOutput(ui, common.ResourceProject, common.ActionDeleted, projectID)
 }

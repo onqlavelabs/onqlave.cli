@@ -9,31 +9,31 @@ import (
 	"github.com/onqlavelabs/onqlave.cli/internal/api/arx"
 )
 
-type FlagArx string
+type FlagProject string
 
 const (
-	Type             FlagArx = "arx_type"
-	EncryptionMethod FlagArx = "arx_encryption_method"
-	Provider         FlagArx = "arx_provider"
-	Purpose          FlagArx = "arx_purpose"
-	RotationCycle    FlagArx = "arx_rotation_cycle"
+	Type             FlagProject = "project_type"
+	EncryptionMethod FlagProject = "project_encryption_method"
+	Provider         FlagProject = "project_provider"
+	Purpose          FlagProject = "project_purpose"
+	RotationCycle    FlagProject = "project_rotation_cycle"
 )
 
-func (flag FlagArx) String() string {
+func (flag FlagProject) String() string {
 	return string(flag)
 }
 
 func Command() *cobra.Command {
-	arxCmd := &cobra.Command{
-		Use:               "arx",
-		Short:             "arx management",
-		Long:              "This command is used to manage arx resources.",
-		Example:           "onqlave arx",
+	projectCmd := &cobra.Command{
+		Use:               "project",
+		Short:             "project management",
+		Long:              "This command is used to manage project resources.",
+		Example:           "onqlave project",
 		PersistentPreRunE: common.PersistentPreRunE,
 		PersistentPostRun: common.PersistentPostRun,
 	}
 
-	arxCmd.AddCommand(
+	projectCmd.AddCommand(
 		addCommand(),
 		deleteCommand(),
 		describeCommand(),
@@ -45,9 +45,9 @@ func Command() *cobra.Command {
 		baseCommand(),
 	)
 
-	return arxCmd
+	return projectCmd
 }
 
-func newArxAPIService(ctx context.Context) *arx.Service {
+func newProjectAPIService(ctx context.Context) *arx.Service {
 	return arx.NewService(arx.ServiceOpt{Ctx: ctx})
 }

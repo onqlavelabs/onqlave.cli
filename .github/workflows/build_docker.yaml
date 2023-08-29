@@ -50,7 +50,7 @@ jobs:
             ${{env.VERSION_TAG}}
             ${{env.LATEST_TAG}}
           build-args: |
-            CLI_VERSION=${GITHUB_REF#$"refs/tags/"}
+            CLI_VERSION=${{steps.version_step.outputs.version}}
 
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
