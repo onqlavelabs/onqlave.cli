@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/onqlavelabs/onqlave.cli/cmd/application"
 	"github.com/onqlavelabs/onqlave.cli/cmd/arx"
 	"github.com/onqlavelabs/onqlave.cli/cmd/auth"
 	"github.com/onqlavelabs/onqlave.cli/cmd/common"
@@ -54,7 +53,6 @@ func addCommands() {
 	rootCmd.AddCommand(key.Command())
 	rootCmd.AddCommand(tenant.Command())
 	rootCmd.AddCommand(arx.Command())
-	rootCmd.AddCommand(application.Command())
 	rootCmd.AddCommand(user.Command())
 }
 
