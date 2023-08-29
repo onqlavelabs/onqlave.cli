@@ -183,7 +183,7 @@ func (s *Service) ValidateProject(
 ) (bool, error) {
 	if strings.TrimSpace(projectOwner) == "" {
 		return false, model.NewAppError("ValidateProject", "cli.invalid.project_owner", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("project owner is request and cannot be blank"))
+			Wrap(fmt.Errorf("project owner is required and cannot be blank"))
 	}
 
 	if !utils.Contains(baseInfo.ProviderIDs, projectProvider) {
@@ -230,7 +230,7 @@ func (s *Service) ValidateEditProjectRequest(
 ) (bool, error) {
 	if strings.TrimSpace(projectOwner) == "" {
 		return false, model.NewAppError("ValidateProject", "cli.invalid.project_owner", nil, "", http.StatusBadRequest).
-			Wrap(fmt.Errorf("project owner is request and cannot be blank"))
+			Wrap(fmt.Errorf("project owner is required and cannot be blank"))
 	}
 
 	if regions, ok := baseInfo.CloudProviderRegions[clusterProvider]; ok {
