@@ -18,18 +18,18 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type unsealArxOperation struct {
-	arxId               string
-	arxOperationTimeout int
+type unsealProjectOperation struct {
+	projectId               string
+	projectOperationTimeout int
 }
 
-func (o unsealArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
+func (o unsealProjectOperation) waitForCompletion(apiService *arx.Service, projectId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	message := "Waiting for arx unseal to complete."
+	message := "Waiting for project unseal to complete."
 	producer.Produce(api.ConcurrencyOperationResult{Result: message, Done: false, Error: nil})
 	for duration.Minutes() < float64(valid) {
-		result, err := apiService.CheckArxOperationState(arxId, arx.UnsealOperation)
+		result, err := apiService.CheckProjectOperationState(projectId, arx.UnsealOperation)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			return
@@ -38,20 +38,20 @@ func (o unsealArxOperation) waitForCompletion(apiService *arx.Service, arxId str
 	}
 }
 
-var unsealArx unsealArxOperation
+var unsealProject unsealProjectOperation
 
 func unsealCommand() *cobra.Command {
-	unsealArx.arxOperationTimeout = 10
+	unsealProject.projectOperationTimeout = 10
 	return &cobra.Command{
 		Use:     "unseal",
-		Short:   "unseal arx by ID",
-		Long:    "This command is used to unseal arx by ID. Arx id is required.",
-		Example: "onqlave arx unseal",
+		Short:   "unseal project by ID",
+		Long:    "This command is used to unseal project by ID. Project id is required.",
+		Example: "onqlave project unseal",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project id is required")))
 			}
-			unsealArx.arxId = args[0]
+			unsealProject.projectId = args[0]
 			return nil
 		},
 		Run: runUnsealCommand,
@@ -60,29 +60,29 @@ func unsealCommand() *cobra.Command {
 
 func runUnsealCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := unsealArx.arxId
+	projectID := unsealProject.projectId
 
-	arxApiService := newArxAPIService(cmd.Context())
+	projectApiService := newProjectAPIService(cmd.Context())
 
-	arxDetail, err := arxApiService.GetArxDetail(arxID)
+	projectDetail, err := projectApiService.GetProjectDetail(projectID)
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error getting arx detail '%s': ", arxID), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error getting project detail '%s': ", projectID), err)
 		return
 	}
 
-	if arxDetail.Acl.CanNot["unseal_reason"] != "" {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error unseal arx: %s", arxDetail.Acl.CanNot["unseal_reason"])))
+	if projectDetail.Acl.CanNot["unseal_reason"] != "" {
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error unseal project: %s", projectDetail.Acl.CanNot["unseal_reason"])))
 		return
 	}
 
-	arxId, err := arxApiService.UnsealArx(arxID)
+	projectId, err := projectApiService.UnsealProject(projectID)
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error retry unsealing arx '%s': ", arxID), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error retry unsealing project '%s': ", projectID), err)
 		return
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx unseal sometime takes up to %d minutes.", unsealArx.arxOperationTimeout)
+	header := fmt.Sprintf("Project unseal sometime takes up to %d minutes.", unsealProject.projectOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
@@ -92,15 +92,15 @@ func runUnsealCommand(cmd *cobra.Command, args []string) {
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project unseal operation: %s", err)) + "\n")
 		return
 	}
-	go unsealArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), unsealArx.arxOperationTimeout)
+	go unsealProject.waitForCompletion(projectApiService, projectId, communication.GetProducer(), unsealProject.projectOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx unseal operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project unseal operation: %s", err)) + "\n")
 		return
 	}
 
-	common.CliRenderUIErrorOutput(ui, common.ResourceArx, common.ActionUnsealed, arxID)
+	common.CliRenderUIErrorOutput(ui, common.ResourceProject, common.ActionUnsealed, projectID)
 }

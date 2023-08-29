@@ -13,23 +13,23 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type describeArxOperation struct {
-	arxId string
+type describeProjectOperation struct {
+	projectId string
 }
 
-var describeArx describeArxOperation
+var describeProject describeProjectOperation
 
 func describeCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:     "describe",
-		Short:   "describe arx by ID",
-		Long:    "This command is used to describe arx by ID. Arx id is required.",
-		Example: "onqlave arx describe",
+		Short:   "describe project by ID",
+		Long:    "This command is used to describe project by ID. Project id is required.",
+		Example: "onqlave project describe",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project id is required")))
 			}
-			describeArx.arxId = args[0]
+			describeProject.projectId = args[0]
 			return nil
 		},
 		Run: runDescribeCommand,
@@ -38,18 +38,18 @@ func describeCommand() *cobra.Command {
 
 func runDescribeCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	ArxID := describeArx.arxId
+	projectID := describeProject.projectId
 
-	arxDetail, err := newArxAPIService(cmd.Context()).GetArxDetail(ArxID)
+	projectDetail, err := newProjectAPIService(cmd.Context()).GetProjectDetail(projectID)
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error describing arx '%s': ", ArxID), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error describing project '%s': ", projectID), err)
 		return
 	}
 
 	if viper.GetBool(common.FlagJson) {
-		common.CliRenderDescribeResourceOutput(width, arxDetail.Detail, common.ResourceArx, ArxID)
+		common.CliRenderDescribeResourceOutput(width, projectDetail.Detail, common.ResourceProject, projectID)
 		return
 	}
 
-	common.NewDataTable(arxDetail.Detail).Render()
+	common.NewDataTable(projectDetail.Detail).Render()
 }

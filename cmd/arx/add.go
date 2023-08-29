@@ -21,28 +21,28 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type addArxOperation struct {
-	arxName             string
-	arxType             string
-	arxProvider         string
-	arxPurpose          string
-	arxRegion           string
-	arxDescription      string
-	arxOperationTimeout int
-	arxSpendLimit       uint64
-	arxEncryptionMethod string
-	arxRotationCycle    string
-	arxOwner            string
-	arxIsDefault        bool
+type addProjectOperation struct {
+	projectName             string
+	projectType             string
+	projectProvider         string
+	projectPurpose          string
+	projectRegion           string
+	projectDescription      string
+	projectOperationTimeout int
+	projectSpendLimit       uint64
+	projectEncryptionMethod string
+	projectRotationCycle    string
+	projectOwner            string
+	projectIsDefault        bool
 }
 
-func (o addArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
+func (o addProjectOperation) waitForCompletion(apiService *arx.Service, projectId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	message := "Waiting for arx creation to complete."
+	message := "Waiting for project creation to complete."
 	producer.Produce(api.ConcurrencyOperationResult{Result: message, Done: false, Error: nil})
 	for duration.Minutes() < float64(valid) {
-		result, err := apiService.CheckArxOperationState(arxId, arx.AddOperation)
+		result, err := apiService.CheckProjectOperationState(projectId, arx.AddOperation)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			return
@@ -51,22 +51,22 @@ func (o addArxOperation) waitForCompletion(apiService *arx.Service, arxId string
 	}
 }
 
-var addArx addArxOperation
+var addProject addProjectOperation
 
 func addCommand() *cobra.Command {
-	addArx.arxOperationTimeout = 10
+	addProject.projectOperationTimeout = 10
 	init := &cobra.Command{
 		Use:   "add",
-		Short: "add arx by name and attributes",
-		Long: "This command is used to add arx. Valid arx name, arx provider,  arx type, arx purpose, " +
-			"arx region, arx description, arx encryption method, arx rotation cycle, arx owner, arx spend limit " +
-			"and arx is default are required.",
-		Example: "onqlave arx add",
+		Short: "add project by name and attributes",
+		Long: "This command is used to add project. Valid project name, project project,  project type, project purpose, " +
+			"project region, project description, project encryption method, project rotation cycle, project owner, project spend limit " +
+			"and project is default are required.",
+		Example: "onqlave project add",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx name is required")))
+				return common.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project name is required")))
 			}
-			addArx.arxName = args[0]
+			addProject.projectName = args[0]
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -78,22 +78,22 @@ func addCommand() *cobra.Command {
 				return common.CliRenderErr(cmd, common.ErrRequireLogIn)
 			}
 
-			arxApiService := newArxAPIService(cmd.Context())
-			modelWrapper, err := arxApiService.GetArxBaseInfo()
+			projectApiService := newProjectAPIService(cmd.Context())
+			modelWrapper, err := projectApiService.GetProjectBaseInfo()
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
 			}
 
-			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
-			_, err = arxApiService.ValidateArx(
+			baseInfo := projectApiService.GetProjectBaseInfoIDSlice(modelWrapper)
+			_, err = projectApiService.ValidateProject(
 				baseInfo,
-				addArx.arxProvider,
-				addArx.arxType,
-				addArx.arxPurpose,
-				addArx.arxRegion,
-				addArx.arxEncryptionMethod,
-				addArx.arxRotationCycle,
-				addArx.arxOwner,
+				addProject.projectProvider,
+				addProject.projectType,
+				addProject.projectPurpose,
+				addProject.projectRegion,
+				addProject.projectEncryptionMethod,
+				addProject.projectRotationCycle,
+				addProject.projectOwner,
 			)
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
@@ -105,43 +105,43 @@ func addCommand() *cobra.Command {
 		},
 		Run: runAddCommand,
 	}
-	init.Flags().StringVarP(&addArx.arxProvider, "arx_provider", "p", "", "enter arx cloud provider")
-	init.Flags().StringVarP(&addArx.arxType, "arx_type", "t", "", "enter arx type")
-	init.Flags().StringVarP(&addArx.arxPurpose, "arx_purpose", "u", "", "enter arx purpose")
-	init.Flags().StringVarP(&addArx.arxRegion, "arx_region", "r", "", "enter arx region")
-	init.Flags().StringVarP(&addArx.arxDescription, "arx_description", "d", "", "enter arx description")
-	init.Flags().StringVarP(&addArx.arxEncryptionMethod, "arx_encryption_method", "e", "", "enter arx encryption method")
-	init.Flags().StringVarP(&addArx.arxRotationCycle, "arx_rotation_cycle", "c", "", "enter arx rotation cycle")
-	init.Flags().StringVarP(&addArx.arxOwner, "arx_owner", "o", "", "enter arx owner")
-	init.Flags().Uint64VarP(&addArx.arxSpendLimit, "arx_spend_limit", "l", 0, "enter arx spend limit")
-	init.Flags().BoolVarP(&addArx.arxIsDefault, "arx_is_default", "i", false, "enter arx is default")
+	init.Flags().StringVarP(&addProject.projectProvider, "project_provider", "p", "", "enter project cloud project")
+	init.Flags().StringVarP(&addProject.projectType, "project_type", "t", "", "enter project type")
+	init.Flags().StringVarP(&addProject.projectPurpose, "project_purpose", "u", "", "enter project purpose")
+	init.Flags().StringVarP(&addProject.projectRegion, "project_region", "r", "", "enter project region")
+	init.Flags().StringVarP(&addProject.projectDescription, "project_description", "d", "", "enter project description")
+	init.Flags().StringVarP(&addProject.projectEncryptionMethod, "project_encryption_method", "e", "", "enter project encryption method")
+	init.Flags().StringVarP(&addProject.projectRotationCycle, "project_rotation_cycle", "c", "", "enter project rotation cycle")
+	init.Flags().StringVarP(&addProject.projectOwner, "project_owner", "o", "", "enter project owner")
+	init.Flags().Uint64VarP(&addProject.projectSpendLimit, "project_spend_limit", "l", 0, "enter project spend limit")
+	init.Flags().BoolVarP(&addProject.projectIsDefault, "project_is_default", "i", false, "enter project is default")
 
 	return init
 }
 
 func runAddCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxApiService := newArxAPIService(cmd.Context())
-	regions := strings.Split(addArx.arxRegion, ",")
-	arxId, err := arxApiService.AddArx(contracts.NewArx{
-		Name:             addArx.arxName,
-		Plan:             addArx.arxType,
-		Provider:         addArx.arxProvider,
-		Purpose:          addArx.arxPurpose,
+	projectApiService := newProjectAPIService(cmd.Context())
+	regions := strings.Split(addProject.projectRegion, ",")
+	projectId, err := projectApiService.AddProject(contracts.NewArx{
+		Name:             addProject.projectName,
+		Plan:             addProject.projectType,
+		Provider:         addProject.projectProvider,
+		Purpose:          addProject.projectPurpose,
 		Regions:          regions,
-		EncryptionMethod: addArx.arxEncryptionMethod,
-		RotationCycle:    addArx.arxRotationCycle,
-		Owner:            addArx.arxOwner,
-		SpendLimit:       utils.UInt64(addArx.arxSpendLimit),
-		IsDefault:        addArx.arxIsDefault,
+		EncryptionMethod: addProject.projectEncryptionMethod,
+		RotationCycle:    addProject.projectRotationCycle,
+		Owner:            addProject.projectOwner,
+		SpendLimit:       utils.UInt64(addProject.projectSpendLimit),
+		IsDefault:        addProject.projectIsDefault,
 	})
 	if err != nil {
-		common.RenderCLIOutputError(fmt.Sprintf("There was an error creating arx '%s': ", addArx.arxName), err)
+		common.RenderCLIOutputError(fmt.Sprintf("There was an error creating project '%s': ", addProject.projectName), err)
 		return
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx creation sometime takes up to %d minutes.", addArx.arxOperationTimeout)
+	header := fmt.Sprintf("Project creation sometime takes up to %d minutes.", addProject.projectOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
@@ -151,15 +151,15 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project creation operation: %s", err)) + "\n")
 		return
 	}
-	go addArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), addArx.arxOperationTimeout)
+	go addProject.waitForCompletion(projectApiService, projectId, communication.GetProducer(), addProject.projectOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx creation operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up project creation operation: %s", err)) + "\n")
 		return
 	}
 
-	common.CliRenderUIErrorOutput(ui, common.ResourceArx, common.ActionCreated, arxId)
+	common.CliRenderUIErrorOutput(ui, common.ResourceProject, common.ActionCreated, projectId)
 }

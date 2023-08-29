@@ -21,24 +21,24 @@ import (
 	"github.com/onqlavelabs/onqlave.core/errors"
 )
 
-type updateArxOperation struct {
-	arxId               string
-	arxName             string
-	arxRegion           string
-	arxOperationTimeout int
-	arxSpendLimit       uint64
-	arxRotationCycle    string
-	arxOwner            string
-	arxIsDefault        bool
+type updateProjectOperation struct {
+	projectId               string
+	projectName             string
+	projectRegion           string
+	projectOperationTimeout int
+	projectSpendLimit       uint64
+	projectRotationCycle    string
+	projectOwner            string
+	projectIsDefault        bool
 }
 
-func (o updateArxOperation) waitForCompletion(apiService *arx.Service, arxId string, producer *api.Producer, valid int) {
+func (o updateProjectOperation) waitForCompletion(apiService *arx.Service, projectId string, producer *api.Producer, valid int) {
 	start := time.Now().UTC()
 	duration := time.Since(start)
-	message := "Waiting for arx update to complete."
+	message := "Waiting for provider update to complete."
 	producer.Produce(api.ConcurrencyOperationResult{Result: message, Done: false, Error: nil})
 	for duration.Minutes() < float64(valid) {
-		result, err := apiService.CheckArxOperationState(arxId, arx.UpdateOperation)
+		result, err := apiService.CheckProjectOperationState(projectId, arx.UpdateOperation)
 		producer.Produce(api.ConcurrencyOperationResult{Result: result.Result, Done: result.Done, Error: err})
 		if result.Done || err != nil {
 			return
@@ -48,22 +48,22 @@ func (o updateArxOperation) waitForCompletion(apiService *arx.Service, arxId str
 	}
 }
 
-var updateArx updateArxOperation
+var updateProject updateProjectOperation
 
 func updateCommand() *cobra.Command {
-	updateArx.arxOperationTimeout = 10
+	updateProject.projectOperationTimeout = 10
 	init := &cobra.Command{
 		Use:   "update",
-		Short: "update arx by ID and attributes",
-		Long: "This command is used to update arx by ID. Arx id, arx name, " +
-			"arx region, arx encryption method, arx rotation cycle, arx owner, arx spend limit " +
-			"and arx is default are required.",
-		Example: "onqlave arx update",
+		Short: "update provider by ID and attributes",
+		Long: "This command is used to update provider by ID. Project id, provider name, " +
+			"provider region, provider encryption method, provider rotation cycle, provider owner, provider spend limit " +
+			"and provider is default are required.",
+		Example: "onqlave provider update",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("ArxID is required")))
+				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project id is required")))
 			}
-			updateArx.arxId = args[0]
+			updateProject.projectId = args[0]
 			return nil
 		},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -76,29 +76,29 @@ func updateCommand() *cobra.Command {
 				return cliCommon.CliRenderErr(cmd, cliCommon.ErrRequireLogIn)
 			}
 
-			arxApiService := newArxAPIService(cmd.Context())
+			projectApiService := newProjectAPIService(cmd.Context())
 
-			modelWrapper, err := arxApiService.GetArxBaseInfo()
+			modelWrapper, err := projectApiService.GetProjectBaseInfo()
 			if err != nil {
 				return cliCommon.CliRenderErr(cmd, err)
 			}
 
-			baseInfo := arxApiService.GetArxBaseInfoIDSlice(modelWrapper)
+			baseInfo := projectApiService.GetProjectBaseInfoIDSlice(modelWrapper)
 
-			arxDetail, err := arxApiService.GetArxDetail(updateArx.arxId)
+			projectDetail, err := projectApiService.GetProjectDetail(updateProject.projectId)
 			if err != nil {
 				return cliCommon.CliRenderErr(cmd, err)
 			}
 
-			if arxDetail == nil {
-				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Arx detail is required")))
+			if projectDetail == nil {
+				return cliCommon.CliRenderErr(cmd, errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("Project detail is required")))
 			}
 
-			_, err = arxApiService.ValidateEditArxRequest(
+			_, err = projectApiService.ValidateEditProjectRequest(
 				baseInfo,
-				arxDetail.ProviderID,
-				updateArx.arxRegion,
-				updateArx.arxRotationCycle,
+				projectDetail.ProviderID,
+				updateProject.projectRegion,
+				updateProject.projectRotationCycle,
 			)
 			if err != nil {
 				return cliCommon.CliRenderErr(cmd, err)
@@ -108,39 +108,39 @@ func updateCommand() *cobra.Command {
 
 			return nil
 		},
-		Run: runArxUpdateCommand,
+		Run: runUpdateCommand,
 	}
-	init.Flags().StringVarP(&updateArx.arxName, "arx_name", "n", "test", "enter arx name")
-	init.Flags().StringVarP(&updateArx.arxRegion, "arx_region", "r", "", "enter arx region - (AUS-EAST, AUS-WEST)")
-	init.Flags().StringVarP(&updateArx.arxRotationCycle, "arx_rotation_cycle", "c", "Default", "enter arx rotation cycle")
-	init.Flags().StringVarP(&updateArx.arxOwner, "arx_owner", "o", "Default", "enter arx owner")
-	init.Flags().Uint64VarP(&updateArx.arxSpendLimit, "arx_spend_limit", "l", 0, "enter arx spend limit")
-	init.Flags().BoolVarP(&updateArx.arxIsDefault, "arx_is_default", "i", false, "enter arx is default")
+	init.Flags().StringVarP(&updateProject.projectName, "project_name", "n", "test", "enter project name")
+	init.Flags().StringVarP(&updateProject.projectRegion, "project_region", "r", "", "enter project region - (AUS-EAST, AUS-WEST)")
+	init.Flags().StringVarP(&updateProject.projectRotationCycle, "project_rotation_cycle", "c", "Default", "enter project rotation cycle")
+	init.Flags().StringVarP(&updateProject.projectOwner, "project_owner", "o", "Default", "enter project owner")
+	init.Flags().Uint64VarP(&updateProject.projectSpendLimit, "project_spend_limit", "l", 0, "enter project spend limit")
+	init.Flags().BoolVarP(&updateProject.projectIsDefault, "project_is_default", "i", false, "enter project is default")
 
 	return init
 }
 
-func runArxUpdateCommand(cmd *cobra.Command, args []string) {
+func runUpdateCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
-	arxID := updateArx.arxId
+	projectID := updateProject.projectId
 
-	arxApiService := newArxAPIService(cmd.Context())
-	arxId, err := arxApiService.UpdateArx(contracts.UpdateArx{
-		ID:            common.ArxId(arxID),
-		Name:          updateArx.arxName,
-		Regions:       []string{updateArx.arxRegion},
-		RotationCycle: updateArx.arxRotationCycle,
-		Owner:         updateArx.arxOwner,
-		SpendLimit:    utils.UInt64(updateArx.arxSpendLimit),
-		IsDefault:     utils.Bool(updateArx.arxIsDefault),
+	projectApiService := newProjectAPIService(cmd.Context())
+	_, err := projectApiService.UpdateProject(contracts.UpdateArx{
+		ID:            common.ArxId(projectID),
+		Name:          updateProject.projectName,
+		Regions:       []string{updateProject.projectRegion},
+		RotationCycle: updateProject.projectRotationCycle,
+		Owner:         updateProject.projectOwner,
+		SpendLimit:    utils.UInt64(updateProject.projectSpendLimit),
+		IsDefault:     utils.Bool(updateProject.projectIsDefault),
 	})
 	if err != nil {
-		cliCommon.RenderCLIOutputError(fmt.Sprintf("There was an error updating arx '%s': ", arxID), err)
+		cliCommon.RenderCLIOutputError(fmt.Sprintf("There was an error updating provider '%s': ", projectID), err)
 		return
 	}
 
 	s := &strings.Builder{}
-	header := fmt.Sprintf("Arx update sometime takes up to %d minutes.", updateArx.arxOperationTimeout)
+	header := fmt.Sprintf("Provider update sometime takes up to %d minutes.", updateProject.projectOperationTimeout)
 	s.WriteString(utils.BoldStyle.Copy().Foreground(utils.Color).Padding(1, 0, 0, 0).Render(wrap.String(header, width)))
 	fmt.Println(s.String())
 
@@ -151,15 +151,15 @@ func runArxUpdateCommand(cmd *cobra.Command, args []string) {
 		Consumer: communication.GetConsumer(),
 	})
 	if err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up provider update operation: %s", err)) + "\n")
 		return
 	}
-	go updateArx.waitForCompletion(arxApiService, arxId, communication.GetProducer(), updateArx.arxOperationTimeout)
+	go updateProject.waitForCompletion(projectApiService, projectID, communication.GetProducer(), updateProject.projectOperationTimeout)
 
 	if _, err := tea.NewProgram(ui).Run(); err != nil {
-		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up arx update operation: %s", err)) + "\n")
+		fmt.Println(utils.RenderError(fmt.Sprintf("There was an error setting up provider update operation: %s", err)) + "\n")
 		return
 	}
 
-	cliCommon.CliRenderUIErrorOutput(ui, cliCommon.ResourceArx, cliCommon.ActionUpdated, arxID)
+	cliCommon.CliRenderUIErrorOutput(ui, cliCommon.ResourceProject, cliCommon.ActionUpdated, projectID)
 }
