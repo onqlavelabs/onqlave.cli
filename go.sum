@@ -193,6 +193,8 @@ github.com/muesli/termenv v0.11.1-0.20220204035834-5ac8409525e0/go.mod h1:Bd5NYQ
 github.com/muesli/termenv v0.11.1-0.20220212125758-44cd13922739/go.mod h1:Bd5NYQ7pd+SrtBSrSNoBBmXlcY8+Xj4BMJgh8qcZrvs=
 github.com/muesli/termenv v0.15.2 h1:GohcuySI0QmI3wN8Ok9PtKGkgkFIk7y6Vpb5PvrY+Wo=
 github.com/muesli/termenv v0.15.2/go.mod h1:Epx+iuz8sNs7mNKhxzH4fWXGNpZwUaJKRS1noLXviQ8=
+github.com/onqlavelabs/onqlave.core v0.0.0-20230831034033-776f7089fac2 h1:6PTvwge9UUSsJFd2R+22kpOSZFlC5SCVeWGoji284LY=
+github.com/onqlavelabs/onqlave.core v0.0.0-20230831034033-776f7089fac2/go.mod h1:7ZRm+ihoAChtpurdGx2EY3OOLf/2ekjxFbwzyQ5m+gk=
 github.com/onqlavelabs/onqlave.core v0.2.0 h1:/P5uDCU3xH7R9i8SzK+MRdC6z7pl/+xc6/4ZaaFM+g4=
 github.com/onqlavelabs/onqlave.core v0.2.0/go.mod h1:7ZRm+ihoAChtpurdGx2EY3OOLf/2ekjxFbwzyQ5m+gk=
 github.com/pelletier/go-toml/v2 v2.0.8 h1:0ctb6s9mE31h0/lhu+J6OPmVeDxJn+kYnJc2jZR9tGQ=

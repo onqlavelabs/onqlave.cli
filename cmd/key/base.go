@@ -12,11 +12,10 @@ import (
 )
 
 type BaseKey struct {
-	Model      string `json:"model"`
-	Flag       string `json:"flag"`
-	Id         string `json:"id"`
-	Name       string `json:"name"`
-	Technology string `json:"technology"`
+	Model string `json:"model"`
+	Flag  string `json:"flag"`
+	Id    string `json:"id"`
+	Name  string `json:"name"`
 }
 
 func baseCommand() *cobra.Command {
@@ -49,22 +48,11 @@ func runBaseCommand(cmd *cobra.Command, args []string) {
 
 func convertKeyBaseInfo(key api_key.Models) []BaseKey {
 	var list []BaseKey
-
-	list = append(list, BaseKey{Model: "Applications", Flag: ApplicationID.String()})
-	for _, application := range key.Applications {
-		list = append(list, BaseKey{
-			Id:         application.ID,
-			Name:       application.Name,
-			Technology: application.ApplicationTechnology.Id,
-		})
-	}
-
 	list = append(list, BaseKey{Model: "Arx", Flag: ArxID.String()})
 	for _, arx := range key.Arx {
 		list = append(list, BaseKey{
-			Id:         arx.ID,
-			Name:       arx.Name,
-			Technology: "",
+			Id:   arx.ID,
+			Name: arx.Name,
 		})
 	}
 

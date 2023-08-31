@@ -8,7 +8,7 @@ require (
 	github.com/charmbracelet/bubbletea v0.24.2
 	github.com/charmbracelet/lipgloss v0.8.0
 	github.com/muesli/reflow v0.3.0
-	github.com/onqlavelabs/onqlave.core v0.2.0
+	github.com/onqlavelabs/onqlave.core v0.0.0-20230831034033-776f7089fac2
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4

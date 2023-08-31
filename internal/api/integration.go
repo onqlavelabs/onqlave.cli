@@ -338,7 +338,7 @@ func (s *APIIntegrationService) SendLoginInvitation(emailAddress string, tenantN
 
 func (s *APIIntegrationService) GetSignupOperationStatus(token string) (*APIIntegrationServiceOperationResult, error) {
 	registrationUrl := fmt.Sprintf("%s/status", UrlBuilder(TenantName.String()))
-	request := auth.RegistrationStatusRequest{
+	request := auth.RegistrationStatus{
 		Request: auth.RegistrationToken{
 			Token: token,
 		},
@@ -357,7 +357,7 @@ func (s *APIIntegrationService) GetSignupOperationStatus(token string) (*APIInte
 
 func (s *APIIntegrationService) GetLoginOperationStatus(token string) (*APIIntegrationServiceOperationResult, string, string, error) {
 	registrationUrl := fmt.Sprintf("%s/status", UrlBuilder(TenantName.String()))
-	request := auth.RegistrationStatusRequest{
+	request := auth.RegistrationStatus{
 		Request: auth.RegistrationToken{
 			Token: token,
 		},

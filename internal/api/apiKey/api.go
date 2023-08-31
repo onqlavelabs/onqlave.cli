@@ -47,7 +47,7 @@ func (s *Service) GetKeyBaseInfo() (api_key.Models, error) {
 	tenantId := viper.Get("tenant_id")
 	clusterUrl := fmt.Sprintf("%s/%s/keys/base", api.UrlBuilder(api.TenantName.String()), tenantId)
 
-	response, err := api.Get[api_key.ListResponse](clusterUrl)
+	response, err := api.Get[api_key.BaseResponse](clusterUrl)
 	if err != nil {
 		return api_key.Models{}, model.NewAppError("GetKeyBaseInfo", "cli.server_error.key_base_info", nil, "get key base info failed", http.StatusInternalServerError).Wrap(err)
 	}
@@ -55,7 +55,7 @@ func (s *Service) GetKeyBaseInfo() (api_key.Models, error) {
 	return response.Data.Model, nil
 }
 
-func (s *Service) ValidateAPIKey(baseInfo api_key.Models, appID, clusterID, appTech string) (bool, error) {
+func (s *Service) ValidateAPIKey(baseInfo api_key.Models, clusterID string) (bool, error) {
 	var isClusterIDValid bool
 	for _, cluster := range baseInfo.Arx {
 		if cluster.ID == clusterID {
@@ -66,20 +66,6 @@ func (s *Service) ValidateAPIKey(baseInfo api_key.Models, appID, clusterID, appT
 	if !isClusterIDValid {
 		return false, model.NewAppError("ValidateAPIKey", "cli.invalid.apikey_error", nil, "", http.StatusBadRequest).
 			Wrap(errors.NewCLIError(errors.KeyCLIInvalidValue, utils.BoldStyle.Render("ArxID is invalid")))
-	}
-
-	var isAppIDValid bool
-	var isTechValid bool
-	for _, app := range baseInfo.Applications {
-		if app.ID == appID && app.ApplicationTechnology.Id == appTech {
-			isAppIDValid = true
-			isTechValid = true
-			break
-		}
-	}
-	if !isAppIDValid || !isTechValid {
-		return false, model.NewAppError("ValidateAPIKey", "cli.invalid.apikey_error", nil, "", http.StatusBadRequest).
-			Wrap(errors.NewCLIError(errors.KeyCLIMissingRequiredField, utils.BoldStyle.Render("AppId or app technology is invalid")))
 	}
 
 	return true, nil

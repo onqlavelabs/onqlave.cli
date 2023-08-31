@@ -20,10 +20,8 @@ import (
 )
 
 type addApiKeyOperation struct {
-	applicationID         string
-	arxID                 string
-	applicationTechnology string
-	operationTimeout      int
+	arxID            string
+	operationTimeout int
 }
 
 var addKey addApiKeyOperation
@@ -33,7 +31,7 @@ func addCommand() *cobra.Command {
 	init := &cobra.Command{
 		Use:     "add",
 		Short:   "add api key by attributes",
-		Long:    "This command is used to create api key. Key application ID, arx ID and application technology is required.",
+		Long:    "This command is used to create api key. Key arx ID is required.",
 		Example: "onqlave key add",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
@@ -50,11 +48,7 @@ func addCommand() *cobra.Command {
 				return common.CliRenderErr(cmd, err)
 			}
 
-			_, err = apiService.ValidateAPIKey(baseInfo,
-				addKey.applicationID,
-				addKey.arxID,
-				addKey.applicationTechnology,
-			)
+			_, err = apiService.ValidateAPIKey(baseInfo, addKey.arxID)
 			if err != nil {
 				return common.CliRenderErr(cmd, err)
 			}
@@ -66,9 +60,7 @@ func addCommand() *cobra.Command {
 		Run: runAddCommand,
 	}
 
-	init.Flags().StringVarP(&addKey.applicationID, "key_application_id", "a", "", "enter application id")
 	init.Flags().StringVarP(&addKey.arxID, "key_arx_id", "c", "", "enter arx id")
-	init.Flags().StringVarP(&addKey.applicationTechnology, "key_application_technology", "t", "", "enter application technology")
 
 	return init
 }
@@ -78,9 +70,7 @@ func runAddCommand(cmd *cobra.Command, args []string) {
 	width, _, _ := term.GetSize(int(os.Stdout.Fd()))
 
 	keyID, err := apiService.AddKey(api_key.CreateAPIKey{
-		ApplicationID:         addKey.applicationID,
-		ClusterID:             addKey.arxID,
-		ApplicationTechnology: addKey.applicationTechnology,
+		ClusterID: addKey.arxID,
 	})
 	if err != nil {
 		common.RenderCLIOutputError("There was an error creating api key: ", err)
